@@ -1,7 +1,9 @@
+import argparse
 import requests
 import json
-# import numpy as np
 import pandas as pd
+
+# import numpy as np
 
 
 def get_languages() -> list:
@@ -171,15 +173,38 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -
 
 
 def main():
-    champion_name = "Nocturne"
-    lane = "jungle"  # top, jungle, middle, bottom, support
-    tier = "1trick"  # gold_plus, platinum_plus, diamond_plus, all, 1trick
-    keystone_name = "LethalTempo"
-    json_file = create_build(
-        champion_name=champion_name, lane=lane, tier=tier, keystone_name=keystone_name
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--champion-name", help="Champion name")
+    parser.add_argument(
+        "-l",
+        "--lane",
+        choices=["top", "jungle", "middle", "bottom", "support"],
+        help="Lane",
     )
-    file = open(f"builds/{champion_name}_{lane}_{keystone_name}.json", "w+")
-    file.write(json.dumps(json_file))
+    parser.add_argument(
+        "-t",
+        "--tier",
+        default="platinum_plus",
+        choices=["gold_plus", "platinum_plus", "diamond_plus", "all", "1trick"],
+        help="Tier data",
+    )
+    parser.add_argument(
+        "-k",
+        "--keystone-name",
+        # choices=[],
+        help="Keystone name",
+    )
+    args = parser.parse_args()
+    champion_name = args.champion_name
+    lane = args.lane  # top, jungle, middle, bottom, support
+    tier = args.tier  # gold_plus, platinum_plus, diamond_plus, all, 1trick
+    keystone_name = args.keystone_name
+    print(f"{champion_name} {lane} {tier} {keystone_name}")
+    # json_file = create_build(
+    #     champion_name=champion_name, lane=lane, tier=tier, keystone_name=keystone_name
+    # )
+    # file = open(f"builds/{champion_name}_{lane}_{keystone_name}.json", "w+")
+    # file.write(json.dumps(json_file))
 
 
 main()
