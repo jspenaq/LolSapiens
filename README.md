@@ -10,12 +10,10 @@ pip install lolsapiens
 
 ## Usage
 
-Edit input.env:
-
 ```bash
-$ python -m project_name
-#or
-$ project_name
+python -h
+# or
+python main.py -c {Champion name} -l {Lane} -t {Tier} -k {Keystone name}
 ```
 
 ## Development
