@@ -199,12 +199,11 @@ def main():
     lane = args.lane  # top, jungle, middle, bottom, support
     tier = args.tier  # gold_plus, platinum_plus, diamond_plus, all, 1trick
     keystone_name = args.keystone_name
-    print(f"{champion_name} {lane} {tier} {keystone_name}")
-    # json_file = create_build(
-    #     champion_name=champion_name, lane=lane, tier=tier, keystone_name=keystone_name
-    # )
-    # file = open(f"builds/{champion_name}_{lane}_{keystone_name}.json", "w+")
-    # file.write(json.dumps(json_file))
+    json_file = create_build(
+        champion_name=champion_name, lane=lane, tier=tier, keystone_name=keystone_name
+    )
+    file = open(f"builds/{champion_name}_{lane}_{keystone_name}.json", "w+")
+    file.write(json.dumps(json_file))
 
 
 main()
