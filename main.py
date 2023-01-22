@@ -9,8 +9,7 @@ import pandas as pd
 def get_languages() -> list:
     url = "https://ddragon.leagueoflegends.com/cdn/languages.json"
     headers = {"accept": "application/json"}
-    response = requests.get(url, headers=headers).json()
-    return response
+    return requests.get(url, headers=headers).json()
 
 
 def get_current_patch() -> str:
@@ -67,10 +66,7 @@ def get_items_data(
 
 
 def convert_item_to_lol_jsons(items: list) -> list:
-    items_jsons = []
-    for i in items:
-        items_jsons.append({"id": str(i), "count": 1})
-    return items_jsons
+    return [{"id": str(i), "count": 1} for i in items]
 
 
 def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -> dict:
@@ -94,8 +90,8 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -
     response = requests.get(url, headers=headers).json()
     blocks = {
         "startSet": "Starting Set",
-        "mythicItem": "Mythic Item",
         "item1": "1st Item",
+        "mythicItem": "Mythic Item",
         "boots": "Boots",
         "item2": "2nd Item",
         "item3": "3rd Item",
@@ -103,20 +99,26 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -
         "item5": "5th Item",
     }
 
-    build_json = {}
     build_file = open("builds/recommend_build.txt", "w+")
     build_file.write(f"{champion_name} {lane} - {keystone_name}\n\n")
-    build_json["title"] = f"PPC - {lane} {champion_name} - {keystone_name}"
-    build_json["associatedMaps"] = [11, 12]
-    build_json["associatedChampions"] = [int(champion_id)]
-    build_json["blocks"] = []
-
+    build_json = {
+        "title": f"PPC - {lane} {champion_name} - {keystone_name}",
+        "type": "custom",
+        "associatedMaps": [11, 12],
+        "associatedChampions": [int(champion_id)],
+        "map": "any",
+        "mode": "any",
+        "preferredItemSlots": [],
+        "sortrank": 1,
+        "startedFrom": "blank",
+        "blocks": [],
+    }
     skillOrder = response["skills"]["skillOrder"][0][0]
-    skillOrder = " > ".join([skill for skill in skillOrder])
+    skillOrder = " > ".join(list(skillOrder))
     build_file.write(skillOrder)
     build_file.write("\n\n")
 
-    for b in blocks.keys():
+    for b, value in blocks.items():
         print(f"=== {b} ===")
         build_file.write(f"=== {b} ===\n")
         if b not in response.keys():
@@ -148,7 +150,7 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -
             build_json["blocks"].append(
                 {
                     "items": convert_item_to_lol_jsons(starting_set),
-                    "type": f"{blocks[b]} ({skillOrder})",
+                    "type": f"{value} ({skillOrder})",
                 }
             )
         else:
@@ -203,7 +205,7 @@ def main():
         champion_name=champion_name, lane=lane, tier=tier, keystone_name=keystone_name
     )
     file = open(f"builds/{champion_name}_{lane}_{keystone_name}.json", "w+")
-    file.write(json.dumps(json_file))
+    file.write(json.dumps(json_file, indent=4))
 
 
 main()
