@@ -2,6 +2,8 @@ import argparse
 import requests
 import json
 import pandas as pd
+from os import makedirs
+from os.path import exists
 
 # import numpy as np
 
@@ -31,7 +33,8 @@ def get_champions_data(
 def get_runes_data(
     version: str, lang: str = "en_US", write_output: bool = False
 ) -> dict:
-    if write_output:
+    file_name = "data/runes_data.json"
+    if not exists(file_name) or write_output:
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/{lang}/runesReforged.json"
         headers = {"accept": "application/json"}
         response = requests.get(url, headers=headers).json()
@@ -40,28 +43,29 @@ def get_runes_data(
             keystones = r["slots"][0]["runes"]
             for i in range(len(keystones)):
                 data[keystones[i]["key"]] = keystones[i]["id"]
-        file = open("runes_data.json", "w+")
-        file.write(json.dumps(data))
+        file = open(file_name, "w+")
+        file.write(json.dumps(data, indent=4))
         return data
     else:
-        file = open("runes_data.json", "r+")
+        file = open(file_name, "r+")
         return json.loads(file.read())
 
 
 def get_items_data(
     version: str, lang: str = "en_US", write_output: bool = False
 ) -> dict:
-    if write_output:
+    file_name = "data/items_data.json"
+    if not exists(file_name) or write_output:
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/{lang}/item.json"
         headers = {"accept": "application/json"}
         response = requests.get(url, headers=headers).json()
         data = response["data"]
         filtered = {key: data[key]["name"] for key in data.keys()}
-        file = open("items_data.json", "w+")
-        file.write(json.dumps(filtered))
-        return data
+        file = open(file_name, "w+")
+        file.write(json.dumps(filtered, indent=4))
+        return filtered
     else:
-        file = open("items_data.json", "r+")
+        file = open(file_name, "r+")
         return json.loads(file.read())
 
 
@@ -99,7 +103,7 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -
         "item5": "5th Item",
     }
 
-    build_file = open("builds/recommend_build.txt", "w+")
+    build_file = open("Champions/recommend_build.txt", "w+")
     build_file.write(f"{champion_name} {lane} - {keystone_name}\n\n")
     build_json = {
         "title": f"PPC - {lane} {champion_name} - {keystone_name}",
@@ -154,7 +158,7 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -
                 }
             )
         else:
-            if "9999" in recommended_sorted["item_id"].values:
+            if "9999" in recommended_sorted["item_id"].values:  # No boots
                 continue
             recommended_sorted["item_name"] = recommended_sorted["item_id"].apply(
                 lambda id: items_data[id]
@@ -196,6 +200,13 @@ def main():
         # choices=[],
         help="Keystone name",
     )
+
+    if not exists("data"):
+        makedirs("data")
+
+    if not exists("Champions"):
+        makedirs("Champions")
+
     args = parser.parse_args()
     champion_name = args.champion_name
     lane = args.lane  # top, jungle, middle, bottom, support
@@ -204,7 +215,13 @@ def main():
     json_file = create_build(
         champion_name=champion_name, lane=lane, tier=tier, keystone_name=keystone_name
     )
-    file = open(f"builds/{champion_name}_{lane}_{keystone_name}.json", "w+")
+
+    if not exists(f"Champions/Recommended/{champion_name}"):
+        makedirs(f"Champions/Recommended/{champion_name}")
+    file = open(
+        f"Champions/Recommended/{champion_name}/{champion_name}_{lane}_{keystone_name}.json",
+        "w+",
+    )
     file.write(json.dumps(json_file, indent=4))
 
 
