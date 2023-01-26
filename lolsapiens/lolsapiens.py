@@ -197,3 +197,10 @@ def main():
 
     if args.Import:
         import_build(build_file_name)
+
+
+# Parce la misma cosa pero chambona
+def getBuildGivenParams(champion_name, lane, tier, keystone_name):
+    return create_build(
+        champion_name=champion_name, lane=lane, tier=tier, keystone_name=keystone_name
+    )
