@@ -3,7 +3,8 @@ import json
 import pandas as pd
 from os import makedirs
 from os.path import exists
-from lolsapiens.utils import create_parser, setup_folders, import_build
+from lolsapiens.utils import create_parser, setup_folders
+import platform
 
 
 def get_languages() -> list:
@@ -196,4 +197,20 @@ def main():
     file.write(json.dumps(json_file, indent=4))
 
     if args.Import:
-        import_build(build_file_name)
+        system = platform.system()
+        base_path = ""
+        if system == "Windows":
+            base_path = "C:\\Riot Games\\League of Legends"
+        elif system == "Darwin":
+            pass
+        elif system == "Linux":
+            pass
+        else:
+            pass
+
+        system_path = f"{base_path}\\Config\\{build_file_name}"
+        file = open(
+            system_path,
+            "w+",
+        )
+        file.write(json.dumps(json_file, indent=4))
