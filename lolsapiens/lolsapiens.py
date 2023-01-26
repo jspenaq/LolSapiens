@@ -3,7 +3,7 @@ import json
 import pandas as pd
 from os import makedirs
 from os.path import exists
-from lolsapiens.utils import create_parser, setup_folders
+from lolsapiens.utils import create_parser, setup_folders, import_build
 
 
 def get_languages() -> list:
@@ -185,10 +185,15 @@ def main():
         champion_name=champion_name, lane=lane, tier=tier, keystone_name=keystone_name
     )
 
-    if not exists(f"Champions/Recommended/{champion_name}"):
-        makedirs(f"Champions/Recommended/{champion_name}")
+    if not exists(f"Champions\\{champion_name}\\Recommended"):
+        makedirs(f"Champions\\{champion_name}\\Recommended")
+
+    build_file_name = f"Champions\\{champion_name}\\Recommended\\{champion_name}_{lane}_{keystone_name}.json"
     file = open(
-        f"Champions/Recommended/{champion_name}/{champion_name}_{lane}_{keystone_name}.json",
+        build_file_name,
         "w+",
     )
     file.write(json.dumps(json_file, indent=4))
+
+    if args.Import:
+        import_build(build_file_name)

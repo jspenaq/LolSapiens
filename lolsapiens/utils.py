@@ -1,6 +1,8 @@
 import argparse
 from os import makedirs
-from os.path import exists
+from os.path import exists, dirname
+import platform
+import shutil
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -29,10 +31,28 @@ def create_parser() -> argparse.ArgumentParser:
         "--import",
         action="store_true",
         help="Import automatically to League of Legends folder",
-        dest="IMPORT"
+        dest="Import",
     )
 
     return parser
+
+
+def import_build(build_file_name: str):
+    os = platform.system()
+    base_path = ""
+    if os == "Windows":
+        base_path = "C:\\Riot Games\\League of Legends"
+    elif os == "Darwin":
+        pass
+    elif os == "Linux":
+        pass
+    else:
+        return
+
+    path = f"{base_path}\\Config\\{build_file_name}"
+    if not exists(dirname(path)):
+        makedirs(dirname(path))
+    shutil.copy(build_file_name, path)
 
 
 def setup_folders() -> bool:
