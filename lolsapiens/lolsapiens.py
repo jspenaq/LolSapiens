@@ -2,7 +2,7 @@ import requests
 import json
 import pandas as pd
 from os import makedirs
-from os.path import exists
+from os.path import exists, dirname
 from lolsapiens.utils import create_parser, setup_folders
 import platform
 
@@ -209,6 +209,8 @@ def main():
             pass
 
         system_path = f"{base_path}\\Config\\{build_file_name}"
+        if not exists(dirname(system_path)):
+            makedirs(dirname(system_path))
         file = open(
             system_path,
             "w+",
