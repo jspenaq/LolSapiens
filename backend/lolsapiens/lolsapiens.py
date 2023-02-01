@@ -4,8 +4,12 @@ import pandas as pd
 from os import makedirs
 from os.path import exists, dirname
 from backend.lolsapiens.sapiens import Sapiens
-from backend.lolsapiens.utils import create_parser, setup_folders, request_get
-import platform
+from backend.lolsapiens.utils import (
+    create_parser,
+    import_build,
+    setup_folders,
+    request_get,
+)
 
 
 def get_languages() -> list:
@@ -46,10 +50,10 @@ def get_runes_data(version: str, write_output: bool = False) -> dict:
                     }
         with open(file_name, "w+", encoding="UTF-8") as file:
             file.write(json.dumps(data, indent=4, ensure_ascii=False))
-        return data
-    else:
-        with open(file_name, "r+", encoding="UTF-8") as file:
-            return json.loads(file.read())
+        # return data
+    # else:
+    with open(file_name, "r+", encoding="UTF-8") as file:
+        return json.loads(file.read())
 
 
 def get_items_data(version: str, write_output: bool = False) -> dict:
@@ -67,10 +71,10 @@ def get_items_data(version: str, write_output: bool = False) -> dict:
             }
         with open(file_name, "w+", encoding="UTF-8") as file:
             file.write(json.dumps(data, indent=4, ensure_ascii=False))
-        return data
-    else:
-        with open(file_name, "r+", encoding="UTF-8") as file:
-            return json.loads(file.read())
+        # return data
+    # else:
+    with open(file_name, "r+", encoding="UTF-8") as file:
+        return json.loads(file.read())
 
 
 def convert_item_to_lol_jsons(items: list) -> list:
@@ -103,10 +107,12 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
         "item5": "5th Item",
     }
 
-    build_file = open("Champions/recommend_build.txt", "w+")
-    build_file.write(f"{champion_name} {lane} - {runes_data[keystone_id]['name_en']}\n\n")
+    build_file = open("Champions/recommend_build.txt", "w+", encoding="UTF-8")
+    build_file.write(
+        f"{champion_name} {lane} - {runes_data[keystone_id]['name_en']} ({runes_data[keystone_id]['name_es']})\n\n"
+    )
     build_json = {
-        "title": f"LolSapiens - {lane} {champion_name} - {runes_data[keystone_id]['name_en']}",
+        "title": f"LolSapiens - {lane} {champion_name} - {runes_data[keystone_id]['name_en']} ({runes_data[keystone_id]['name_es']})",
         "type": "custom",
         "associatedMaps": [11, 12],
         "associatedChampions": [int(champion_id)],
@@ -140,9 +146,9 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
         df = pd.DataFrame(items, columns=columns)
         s = Sapiens()
         recommended = s.analyze(df)
-        
+
         if b == "startSet":
-            # split cases such as: "3850_2003_2003" into [3850, 2003, 2003] 
+            # split cases such as: "3850_2003_2003" into [3850, 2003, 2003]
             recommended["item_name"] = recommended["item_id"].apply(
                 lambda id: ", ".join([items_data[x]["name_en"] for x in id.split("_")])
             )
@@ -159,7 +165,9 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
             )
         else:
             if "9999" in recommended["item_id"].values:  # No boots
-                recommended.drop(recommended[recommended['item_id'] == "9999"].index, inplace = True)
+                recommended.drop(
+                    recommended[recommended["item_id"] == "9999"].index, inplace=True
+                )
             if recommended.empty:
                 print("EMPTY")
                 continue
@@ -171,9 +179,7 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
             )
             build_json["blocks"].append(
                 {
-                    "items": convert_item_to_lol_jsons(
-                        list(recommended["item_id"])
-                    ),
+                    "items": convert_item_to_lol_jsons(list(recommended["item_id"])),
                     "type": blocks[b],
                 }
             )
@@ -183,6 +189,7 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
         print(recommended)
         build_file.write("\n\n")
 
+    build_file.close()
     return build_json
 
 
@@ -203,29 +210,8 @@ def main():
         makedirs(f"Champions\\{champion_name}\\Recommended")
 
     build_file_name = f"Champions\\{champion_name}\\Recommended\\{champion_name}_{lane}_{keystone_name}.json"
-    file = open(
-        build_file_name,
-        "w+",
-    )
-    file.write(json.dumps(json_file, indent=4))
+    with open(build_file_name, "w+", encoding="UTF-8") as file:
+        file.write(json.dumps(json_file, indent=4))
 
     if args.Import:
-        system = platform.system()
-        base_path = ""
-        if system == "Windows":
-            base_path = "C:\\Riot Games\\League of Legends"
-        elif system == "Darwin":
-            pass
-        elif system == "Linux":
-            pass
-        else:
-            pass
-
-        system_path = f"{base_path}\\Config\\{build_file_name}"
-        if not exists(dirname(system_path)):
-            makedirs(dirname(system_path))
-        file = open(
-            system_path,
-            "w+",
-        )
-        file.write(json.dumps(json_file, indent=4))
+        import_build(build_file_name, json_file)
