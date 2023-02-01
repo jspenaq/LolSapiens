@@ -77,7 +77,7 @@ def convert_item_to_lol_jsons(items: list) -> list:
     return [{"id": str(i), "count": 1} for i in items]
 
 
-def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -> dict:
+def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> dict:
     current_patch = get_current_patch()
     champions_data = get_champions_data(current_patch)
     runes_data = get_runes_data(current_patch)
@@ -86,8 +86,8 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -
     patch = ".".join(current_patch.split(".")[:2])
     champion_id = champions_data[champion_name]["key"]
     region = "all"
-    # keystone = runes_data[keystone_name]["key"]
-    keystone = keystone_name
+    # keystone = runes_data[keystone_id]["key"]
+    keystone = keystone_id
 
     print(f"Searching {champion_name} {lane}")
     url = f"{base_url}/?ep=champion&p=d&v=1&patch={patch}&cid={champion_id}&lane={lane}&tier={tier}&queue=420&region={region}&keystone={keystone}"
@@ -104,9 +104,9 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_name: str) -
     }
 
     build_file = open("Champions/recommend_build.txt", "w+")
-    build_file.write(f"{champion_name} {lane} - {keystone_name}\n\n")
+    build_file.write(f"{champion_name} {lane} - {runes_data[keystone_id]['name_en']}\n\n")
     build_json = {
-        "title": f"LolSapiens - {lane} {champion_name} - {keystone_name}",
+        "title": f"LolSapiens - {lane} {champion_name} - {runes_data[keystone_id]['name_en']}",
         "type": "custom",
         "associatedMaps": [11, 12],
         "associatedChampions": [int(champion_id)],
@@ -196,7 +196,7 @@ def main():
     tier = args.tier  # gold_plus, platinum_plus, diamond_plus, all, 1trick
     keystone_name = args.keystone_name
     json_file = create_build(
-        champion_name=champion_name, lane=lane, tier=tier, keystone_name=keystone_name
+        champion_name=champion_name, lane=lane, tier=tier, keystone_id=keystone_name
     )
 
     if not exists(f"Champions\\{champion_name}\\Recommended"):
