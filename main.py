@@ -1,4 +1,4 @@
-from lolsapiens.lolsapiens import main
+from backend.lolsapiens.lolsapiens import main
 
 if __name__ == '__main__':
     main()

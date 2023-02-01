@@ -1,6 +1,12 @@
 import argparse
+import requests
 from os import makedirs
 from os.path import exists, dirname
+
+
+def request_get(url: str) :
+    headers = {"accept": "application/json"}
+    return requests.get(url, headers=headers).json()
 
 
 def create_parser() -> argparse.ArgumentParser:
