@@ -31,9 +31,9 @@ class Sapiens:
         method = 0
         if cv > 1.5:
             method = 1
-        elif 1.5 > cv and cv > 1.0:
+        elif 1.5 > cv > 1.0:
             method = 2
-        elif 1.0 > cv and cv > 0.5:
+        elif 1.0 > cv > 0.5:
             method = 3
         elif cv < 0.5:
             method = 4
@@ -50,7 +50,7 @@ class Sapiens:
                 recommended = df[df["games"] >= q2]
             case 4:
                 recommended = df[df["games"] >= q1]
-        
+
         recommended_sorted = recommended.sort_values(by="win_rate", ascending=False)
         recommended_sorted["item_id"] = recommended_sorted["item_id"].astype(str)
         return recommended_sorted.reset_index()

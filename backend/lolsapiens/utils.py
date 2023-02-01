@@ -65,7 +65,7 @@ def import_build(build_file_name: str, json_file: dict) -> bool:
     if system == "Windows":
         base_path = "C:\\Riot Games\\League of Legends"
     elif system == "Darwin":
-        pass
+        base_path = "/Applications/League of Legends.app/Contents/LoL"
     elif system == "Linux":
         pass
     else:
