@@ -4,7 +4,7 @@ import platform
 import requests
 from os import makedirs
 from os.path import exists, dirname
-
+from pathlib import Path
 
 def request_get(url: str):
     headers = {"accept": "application/json"}
@@ -59,7 +59,7 @@ def setup_folders() -> bool:
     return True
 
 
-def import_build(build_file_name: str, json_file: dict) -> bool:
+def import_build(build_path: Path, json_file: dict) -> bool:
     system = platform.system()
     base_path = ""
     if system == "Windows":
@@ -71,7 +71,7 @@ def import_build(build_file_name: str, json_file: dict) -> bool:
     else:
         pass
 
-    system_path = f"{base_path}\\Config\\{build_file_name}"
+    system_path = f"{base_path}/Config/" / build_path
     if not exists(dirname(system_path)):
         makedirs(dirname(system_path))
     with open(system_path, "w+", encoding="UTF-8") as file:

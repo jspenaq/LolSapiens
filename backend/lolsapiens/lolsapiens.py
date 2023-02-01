@@ -3,6 +3,7 @@ import json
 import pandas as pd
 from os import makedirs
 from os.path import exists, dirname
+from pathlib import Path
 from backend.lolsapiens.sapiens import Sapiens
 from backend.lolsapiens.utils import (
     create_parser,
@@ -107,89 +108,89 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
         "item5": "5th Item",
     }
 
-    build_file = open("Champions/recommend_build.txt", "w+", encoding="UTF-8")
-    build_file.write(
-        f"{champion_name} {lane} - {runes_data[keystone_id]['name_en']} ({runes_data[keystone_id]['name_es']})\n\n"
-    )
-    build_json = {
-        "title": f"LolSapiens - {lane} {champion_name} - {runes_data[keystone_id]['name_en']} ({runes_data[keystone_id]['name_es']})",
-        "type": "custom",
-        "associatedMaps": [11, 12],
-        "associatedChampions": [int(champion_id)],
-        "map": "any",
-        "mode": "any",
-        "preferredItemSlots": [],
-        "sortrank": 1,
-        "startedFrom": "blank",
-        "blocks": [],
-    }
-    skillOrder = response["skills"]["skillOrder"][0][0]
-    skillOrder = " > ".join(list(skillOrder))
-    build_file.write(skillOrder)
-    build_file.write("\n\n")
-
-    for b, value in blocks.items():
-        print(f"=== {b} ===")
-        build_file.write(f"=== {b} ===\n")
-        if b not in response.keys():
-            continue
-
-        items = response[b]
-        # [0]: item_id, [1]: win_rate, [2]: pick_rate, [3]: games, [4]: time,
-        if len(items) > 7:
-            items = items[:7]
-
-        columns = ["item_id", "win_rate", "pick_rate", "games", "time"]
-        if b == "startSet":
-            columns = columns[:4]
-
-        df = pd.DataFrame(items, columns=columns)
-        s = Sapiens()
-        recommended = s.analyze(df)
-
-        if b == "startSet":
-            # split cases such as: "3850_2003_2003" into [3850, 2003, 2003]
-            recommended["item_name"] = recommended["item_id"].apply(
-                lambda id: ", ".join([items_data[x]["name_en"] for x in id.split("_")])
-            )
-            recommended["item_name_es"] = recommended["item_id"].apply(
-                lambda id: ", ".join([items_data[x]["name_es"] for x in id.split("_")])
-            )
-            starting_set = recommended["item_id"][0].split("_")
-            # starting_set.append([]) # todo: add wards, lens
-            build_json["blocks"].append(
-                {
-                    "items": convert_item_to_lol_jsons(starting_set),
-                    "type": f"{value} ({skillOrder})",
-                }
-            )
-        else:
-            if "9999" in recommended["item_id"].values:  # No boots
-                recommended.drop(
-                    recommended[recommended["item_id"] == "9999"].index, inplace=True
-                )
-            if recommended.empty:
-                print("EMPTY")
-                continue
-            recommended["item_name"] = recommended["item_id"].apply(
-                lambda id: items_data[id]["name_en"]
-            )
-            recommended["item_name_es"] = recommended["item_id"].apply(
-                lambda id: items_data[id]["name_es"]
-            )
-            build_json["blocks"].append(
-                {
-                    "items": convert_item_to_lol_jsons(list(recommended["item_id"])),
-                    "type": blocks[b],
-                }
-            )
-            recommended.drop(columns=["time"], inplace=True)
-        recommended.drop(columns=["index"], inplace=True)
-        build_file.write(recommended.to_string())
-        print(recommended)
+    build_txt_path= Path("Champions/recommend_build.txt")
+    with open(build_txt_path, "w+", encoding="UTF-8") as build_file:
+        build_file.write(
+            f"{champion_name} {lane} - {runes_data[keystone_id]['name_en']} ({runes_data[keystone_id]['name_es']})\n\n"
+        )
+        build_json = {
+            "title": f"LolSapiens - {lane} {champion_name} - {runes_data[keystone_id]['name_en']} ({runes_data[keystone_id]['name_es']})",
+            "type": "custom",
+            "associatedMaps": [11, 12],
+            "associatedChampions": [int(champion_id)],
+            "map": "any",
+            "mode": "any",
+            "preferredItemSlots": [],
+            "sortrank": 1,
+            "startedFrom": "blank",
+            "blocks": [],
+        }
+        skillOrder = response["skills"]["skillOrder"][0][0]
+        skillOrder = " > ".join(list(skillOrder))
+        build_file.write(skillOrder)
         build_file.write("\n\n")
 
-    build_file.close()
+        for b, value in blocks.items():
+            print(f"=== {b} ===")
+            build_file.write(f"=== {b} ===\n")
+            if b not in response.keys():
+                continue
+
+            items = response[b]
+            # [0]: item_id, [1]: win_rate, [2]: pick_rate, [3]: games, [4]: time,
+            if len(items) > 7:
+                items = items[:7]
+
+            columns = ["item_id", "win_rate", "pick_rate", "games", "time"]
+            if b == "startSet":
+                columns = columns[:4]
+
+            df = pd.DataFrame(items, columns=columns)
+            s = Sapiens()
+            recommended = s.analyze(df)
+
+            if b == "startSet":
+                # split cases such as: "3850_2003_2003" into [3850, 2003, 2003]
+                recommended["item_name"] = recommended["item_id"].apply(
+                    lambda id: ", ".join([items_data[x]["name_en"] for x in id.split("_")])
+                )
+                recommended["item_name_es"] = recommended["item_id"].apply(
+                    lambda id: ", ".join([items_data[x]["name_es"] for x in id.split("_")])
+                )
+                starting_set = recommended["item_id"][0].split("_")
+                # starting_set.append([]) # todo: add wards, lens
+                build_json["blocks"].append(
+                    {
+                        "items": convert_item_to_lol_jsons(starting_set),
+                        "type": f"{value} ({skillOrder})",
+                    }
+                )
+            else:
+                if "9999" in recommended["item_id"].values:  # No boots
+                    recommended.drop(
+                        recommended[recommended["item_id"] == "9999"].index, inplace=True
+                    )
+                if recommended.empty:
+                    print("EMPTY")
+                    continue
+                recommended["item_name"] = recommended["item_id"].apply(
+                    lambda id: items_data[id]["name_en"]
+                )
+                recommended["item_name_es"] = recommended["item_id"].apply(
+                    lambda id: items_data[id]["name_es"]
+                )
+                build_json["blocks"].append(
+                    {
+                        "items": convert_item_to_lol_jsons(list(recommended["item_id"])),
+                        "type": blocks[b],
+                    }
+                )
+                recommended.drop(columns=["time"], inplace=True)
+            recommended.drop(columns=["index"], inplace=True)
+            build_file.write(recommended.to_string())
+            print(recommended)
+            build_file.write("\n\n")
+
     return build_json
 
 
@@ -206,12 +207,13 @@ def main():
         champion_name=champion_name, lane=lane, tier=tier, keystone_id=keystone_name
     )
 
-    if not exists(f"Champions\\{champion_name}\\Recommended"):
-        makedirs(f"Champions\\{champion_name}\\Recommended")
+    champion_folder_path = Path(f"Champions/{champion_name}/Recommended")
+    if not champion_folder_path.exists():
+        champion_folder_path.mkdir(parents=True, exist_ok=True)
 
-    build_file_name = f"Champions\\{champion_name}\\Recommended\\{champion_name}_{lane}_{keystone_name}.json"
-    with open(build_file_name, "w+", encoding="UTF-8") as file:
+    build_path = champion_folder_path / f"{champion_name}_{lane}_{keystone_name}.json"
+    with open(build_path, "w+", encoding="UTF-8") as file:
         file.write(json.dumps(json_file, indent=4))
 
     if args.Import:
-        import_build(build_file_name, json_file)
+        import_build(build_path, json_file)
