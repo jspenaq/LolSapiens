@@ -6,7 +6,7 @@ from backend.lolsapiens.lcu.utils import (
     update_game_mode,
     # is_champ_select_phase,
     # get_current_champion,
-    # update_current_champion_and_runes,
+    update_current_champion_and_runes,
 )
 
 connector = Connector()
@@ -31,8 +31,8 @@ async def gameflow_session_listener(connection, event):
         "DELETE",
     ),
 )
-# async def champion_select_champ_listener(connection, event):
-#     await update_current_champion_and_runes(connection, event)
+async def champion_select_champ_listener(connection, event):
+    await update_current_champion_and_runes(connection, event)
 
 
 @connector.close

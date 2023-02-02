@@ -64,18 +64,19 @@ async def update_game_mode(connection, event):
 #     return champions.from_id(event.data)
 
 
-# async def update_current_champion_and_runes(connection, event):
-#     current_champion = await get_current_champion(connection, event)
+async def update_current_champion_and_runes(connection, event):
+    champion_id = event.data
+    name = input('What is your name?\n') 
+    print(name)
+    # if not current_champion:
+    #     return
+    # if connection.locals["champion"] == current_champion:
+    #     return
 
-#     if not current_champion:
-#         return
-#     if connection.locals["champion"] == current_champion:
-#         return
+    # connection.locals["champion"] = current_champion
+    # print_game_details(connection)
 
-#     connection.locals["champion"] = current_champion
-#     print_game_details(connection)
-
-#     await update_rune_page(connection)
+    # await update_rune_page(connection)
 
 
 #############################################################

@@ -2,8 +2,6 @@ import argparse
 import json
 import platform
 import requests
-from os import makedirs
-from os.path import exists, dirname
 from pathlib import Path
 
 
@@ -53,11 +51,13 @@ def create_parser() -> argparse.ArgumentParser:
 
 def setup_folders() -> bool:
     try:
-        if not exists("data"):
-            makedirs("data")
+        folder = Path("data")
+        if not folder.exists():
+            folder.mkdir(parents=True, exist_ok=True)
 
-        if not exists("Champions"):
-            makedirs("Champions")
+        folder = Path("Champions")
+        if not folder.exists():
+            folder.mkdir(parents=True, exist_ok=True)
 
     except Exception as e:
         print("An exception occurred:")
@@ -80,7 +80,7 @@ def import_build(build_path: Path, json_file: dict) -> bool:
         pass
 
     system_path = f"{base_path}/Config/" / build_path
-    if not exists(dirname(system_path)):
-        makedirs(dirname(system_path))
+    if not system_path.parent.exists():
+        system_path.parent.mkdir(parents=True, exist_ok=True)
     with open(system_path, "w+", encoding="UTF-8") as file:
         file.write(json.dumps(json_file, indent=4))

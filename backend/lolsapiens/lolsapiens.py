@@ -1,8 +1,6 @@
-import requests
 import json
 import pandas as pd
-from os import makedirs
-from os.path import exists, dirname
+from os.path import exists
 from pathlib import Path
 from backend.lolsapiens.sapiens import Sapiens
 from backend.lolsapiens.utils import (
@@ -230,6 +228,7 @@ def main():
             mode = 420
         case "aram":
             mode = 450
+            lane = "middle"
     keystone_name = args.keystone_name
     json_file = create_build(
         champion_id=champion_id, lane=lane, tier=tier, mode=mode, keystone_id=keystone_name
