@@ -6,6 +6,7 @@ from os import makedirs
 from os.path import exists, dirname
 from pathlib import Path
 
+
 def request_get(url: str):
     headers = {"accept": "application/json"}
     return requests.get(url, headers=headers).json()
@@ -26,6 +27,13 @@ def create_parser() -> argparse.ArgumentParser:
         default="platinum_plus",
         choices=["gold_plus", "platinum_plus", "diamond_plus", "all", "1trick"],
         help="Tier data",
+    )
+    parser.add_argument(
+        "-m",
+        "--mode",
+        default="ranked",
+        choices=["ranked", "aram"],
+        help="Queue mode",
     )
     parser.add_argument(
         "-k",

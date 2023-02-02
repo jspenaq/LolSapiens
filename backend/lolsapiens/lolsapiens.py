@@ -23,13 +23,24 @@ def get_current_patch() -> str:
     return request_get(url)[0]
 
 
-def get_champions_data(
-    version: str, lang: str = "en_US", write_output: bool = False
-) -> dict:
-    url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/{lang}/champion.json"
-    headers = {"accept": "application/json"}
-    response = requests.get(url, headers=headers).json()
-    return response["data"]
+def get_champions_data(version: str, write_output: bool = False) -> dict:
+    file_name = "data/champions_data.json"
+    if not exists(file_name) or write_output:
+        url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/champion.json"
+        response = request_get(url)["data"]
+        data = {}
+        for champion in response:
+            champion_data = response[champion]
+            data[champion_data["key"]] = {
+                "id": champion_data["id"],
+                "name": champion_data["name"],
+            }
+        with open(file_name, "w+", encoding="UTF-8") as file:
+            file.write(json.dumps(data, indent=4, ensure_ascii=False))
+        # return data
+    # else:
+    with open(file_name, "r+", encoding="UTF-8") as file:
+        return json.loads(file.read())
 
 
 def get_runes_data(version: str, write_output: bool = False) -> dict:
@@ -82,20 +93,20 @@ def convert_item_to_lol_jsons(items: list) -> list:
     return [{"id": str(i), "count": 1} for i in items]
 
 
-def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> dict:
+def create_build(champion_id: str, lane: str, tier: str, mode: int, keystone_id: str) -> dict:
     current_patch = get_current_patch()
     champions_data = get_champions_data(current_patch)
     runes_data = get_runes_data(current_patch)
     items_data = get_items_data(current_patch)
     base_url = "https://axe.lolalytics.com/mega"
     patch = ".".join(current_patch.split(".")[:2])
-    champion_id = champions_data[champion_name]["key"]
+    champion_name = champions_data[champion_id]["name"]
     region = "all"
     # keystone = runes_data[keystone_id]["key"]
     keystone = keystone_id
 
     print(f"Searching {champion_name} {lane}")
-    url = f"{base_url}/?ep=champion&p=d&v=1&patch={patch}&cid={champion_id}&lane={lane}&tier={tier}&queue=420&region={region}&keystone={keystone}"
+    url = f"{base_url}/?ep=champion&p=d&v=1&patch={patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={mode}&region={region}&keystone={keystone}"
     response = request_get(url)
     blocks = {
         "startSet": "Starting Set",
@@ -108,7 +119,7 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
         "item5": "5th Item",
     }
 
-    build_txt_path= Path("Champions/recommend_build.txt")
+    build_txt_path = Path("Champions/recommend_build.txt")
     with open(build_txt_path, "w+", encoding="UTF-8") as build_file:
         build_file.write(
             f"{champion_name} {lane} - {runes_data[keystone_id]['name_en']} ({runes_data[keystone_id]['name_es']})\n\n"
@@ -152,10 +163,14 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
             if b == "startSet":
                 # split cases such as: "3850_2003_2003" into [3850, 2003, 2003]
                 recommended["item_name"] = recommended["item_id"].apply(
-                    lambda id: ", ".join([items_data[x]["name_en"] for x in id.split("_")])
+                    lambda id: ", ".join(
+                        [items_data[x]["name_en"] for x in id.split("_")]
+                    )
                 )
                 recommended["item_name_es"] = recommended["item_id"].apply(
-                    lambda id: ", ".join([items_data[x]["name_es"] for x in id.split("_")])
+                    lambda id: ", ".join(
+                        [items_data[x]["name_es"] for x in id.split("_")]
+                    )
                 )
                 starting_set = recommended["item_id"][0].split("_")
                 # starting_set.append([]) # todo: add wards, lens
@@ -168,7 +183,8 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
             else:
                 if "9999" in recommended["item_id"].values:  # No boots
                     recommended.drop(
-                        recommended[recommended["item_id"] == "9999"].index, inplace=True
+                        recommended[recommended["item_id"] == "9999"].index,
+                        inplace=True,
                     )
                 if recommended.empty:
                     print("EMPTY")
@@ -181,7 +197,9 @@ def create_build(champion_name: str, lane: str, tier: str, keystone_id: str) -> 
                 )
                 build_json["blocks"].append(
                     {
-                        "items": convert_item_to_lol_jsons(list(recommended["item_id"])),
+                        "items": convert_item_to_lol_jsons(
+                            list(recommended["item_id"])
+                        ),
                         "type": blocks[b],
                     }
                 )
@@ -199,12 +217,22 @@ def main():
 
     parser = create_parser()
     args = parser.parse_args()
-    champion_name = args.champion_name
+    champion_id = args.champion_name
+    # TODO: Fix this:
+    current_patch = get_current_patch()
+    champions_data = get_champions_data(current_patch)
+    champion_name = champions_data[champion_id]["name"]
     lane = args.lane  # top, jungle, middle, bottom, support
     tier = args.tier  # gold_plus, platinum_plus, diamond_plus, all, 1trick
+    mode = args.mode  # ranked, aram
+    match mode:
+        case "ranked":
+            mode = 420
+        case "aram":
+            mode = 450
     keystone_name = args.keystone_name
     json_file = create_build(
-        champion_name=champion_name, lane=lane, tier=tier, keystone_id=keystone_name
+        champion_id=champion_id, lane=lane, tier=tier, mode=mode, keystone_id=keystone_name
     )
 
     champion_folder_path = Path(f"Champions/{champion_name}/Recommended")
