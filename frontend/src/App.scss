@@ -1,0 +1,43 @@
+#root {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.App {
+  width: 100%;
+}
+
+.bg__gray {
+  background-color: rgba(71, 71, 71, 0.64);
+}
+
+.Champion {
+  padding: 2rem;
+  border-radius: 15px;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: space-between;
+
+  &__info {
+    flex: 1;
+  }
+
+  &__stats {
+    width: 20%;
+  }
+
+  .Tags {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+.Chip {
+  background-color: rgba(95, 95, 95, 0.64);
+  border-radius: 15px;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+}
