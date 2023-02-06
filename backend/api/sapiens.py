@@ -139,10 +139,14 @@ class Sapiens:
                 "startedFrom": "blank",
                 "blocks": [],
             }
-            skillOrder = response["skills"]["skillOrder"][0][0]
-            skillOrder = " > ".join(list(skillOrder))
-            build_file.write(skillOrder)
-            build_file.write("\n\n")
+            try:
+                skillOrder = response["skills"]["skillOrder"][0][0]
+                skillOrder = " > ".join(list(skillOrder))
+                build_file.write(skillOrder)
+                build_file.write("\n\n")
+            except Exception as e:
+                print(e)
+                return {}
 
             for b, value in blocks.items():
                 print(f"=== {b} ===")
