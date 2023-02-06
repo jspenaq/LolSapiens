@@ -7,12 +7,13 @@ from backend.api.lol_scraper import (
     get_runes_data,
     get_items_data,
 )
-from backend.api.utils import request_get
+from backend.api.utils import request_get, setup_folders
 
 
 class Sapiens:
     def __init__(self):
         print("Init Sapiens...")
+        setup_folders()
         self.current_patch = get_current_patch()
         self.champions_data = get_champions_data(self.current_patch)
         self.runes_data = get_runes_data(self.current_patch)
