@@ -110,11 +110,12 @@ function App() {
         <div className="Champion__info">
           <h2>{champ.name}</h2>
           <div className="Tags">
-            {champ.tags.map((tag: string) => (
-              <span className="Chip" key={tag}>
-                {tag}
-              </span>
-            ))}
+            {champ.tags &&
+              champ.tags.map((tag: string) => (
+                <span className="Chip" key={tag}>
+                  {tag}
+                </span>
+              ))}
           </div>
         </div>
         <div className="Champion__stats">
