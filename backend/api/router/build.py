@@ -3,10 +3,10 @@ from fastapi import APIRouter, Query
 from backend.api.constants import s
 
 
-router = APIRouter()
+build_router = APIRouter()
 
 
-@router.get("/build")
+@build_router.get("/build")
 def create_build(
     champion_id: str = Query(None, title="champion_id", description="Champion ID"),
     lane: str = Query(
@@ -19,7 +19,6 @@ def create_build(
         "ranked", title="mode", description="Queue mode ('ranked', 'aram')"
     ),
     keystone_id: str = Query(None, title="keystone_id", description="Tier data"),
+    spicy: int = Query(0, title="spicy factor", description="Give a int value (0, 1 or 2) to modify final champion build"),
 ):
-    # print(sapiens.get_current_patch())
-    print(champion_id,lane,tier,mode,keystone_id)
-    return s.generate_build(champion_id,lane,tier,mode,keystone_id)
+    return s.generate_build(champion_id,lane,tier,mode,keystone_id, spicy)
