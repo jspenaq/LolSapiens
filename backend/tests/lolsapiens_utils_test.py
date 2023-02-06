@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-from backend.lolsapiens.utils import request_get, setup_folders
+from backend.api.utils import request_get, setup_folders
 
 
 class TestRequestGet:

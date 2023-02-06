@@ -1,6 +1,6 @@
 from lcu_driver import Connector
 
-from backend.lolsapiens.lcu.utils import (
+from backend.api.lcu.utils import (
     get_summoner_data,
     initialize_variables,
     update_game_mode,

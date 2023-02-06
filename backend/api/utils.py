@@ -32,6 +32,11 @@ def request_get(url: str):
 
 def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-s, --start",
+        action="store_true",
+        help="Start backend server using fastpi and uvicorn",
+    )
     parser.add_argument("-c", "--champion-name", help="Champion name")
     parser.add_argument(
         "-l",
