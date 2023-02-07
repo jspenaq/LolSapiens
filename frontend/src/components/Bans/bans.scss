@@ -1,0 +1,34 @@
+.topBans {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.8rem;
+
+  &__champion {
+    padding: 0.5rem;
+    border-radius: 15px;
+    background-color: rgba(71, 71, 71, 0.64);
+    gap: 1rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .ban-description {
+    p {
+      margin: 0;
+    }
+
+    &__wr,
+    &__pr {
+      font-weight: bold;
+      font-size: 0.8rem;
+    }
+
+    &__wr {
+      color: rgb(8, 163, 8);
+    }
+
+    &__pr {
+      color: rgb(55, 144, 218);
+    }
+  }
+}

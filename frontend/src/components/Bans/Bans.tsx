@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { parseSelectValues } from "../../utils";
 import Tooltip from "../Tooltip";
+import "./bans.scss";
 
 export default function Bans({ champ, lane, tier, champsInfo }: any) {
   const [topBans, setTopBans] = useState([]);
@@ -24,7 +26,8 @@ export default function Bans({ champ, lane, tier, champsInfo }: any) {
   return (
     <section className="card bg__gray">
       <h2>
-        Top 10 Bans Lane: {lane}, Tier: {tier}
+        Top 10 Bans Lane: {parseSelectValues(lane)}, Tier:{" "}
+        {parseSelectValues(tier)}
       </h2>
       <div className="topBans">
         {Boolean(topBans.length) &&
@@ -41,9 +44,15 @@ export default function Bans({ champ, lane, tier, champsInfo }: any) {
                     }`}
                   />
                 </Tooltip>
-                <p>{name}</p>
-                <p className="color__green">WR: {win_rate.toFixed(2)}%</p>
-                <p className="color__blue">PR: {pick_rate.toFixed(2)}%</p>
+                <div className="ban-description">
+                  <p>{name}</p>
+                  <p className="ban-description__wr">
+                    WR: {win_rate.toFixed(2)}%
+                  </p>
+                  <p className="ban-description__pr">
+                    PR: {pick_rate.toFixed(2)}%
+                  </p>
+                </div>
               </div>
             );
           })}

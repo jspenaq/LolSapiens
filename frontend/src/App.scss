@@ -62,16 +62,6 @@
   border-radius: 15px;
 }
 
-.topBans {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-
-  &__champion {
-    text-align: center;
-  }
-}
-
 .color {
   &__green {
     color: rgb(8, 163, 8);
