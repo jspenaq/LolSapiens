@@ -1,73 +1,25 @@
 import { useState, useEffect, Fragment } from "react";
-import {
-  Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip as CharTooltip,
-  Legend,
-} from "chart.js";
-import { Radar } from "react-chartjs-2";
 import "./App.scss";
-import Tooltip from "./Tooltip";
+import championsData from "../../data/champions_data.json";
+import ChampionCard from "./components/ChampionCard/ChampionCard";
+import { lanes, tiers } from './constants';
+import Select from "./components/Select/Select";
+import Bans from "./components/Bans/Bans";
 
-ChartJS.register(
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  CharTooltip,
-  Legend
-);
+const championList = championsData
+  ? Object.values(championsData).sort((a: any, b: any) => {
+      return a.name.localeCompare(b.name);
+    })
+  : [];
+
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [lane, setLane] = useState("default");
+  const [tier, setTier] = useState("gold_plus");
   const [champsInfo, setChampsInfo] = useState<any>({});
-  const [champ, setChamp] = useState<any>({
-    name: "Aatrox",
-    info: {
-      attack: 8,
-      defense: 4,
-      magic: 3,
-      difficulty: 4,
-    },
-    image: {
-      full: "Aatrox.png",
-      sprite: "champion0.png",
-      group: "champion",
-      x: 0,
-      y: 0,
-      w: 48,
-      h: 48,
-    },
-  });
+  const [champ, setChamp] = useState<any>(null);
 
-  const statsToParse = Object.entries(champ?.info) || [];
-  const labelInfo =
-    statsToParse?.map((stat) => {
-      return stat[0];
-    }) || [];
-  const statDataInfo =
-    statsToParse?.map((stat) => {
-      return stat[1];
-    }) || [];
-
-  const data = {
-    labels: labelInfo || [],
-    datasets: [
-      {
-        label: `${champ.name} stats`,
-        data: statDataInfo,
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
-        borderColor: "rgba(255, 99, 132, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const getChampInfo = async (event: any) => {
-    const champName = event.target.value;
+  const getChampInfo = async (champName: string) => {
     const res = await fetch(
       `http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion/${champName}.json`
     );
@@ -89,75 +41,32 @@ function App() {
     };
   }, []);
 
-  async function getChampName(name: string) {
-    const res = await fetch(
-      `https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${name}.png`
-    );
+  if (champsInfo && !champ) {
+    getChampInfo("Aatrox");
   }
-
-  console.log(champ);
 
   return (
     <div className="App">
       <h1>LoL Sapiens</h1>
-
-      {champsInfo && (
-        <select onChange={getChampInfo}>
-          {Object.keys(champsInfo).map((champ: any) => {
-            return (
-              <option value={champ} key={champ}>
-                {champ}
-              </option>
-            );
-          })}
-        </select>
-      )}
-
-      <section className="champion bg__gray">
-        {champ.image && (
-          <img
-            src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${
-              champ.image?.full || ""
-            }`}
-          />
-        )}
-
-        <div className="champion__info">
-          <h2>{champ.name}</h2>
-          <span>{champ.title}</span>
-          <div className="tags">
-            {champ.tags &&
-              champ.tags.map((tag: string) => (
-                <span className="chip" key={tag}>
-                  {tag}
-                </span>
-              ))}
-          </div>
-          <div className="spells">
-            {champ.passive && (
-              <img
-                src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/passive/${
-                  champ.passive.image?.full || ""
-                }`}
-              />
-            )}
-            {champ.spells &&
-              champ.spells.map((spell: any) => (
-                <Fragment key={spell.id}>
-                  <img
-                    src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/spell/${
-                      spell.image?.full || ""
-                    }`}
-                  />
-                  <Tooltip show={true}>{spell.description}</Tooltip>
-                </Fragment>
-              ))}
-          </div>
-        </div>
-        <div className="champion__stats">
-          <Radar data={data} />
-        </div>
+      <section className="card bg__gray selects">
+        <Select
+          itemList={championList}
+          onChangeCallback={getChampInfo}
+          defaultValue={"Aatrox"}
+        />
+        <Select
+          itemList={lanes}
+          onChangeCallback={setLane}
+          defaultValue={tier}
+        />
+        <Select
+          itemList={tiers}
+          onChangeCallback={setTier}
+          defaultValue={tier}
+        />
       </section>
+      <ChampionCard champion={champ} />
+      <Bans lane={lane} tier={tier} champ={champ} champsInfo={champsInfo}/>
     </div>
   );
 }

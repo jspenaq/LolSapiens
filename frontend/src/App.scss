@@ -21,8 +21,6 @@
 }
 
 .champion {
-  padding: 2rem;
-  border-radius: 15px;
   display: flex;
   gap: 2rem;
   align-items: center;
@@ -58,12 +56,40 @@
 }
 
 .tooltip {
+  position: absolute;
   background-color: rgba(0, 0, 0, 0.527);
   border-radius: 15px;
   max-width: 320px;
   padding: 0.5rem;
 }
 
-.portal {
-  position: relative;
+.card {
+  margin: 1rem 0;
+  padding: 2rem;
+  border-radius: 15px;
+}
+
+.topBans {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+
+  &__champion {
+    text-align: center;
+  }
+}
+
+.color {
+  &__green {
+    color: rgb(8, 163, 8);
+  }
+
+  &__blue {
+    color: rgb(55, 144, 218);
+  }
+}
+
+.selects {
+  display: flex;
+  gap: 10px;
 }
