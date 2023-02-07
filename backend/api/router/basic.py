@@ -6,7 +6,7 @@ basic_router = APIRouter()
 
 @basic_router.get("/")
 def root():
-    return {"Status": "OK"}
+    return {"Status": "OK 🗿"}
 
 
 @basic_router.get("/healthcheck")
