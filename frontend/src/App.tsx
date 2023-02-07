@@ -81,7 +81,6 @@ function App() {
         "https://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json"
       );
       const parsedRes = await res.json();
-      console.log(parsedRes.data);
       setChampsInfo(parsedRes.data as any);
     }
     getChamps();
