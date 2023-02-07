@@ -135,22 +135,25 @@ function App() {
           </div>
           <div className="spells">
             {champ.passive && (
-              <img
-                src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/passive/${
-                  champ.passive.image?.full || ""
-                }`}
-              />
+              <Tooltip text={champ.passive.description}>
+                <img
+                  height={48}
+                  src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/passive/${
+                    champ.passive.image?.full || ""
+                  }`}
+                />
+              </Tooltip>
             )}
             {champ.spells &&
               champ.spells.map((spell: any) => (
-                <Fragment key={spell.id}>
+                <Tooltip key={spell.id} text={spell.description}>
                   <img
+                    height={48}
                     src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/spell/${
                       spell.image?.full || ""
                     }`}
                   />
-                  <Tooltip show={true}>{spell.description}</Tooltip>
-                </Fragment>
+                </Tooltip>
               ))}
           </div>
         </div>

@@ -51,12 +51,9 @@
 }
 
 .tooltip {
+  position: absolute;
   background-color: rgba(0, 0, 0, 0.527);
   border-radius: 15px;
   max-width: 320px;
   padding: 0.5rem;
-}
-
-.portal {
-  position: relative;
 }
