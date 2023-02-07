@@ -5,6 +5,7 @@ from backend.api.lol_scraper import main
 from backend.api.router.basic import basic_router
 from backend.api.router.bans import bans_router
 from backend.api.router.build import build_router
+from backend.api.router.picks import picks_router
 from backend.api.utils import create_parser
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,6 +25,7 @@ app.add_middleware(
 app.include_router(basic_router)
 app.include_router(bans_router)
 app.include_router(build_router)
+app.include_router(picks_router)
 
 if __name__ == "__main__":
 
