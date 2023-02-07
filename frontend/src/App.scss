@@ -14,8 +14,6 @@
 }
 
 .champion {
-  padding: 2rem;
-  border-radius: 15px;
   display: flex;
   gap: 2rem;
   align-items: center;
@@ -56,4 +54,20 @@
   border-radius: 15px;
   max-width: 320px;
   padding: 0.5rem;
+}
+
+.card {
+  margin: 1rem 0;
+  padding: 2rem;
+  border-radius: 15px;
+}
+
+.topBans {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+
+  &__champion {
+    text-align: center;
+  }
 }

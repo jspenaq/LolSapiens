@@ -22,7 +22,9 @@ ChartJS.register(
 );
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [lane, setLane] = useState("default");
+  const [tier, setTier] = useState("gold_plus");
+  const [topBans, setTopBans] = useState([]);
   const [champsInfo, setChampsInfo] = useState<any>({});
   const [champ, setChamp] = useState<any>({
     name: "Aatrox",
@@ -75,6 +77,18 @@ function App() {
     setChamp(parsedRes.data[champName]);
   };
 
+  const getTopBans = async () => {
+    const res = await fetch(
+      `http://localhost:3200/bans/top10?` +
+        new URLSearchParams({
+          lane,
+          tier,
+        })
+    );
+    const parsedRes = await res.json();
+    setTopBans(Object.values(parsedRes));
+  };
+
   useEffect(() => {
     async function getChamps() {
       const res = await fetch(
@@ -89,13 +103,11 @@ function App() {
     };
   }, []);
 
-  async function getChampName(name: string) {
-    const res = await fetch(
-      `https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${name}.png`
-    );
-  }
-
-  console.log(champ);
+  useEffect(() => {
+    if (champ && lane && tier) {
+      getTopBans();
+    }
+  }, [champ, lane, tier]);
 
   return (
     <div className="App">
@@ -113,7 +125,26 @@ function App() {
         </select>
       )}
 
-      <section className="champion bg__gray">
+      <select onChange={(e) => setLane(e.target.value)} defaultValue={lane}>
+        <option value="default">default</option>
+        <option value="top">top</option>
+        <option value="jungle">jungle</option>
+        <option value="middle">middle</option>
+        <option value="bottom">bottom</option>
+        <option value="support">support</option>
+      </select>
+
+      <select onChange={(e) => setTier(e.target.value)} defaultValue={tier}>
+        <option value="1trick">1trick</option>
+        <option value="diamond_plus">diamond_plus</option>
+        <option value="platinum_plus">platinum_plus</option>
+        <option value="gold_plus">gold_plus</option>
+        <option value="platinum">platinum</option>
+        <option value="gold">gold</option>
+        <option value="silver">silver</option>
+      </select>
+
+      <section className="card champion bg__gray">
         {champ.image && (
           <img
             src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${
@@ -159,6 +190,31 @@ function App() {
         </div>
         <div className="champion__stats">
           <Radar data={data} />
+        </div>
+      </section>
+      <section className="card  bg__gray">
+        <h4>
+          Top 10 Bans Lane: {lane}, Tier: {tier}
+        </h4>
+        <div className="topBans">
+          {Boolean(topBans.length) &&
+            topBans.map((champName) => {
+              const imgPath = champsInfo[champName].image.full;
+              return (
+                <div className="topBans__champion">
+                  <Tooltip text={champName}>
+                    <img
+                      key={champName}
+                      height={54}
+                      src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${
+                        imgPath || ""
+                      }`}
+                    />
+                  </Tooltip>
+                  <span>{champName}</span>
+                </div>
+              );
+            })}
         </div>
       </section>
     </div>
