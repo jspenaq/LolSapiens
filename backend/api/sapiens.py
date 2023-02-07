@@ -151,7 +151,7 @@ class Sapiens:
         self,
         lane: str = "default",
         tier: str = "platinum_plus",
-    ) -> dict:
+    ) -> list:
         """Fetches the top ten banned champions in the given lane and tier.
 
         Args:
@@ -159,19 +159,29 @@ class Sapiens:
             tier (str, optional): the tier to filter the tier list by.
 
         Returns:
-            dict: a dictionary mapping champion id to its id, name, win rate and pick rate.
+            list: A dictionaries list with the following format:
+            {
+                "id": champion id,
+                "value": value for the specified champion,
+                "name": name for the specified champion,
+                "win_rate": win rate for the specified champion,
+                "pick_rate": pick rate for the specified champion,
+            }
         """
         df = self._get_tierlist(lane, tier)
         ids = self.analyze_bans(df)
-        data = {}
+        data = []
         for _, row in ids.iterrows():
             champion_id = int(row["id"])
-            data[champion_id] = {
-                "value": self.champions_data[str(champion_id)]["id"],
-                "name": self.champions_data[str(champion_id)]["name"],
-                "win_rate": row["win_rate"],
-                "pick_rate": row["pick_rate"],
-            }
+            data.append(
+                {
+                    "id": champion_id,
+                    "value": self.champions_data[str(champion_id)]["id"],
+                    "name": self.champions_data[str(champion_id)]["name"],
+                    "win_rate": row["win_rate"],
+                    "pick_rate": row["pick_rate"],
+                }
+            )
         return data
 
     def generate_build(
