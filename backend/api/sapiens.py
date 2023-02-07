@@ -154,7 +154,7 @@ class Sapiens:
         for _, row in ids.iterrows():
             champion_id = int(row["id"])
             data[champion_id] = {
-                "key": self.champions_data[str(champion_id)]["id"],
+                "value": self.champions_data[str(champion_id)]["id"],
                 "name": self.champions_data[str(champion_id)]["name"],
             }
         return data
