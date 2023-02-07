@@ -71,3 +71,13 @@
     text-align: center;
   }
 }
+
+.color {
+  &__green {
+    color: rgb(8, 163, 8);
+  }
+
+  &__blue {
+    color: rgb(55, 144, 218);
+  }
+}
