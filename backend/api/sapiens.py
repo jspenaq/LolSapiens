@@ -200,8 +200,6 @@ class Sapiens:
         median_winrate = df["win_rate"].median()
         df = df[(df["pick_rate"] < max(mean_pickrate, median_pickrate)) & (df["win_rate"] > max(mean_winrate, median_winrate))]
         df = df.sort_values(by="win_rate", ascending=False)
-        print(mean_winrate, median_winrate)
-        print(mean_pickrate, median_pickrate)
         return df.head(10)[["id", "win_rate", "pick_rate"]]
 
     def get_top10_picks(
