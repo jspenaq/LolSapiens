@@ -1,5 +1,4 @@
 from abc import abstractmethod
-import json
 import pandas as pd
 from pathlib import Path
 from backend.api.lol_scraper import (
@@ -14,72 +13,14 @@ from backend.api.utils import request_get, setup_folders
 
 class Sapiens:
     def __init__(self):
-        print("Initializing Sapiens...")
+        print("Init Sapiens...")
         setup_folders()
         self.current_patch = get_current_patch()
         self.champions_data = get_champions_data(self.current_patch)
         self.runes_data = get_runes_data(self.current_patch)
         self.items_data = get_items_data(self.current_patch)
-        self.base_url = "https://axe.lolalytics.com"  # LoLalytics
+        self.base_url = "https://axe.lolalytics.com/mega"  # LoLalytics
         self.patch = ".".join(self.current_patch.split(".")[:2])
-        self.tierlist = self._get_tierlist()
-
-    def _get_tierlist(
-        self, lane: str = "default", tier: str = "platinum_plus"
-    ) -> pd.DataFrame:
-        file_name = Path(f"data/tierlist_{lane}_{tier}.csv")
-        if not file_name.exists():
-            url = f"{self.base_url}/tierlist/2/?lane={lane}&patch={self.patch}&tier={tier}&queue=420&region=all"
-            response = request_get(url)
-            with open(file_name, "w+", encoding="UTF-8") as file:
-                columns = [
-                    "id",
-                    "rank",
-                    "wins_by_lane",
-                    "games_by_lane",
-                    "win_rate",
-                    "total_games",
-                    "pick_by_lane",
-                    "ban_rate",
-                    "pick_rate",
-                    "rank_last_days",
-                    "win_rate_last_days",
-                    "games_last_days",
-                    "wins_by_lane_last_days",
-                    "games_by_lane_last_days",
-                    "delta_pick_lane",
-                ]
-                file.write(",".join(columns))
-                file.write("\n")
-                total_games_by_tier = response["pick"]
-                for champion_id, value in response["cid"].items():
-                    # value:
-                    # [0]: rank, [1]: , [2]: , [3]: wins_by_lane, [4]: games_by_lane, [5]: total_games, [6]: ban_rate, [7]: rank_last_days,
-                    # [8]: win_rate_last_days, [9]: games_last_days, [10]: , [11]: wins_by_lane_last_days, [12]: games_by_lane_last_days,
-                    output = [
-                        champion_id,
-                        value[0],
-                        value[3],
-                        value[4],
-                        round(value[3] * 100 / value[4], 2),
-                        value[5],
-                        round(value[4] * 100 / value[5], 2),
-                        value[6],
-                        value[4] * 100 / total_games_by_tier,
-                        value[7],
-                        value[8],
-                        value[9],
-                        value[11],
-                        value[12],
-                        round(
-                            value[3] * 100 / value[4] - value[11] * 100 / value[12], 2
-                        ),
-                    ]
-                    output = list(map(str, output))
-                    file.write(",".join(output))
-                    file.write("\n")
-
-        return pd.read_csv(file_name)
 
     @abstractmethod
     def analyze(self, df: pd.DataFrame, spicy: int) -> pd.DataFrame:
@@ -136,22 +77,6 @@ class Sapiens:
         recommended_sorted["item_id"] = recommended_sorted["item_id"].astype(str)
         return recommended_sorted.reset_index()
 
-    def analyze_bans(self, df: pd.DataFrame) -> pd.DataFrame:
-        mean = df["pick_rate"].mean()
-        median = df["pick_rate"].median()
-        df = df[df["pick_rate"] > max(mean, median)]
-        df = df.sort_values(by="win_rate", ascending=False)
-        return df.head(10)[["id", "win_rate", "pick_rate", "ban_rate"]]
-
-    def get_top10_bans(
-        self,
-        lane: str = "default",
-        tier: str = "platinum_plus",
-    ) -> dict:
-        df = self._get_tierlist(lane, tier)
-        df = self.analyze_bans(df)
-        return {"bans": df["id"].to_list()}
-
     def generate_build(
         self,
         champion_id: str,
@@ -168,7 +93,7 @@ class Sapiens:
             lane = "middle"
         region = "all"
         print(f"Searching {champion_name} {lane}")
-        url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
+        url = f"{self.base_url}/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
         response = request_get(url)
         return self._get_build_json(
             response, champion_id, lane, tier, queue_mode, keystone_id, spicy
