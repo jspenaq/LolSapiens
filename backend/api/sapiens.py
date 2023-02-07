@@ -141,7 +141,7 @@ class Sapiens:
         median = df["pick_rate"].median()
         df = df[df["pick_rate"] > max(mean, median)]
         df = df.sort_values(by="win_rate", ascending=False)
-        return df.head(10)[["id", "win_rate", "pick_rate", "ban_rate"]]
+        return df.head(10)[["id", "win_rate", "pick_rate"]]
 
     def get_top10_bans(
         self,
@@ -149,9 +149,15 @@ class Sapiens:
         tier: str = "platinum_plus",
     ) -> dict:
         df = self._get_tierlist(lane, tier)
-        ids = self.analyze_bans(df)["id"].to_list()
-        return {id: self.champions_data[str(id)]["id"] for id in ids}
-        # return {"bans": df["id"].to_list()}
+        ids = self.analyze_bans(df)
+        data = {}
+        for _, row in ids.iterrows():
+            champion_id = int(row["id"])
+            data[champion_id] = {
+                "key": self.champions_data[str(champion_id)]["id"],
+                "name": self.champions_data[str(champion_id)]["name"],
+            }
+        return data
 
     def generate_build(
         self,
