@@ -140,7 +140,15 @@ class Sapiens:
         return recommended_sorted.reset_index()
 
     def analyze_bans(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Analyze which champions to ban using statistics in the provided data frame.
 
+        Args:
+            df (pd.DataFrame): A pandas data frame containing champion statistics.
+
+        Returns:
+            pd.DataFrame: Data frame with the top 10 champions to ban.
+        """
         mean = df["pick_rate"].mean()
         median = df["pick_rate"].median()
         df = df[df["pick_rate"] > max(mean, median)]
