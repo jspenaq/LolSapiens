@@ -150,7 +150,7 @@ class Sapiens:
     ) -> dict:
         df = self._get_tierlist(lane, tier)
         ids = self.analyze_bans(df)["id"].to_list()
-        return {id: self.champions_data[str(id)]["name"] for id in ids}
+        return {id: self.champions_data[str(id)]["id"] for id in ids}
         # return {"bans": df["id"].to_list()}
 
     def generate_build(
