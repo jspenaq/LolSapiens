@@ -4,6 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from backend.api.lol_scraper import main
 from backend.api.router.basic import basic_router
+from backend.api.router.bans import bans_router
 from backend.api.router.build import build_router
 from backend.api.utils import create_parser
 
@@ -11,6 +12,7 @@ app = FastAPI()
 
 
 app.include_router(basic_router)
+app.include_router(bans_router)
 app.include_router(build_router)
 
 if __name__ == "__main__":
