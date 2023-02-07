@@ -1,0 +1,27 @@
+.champion {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: space-between;
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        flex: 1;
+    }
+
+    &__stats {
+        width: 20%;
+    }
+
+    .tags {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .spells {
+        display: flex;
+        gap: 1rem;
+    }
+}
