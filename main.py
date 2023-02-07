@@ -1,15 +1,25 @@
 # from backend.lolsapiens.lcu.lcu_connection import main_loop
 import os
 import uvicorn
-from fastapi import FastAPI
 from backend.api.lol_scraper import main
 from backend.api.router.basic import basic_router
 from backend.api.router.bans import bans_router
 from backend.api.router.build import build_router
 from backend.api.utils import create_parser
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(basic_router)
 app.include_router(bans_router)
