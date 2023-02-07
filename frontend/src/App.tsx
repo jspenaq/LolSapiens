@@ -11,6 +11,13 @@ import {
 import { Radar } from "react-chartjs-2";
 import "./App.scss";
 import Tooltip from "./Tooltip";
+import championsData from "../../data/champions_data.json";
+
+const ChampionList = championsData
+  ? Object.values(championsData).sort((a: any, b: any) => {
+      return a.name.localeCompare(b.name);
+    })
+  : [];
 
 ChartJS.register(
   RadialLinearScale,
@@ -22,28 +29,13 @@ ChartJS.register(
 );
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [lane, setLane] = useState("default");
+  const [tier, setTier] = useState("gold_plus");
+  const [topBans, setTopBans] = useState([]);
   const [champsInfo, setChampsInfo] = useState<any>({});
-  const [champ, setChamp] = useState<any>({
-    name: "Aatrox",
-    info: {
-      attack: 8,
-      defense: 4,
-      magic: 3,
-      difficulty: 4,
-    },
-    image: {
-      full: "Aatrox.png",
-      sprite: "champion0.png",
-      group: "champion",
-      x: 0,
-      y: 0,
-      w: 48,
-      h: 48,
-    },
-  });
+  const [champ, setChamp] = useState<any>(null);
 
-  const statsToParse = Object.entries(champ?.info) || [];
+  const statsToParse = champ ? Object.entries(champ?.info) : [];
   const labelInfo =
     statsToParse?.map((stat) => {
       return stat[0];
@@ -57,7 +49,7 @@ function App() {
     labels: labelInfo || [],
     datasets: [
       {
-        label: `${champ.name} stats`,
+        label: `${champ?.name} stats`,
         data: statDataInfo,
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         borderColor: "rgba(255, 99, 132, 1)",
@@ -65,14 +57,24 @@ function App() {
       },
     ],
   };
-
-  const getChampInfo = async (event: any) => {
-    const champName = event.target.value;
+  const getChampInfo = async (champName: string) => {
     const res = await fetch(
       `http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion/${champName}.json`
     );
     const parsedRes = await res.json();
     setChamp(parsedRes.data[champName]);
+  };
+
+  const getTopBans = async () => {
+    const res = await fetch(
+      `http://localhost:3200/bans/top10?` +
+        new URLSearchParams({
+          lane,
+          tier,
+        })
+    );
+    const parsedRes = await res.json();
+    setTopBans(parsedRes);
   };
 
   useEffect(() => {
@@ -89,32 +91,56 @@ function App() {
     };
   }, []);
 
-  async function getChampName(name: string) {
-    const res = await fetch(
-      `https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${name}.png`
-    );
-  }
+  useEffect(() => {
+    if (champsInfo) {
+      getChampInfo("Aatrox");
+    }
+  }, [champsInfo]);
 
-  console.log(champ);
+  useEffect(() => {
+    if (champ && lane && tier) {
+      getTopBans();
+    }
+  }, [champ, lane, tier]);
 
   return (
     <div className="App">
       <h1>LoL Sapiens</h1>
 
-      {champsInfo && (
-        <select onChange={getChampInfo}>
-          {Object.keys(champsInfo).map((champ: any) => {
-            return (
-              <option value={champ} key={champ}>
-                {champ}
-              </option>
-            );
-          })}
-        </select>
-      )}
+      <select
+        onChange={(e) => getChampInfo(e.target.value)}
+        defaultValue="Aatrox"
+      >
+        {ChampionList.map(({ id, name }: any) => {
+          return (
+            <option value={id} key={id}>
+              {name}
+            </option>
+          );
+        })}
+      </select>
 
-      <section className="champion bg__gray">
-        {champ.image && (
+      <select onChange={(e) => setLane(e.target.value)} defaultValue={lane}>
+        <option value="default">default</option>
+        <option value="top">top</option>
+        <option value="jungle">jungle</option>
+        <option value="middle">middle</option>
+        <option value="bottom">bottom</option>
+        <option value="support">support</option>
+      </select>
+
+      <select onChange={(e) => setTier(e.target.value)} defaultValue={tier}>
+        <option value="1trick">1trick</option>
+        <option value="diamond_plus">diamond_plus</option>
+        <option value="platinum_plus">platinum_plus</option>
+        <option value="gold_plus">gold_plus</option>
+        <option value="platinum">platinum</option>
+        <option value="gold">gold</option>
+        <option value="silver">silver</option>
+      </select>
+
+      <section className="card champion bg__gray">
+        {champ?.image && (
           <img
             src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${
               champ.image?.full || ""
@@ -123,10 +149,10 @@ function App() {
         )}
 
         <div className="champion__info">
-          <h2>{champ.name}</h2>
-          <span>{champ.title}</span>
+          <h2>{champ?.name}</h2>
+          <span>{champ?.title}</span>
           <div className="tags">
-            {champ.tags &&
+            {champ?.tags &&
               champ.tags.map((tag: string) => (
                 <span className="chip" key={tag}>
                   {tag}
@@ -134,28 +160,58 @@ function App() {
               ))}
           </div>
           <div className="spells">
-            {champ.passive && (
-              <img
-                src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/passive/${
-                  champ.passive.image?.full || ""
-                }`}
-              />
+            {champ?.passive && (
+              <Tooltip text={champ.passive.description}>
+                <img
+                  height={48}
+                  src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/passive/${
+                    champ.passive.image?.full || ""
+                  }`}
+                />
+              </Tooltip>
             )}
-            {champ.spells &&
+            {champ?.spells &&
               champ.spells.map((spell: any) => (
-                <Fragment key={spell.id}>
+                <Tooltip key={spell.id} text={spell.description}>
                   <img
+                    height={48}
                     src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/spell/${
                       spell.image?.full || ""
                     }`}
                   />
-                  <Tooltip show={true}>{spell.description}</Tooltip>
-                </Fragment>
+                </Tooltip>
               ))}
           </div>
         </div>
         <div className="champion__stats">
           <Radar data={data} />
+        </div>
+      </section>
+      <section className="card  bg__gray">
+        <h4>
+          Top 10 Bans Lane: {lane}, Tier: {tier}
+        </h4>
+        <div className="topBans">
+          {Boolean(topBans.length) &&
+            topBans.map((champion: any) => {
+              const { id, name, value, win_rate, pick_rate } = champion;
+              const imgPath = champsInfo[value].image.full;
+              return (
+                <div key={id} className="topBans__champion">
+                  <Tooltip text={name}>
+                    <img
+                      height={54}
+                      src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${
+                        imgPath || ""
+                      }`}
+                    />
+                  </Tooltip>
+                  <p>{name}</p>
+                  <p className="color__green">WR: {win_rate.toFixed(2)}%</p>
+                  <p className="color__blue">PR: {pick_rate.toFixed(2)}%</p>
+                </div>
+              );
+            })}
         </div>
       </section>
     </div>
