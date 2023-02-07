@@ -1,5 +1,4 @@
 import { ReactNode, useState } from "react";
-import Portal from "../Portal";
 
 const Tooltip = ({
   children,
