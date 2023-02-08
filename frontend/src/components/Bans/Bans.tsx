@@ -33,12 +33,12 @@ export default function Bans({ champ, lane, tier, champsInfo }: any) {
         {Boolean(topBans.length) &&
           topBans.map((champion: any) => {
             const { id, name, value, win_rate, pick_rate } = champion;
-            const imgPath = champsInfo[value].image.full;
+            const imgPath = champsInfo[value]?.image.full;
             return (
               <div key={id} className="topBans__champion">
                 <Tooltip text={name}>
                   <img
-                    height={54}
+                    height={72}
                     src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${
                       imgPath || ""
                     }`}
