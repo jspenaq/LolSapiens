@@ -9,6 +9,6 @@ def root():
     return {"Status": "OK 🗿"}
 
 
-@basic_router.get("/healthcheck")
+@basic_router.get("/health-check")
 def health_check():
     return {"Status": "Running faster than iwi's brain"}

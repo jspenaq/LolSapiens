@@ -22,9 +22,9 @@ app.add_middleware(
 )
 
 app.include_router(basic_router)
-app.include_router(bans_router)
-app.include_router(build_router)
-app.include_router(picks_router)
+app.include_router(bans_router, prefix="/tierlist")
+app.include_router(picks_router, prefix="/tierlist")
+app.include_router(build_router, prefix="/champion")
 
 if __name__ == "__main__":
 
