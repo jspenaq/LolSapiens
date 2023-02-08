@@ -4,30 +4,40 @@ import {
   createRoutesFromElements,
   Route,
   RouterProvider,
-  Outlet
+  Outlet,
+  Navigate,
+  useRouteError,
 } from "react-router-dom";
 import { InfoAndBans } from "./pages";
+
+function ErrorBoundary() {
+  let error = useRouteError();
+  console.error(error);
+  // Uncaught ReferenceError: path is not defined
+  return <div>Dang!</div>;
+}
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
       path="/"
       element={
-        <Outlet />
+        <div className="App">
+          <h1>LoL Sapiens</h1>
+          <Outlet />
+        </div>
       }
+      errorElement={<ErrorBoundary />}
     >
-      <Route path="/info-bans" element={<InfoAndBans/>} />
+      <Route path="/info-bans" element={<InfoAndBans />} />
+      <Route index element={<Navigate to="/info-bans" />} />
+      <Route path="*" element={<Navigate to="/info-bans" />} />
     </Route>
   )
 );
 
 function SapiensRouter() {
-  return (
-    <div className="App">
-      <h1>LoL Sapiens</h1>
-      <RouterProvider router={router} />
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default SapiensRouter;
