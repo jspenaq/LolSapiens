@@ -284,7 +284,7 @@ class Sapiens:
         blocks = {
             "startSet": "Starting Set",
             "item1": "1st Item",
-            "mythicItem": "Mythic Item",
+            # "mythicItem": "Mythic Item",
             "boots": "Boots",
             "item2": "2nd Item",
             "item3": "3rd Item",
@@ -367,6 +367,8 @@ class Sapiens:
                     if recommended.empty:
                         print("EMPTY")
                         continue
+                    recommended = recommended.head(5) # Maximum 5 items by block
+                    
                     recommended["item_name"] = recommended["item_id"].apply(
                         lambda id: self.items_data[id]["name_en"]
                     )

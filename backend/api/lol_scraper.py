@@ -143,23 +143,6 @@ def convert_item_to_lol_jsons(items: list) -> list:
     return [{"id": str(i), "count": 1} for i in items]
 
 
-def create_build(
-    champion_id: str, lane: str, tier: str, mode: str, keystone_id: str
-) -> dict:
-    # current_patch = get_current_patch()
-    # champions_data = get_champions_data(current_patch)
-    # runes_data = get_runes_data(current_patch)
-    # items_data = get_items_data(current_patch)
-    # base_url = "https://axe.lolalytics.com/mega"
-    # patch = ".".join(current_patch.split(".")[:2])
-    
-    region = "all"
-    # keystone = runes_data[keystone_id]["key"]
-    keystone = keystone_id
-
-    
-
-
 def main():
     setup_folders()
 
