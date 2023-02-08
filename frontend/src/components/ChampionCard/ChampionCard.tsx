@@ -1,4 +1,3 @@
-import Tooltip from "../Tooltip";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -9,6 +8,7 @@ import {
   Legend,
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
+import Tooltip from "../Tooltip";
 import './championCard.scss';
 
 ChartJS.register(

@@ -1,10 +1,7 @@
-import { useState, useEffect, Fragment } from "react";
-import "./App.scss";
-import championsData from "../../data/champions_data.json";
-import ChampionCard from "./components/ChampionCard/ChampionCard";
-import { lanes, tiers } from './constants';
-import Select from "./components/Select/Select";
-import Bans from "./components/Bans/Bans";
+import { useState, useEffect } from 'react'
+import championsData from '../../../../data/champions_data.json';
+import { lanes, tiers } from '../../constants';
+import { ChampionCard, Bans, Select } from '../../components';
 
 const championList = championsData
   ? Object.values(championsData).sort((a: any, b: any) => {
@@ -12,8 +9,7 @@ const championList = championsData
     })
   : [];
 
-
-function App() {
+function InfoAndBans() {
   const [lane, setLane] = useState("default");
   const [tier, setTier] = useState("gold_plus");
   const [champsInfo, setChampsInfo] = useState<any>({});
@@ -46,8 +42,8 @@ function App() {
   }
 
   return (
+    // <RouterProvider router={router} />
     <div className="App">
-      <h1>LoL Sapiens</h1>
       <section className="card bg__gray selects">
         <Select
           itemList={championList}
@@ -66,9 +62,9 @@ function App() {
         />
       </section>
       <ChampionCard champion={champ} />
-      <Bans lane={lane} tier={tier} champ={champ} champsInfo={champsInfo}/>
+      <Bans lane={lane} tier={tier} champ={champ} champsInfo={champsInfo} />
     </div>
   );
 }
 
-export default App;
+export default InfoAndBans;

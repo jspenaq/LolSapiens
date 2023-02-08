@@ -1,5 +1,3 @@
-from abc import abstractmethod
-import json
 import pandas as pd
 from pathlib import Path
 from backend.api.lol_scraper import (
@@ -84,8 +82,7 @@ class Sapiens:
 
         return pd.read_csv(file_name)
 
-    @abstractmethod
-    def analyze(self, df: pd.DataFrame, spicy: int) -> pd.DataFrame:
+    def _analyze(self, df: pd.DataFrame, spicy: int) -> pd.DataFrame:
         standard = df["games"].std(ddof=0)  # Normalize by N instead of N-1
         mean = df["games"].mean()
         cv = standard / mean
@@ -139,7 +136,7 @@ class Sapiens:
         recommended_sorted["item_id"] = recommended_sorted["item_id"].astype(str)
         return recommended_sorted.reset_index()
 
-    def analyze_bans(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _analyze_bans(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Analyze which champions to ban using statistics in the provided data frame.
 
@@ -151,9 +148,24 @@ class Sapiens:
         """
         mean = df["pick_rate"].mean()
         median = df["pick_rate"].median()
-        df = df[df["pick_rate"] > max(mean, median)]
+        p20 = df["ban_rate"].quantile(0.20)
+        df = df[(df["pick_rate"] > max(mean, median)) & (df["ban_rate"] > p20)]
         df = df.sort_values(by="win_rate", ascending=False)
         return df.head(10)[["id", "win_rate", "pick_rate"]]
+
+    def _analyze_picks(self, df: pd.DataFrame) -> pd.DataFrame:
+
+        mean_pickrate = df["pick_rate"].mean()
+        median_pickrate = df["pick_rate"].median()
+        mean_winrate = df["win_rate"].mean()
+        median_winrate = df["win_rate"].median()
+        df = df[
+            (df["pick_rate"] < max(mean_pickrate, median_pickrate))
+            & (df["win_rate"] > max(mean_winrate, median_winrate))
+            & (df["games_by_lane"] >= 5)
+        ]
+        df = df.sort_values(by="win_rate", ascending=False).reset_index()
+        return df[["id", "win_rate", "pick_rate"]]
 
     def get_top10_bans(
         self,
@@ -177,7 +189,7 @@ class Sapiens:
             }
         """
         df = self._get_tierlist(lane, tier)
-        ids = self.analyze_bans(df)
+        ids = self._analyze_bans(df)
         data = []
         for _, row in ids.iterrows():
             champion_id = int(row["id"])
@@ -192,26 +204,20 @@ class Sapiens:
             )
         return data
 
-    def analyze_picks(self, df: pd.DataFrame) -> pd.DataFrame:
-
-        mean_pickrate = df["pick_rate"].mean()
-        median_pickrate = df["pick_rate"].median()
-        mean_winrate = df["win_rate"].mean()
-        median_winrate = df["win_rate"].median()
-        df = df[(df["pick_rate"] < max(mean_pickrate, median_pickrate)) & (df["win_rate"] > max(mean_winrate, median_winrate))]
-        df = df.sort_values(by="win_rate", ascending=False)
-        return df.head(10)[["id", "win_rate", "pick_rate"]]
-
     def get_top10_picks(
         self,
         lane: str = "default",
         tier: str = "platinum_plus",
+        limit: int = 10,
+        random: int = 0,
     ) -> list:
         """Fetches the top ten spicy champions picks in the given lane and tier.
 
         Args:
             lane (str, optional): the name of the lane to filter the tier list by.
             tier (str, optional): the tier to filter the tier list by.
+            limit (int, optional):
+            random (int, optional):
 
         Returns:
             list: A dictionaries list with the following format:
@@ -224,7 +230,12 @@ class Sapiens:
             }
         """
         df = self._get_tierlist(lane, tier)
-        ids = self.analyze_picks(df)
+        ids = self._analyze_picks(df)
+        limit = min(limit, 20)
+        ids = ids.head(limit)
+        if random > 0:
+            random = min(random, len(ids))
+            ids = ids.sample(random)
         data = []
         for _, row in ids.iterrows():
             champion_id = int(row["id"])
@@ -274,7 +285,7 @@ class Sapiens:
         blocks = {
             "startSet": "Starting Set",
             "item1": "1st Item",
-            "mythicItem": "Mythic Item",
+            # "mythicItem": "Mythic Item",
             "boots": "Boots",
             "item2": "2nd Item",
             "item3": "3rd Item",
@@ -326,7 +337,7 @@ class Sapiens:
                     columns = columns[:4]
 
                 df = pd.DataFrame(items, columns=columns)
-                recommended = self.analyze(df, spicy)
+                recommended = self._analyze(df, spicy)
 
                 if b == "startSet":
                     # split cases such as: "3850_2003_2003" into [3850, 2003, 2003]
@@ -357,6 +368,8 @@ class Sapiens:
                     if recommended.empty:
                         print("EMPTY")
                         continue
+                    recommended = recommended.head(5)  # Maximum 5 items by block
+
                     recommended["item_name"] = recommended["item_id"].apply(
                         lambda id: self.items_data[id]["name_en"]
                     )
