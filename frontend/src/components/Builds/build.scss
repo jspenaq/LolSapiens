@@ -1,0 +1,33 @@
+.build-block {
+  background-color: rgba(71, 71, 71, 0.64);
+  padding: 0.5rem;
+  border-radius: 15px;
+
+  &__items {
+    height: 48px;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+
+    img {
+      border-radius: 7px;
+      border: 2px solid black;
+    }
+
+    & img:first-child {
+      border: 3px solid #ffc773;
+    }
+  }
+
+  p {
+    margin: 0 0 0.5rem;
+    font-weight: bold;
+  }
+}
+
+.build {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
