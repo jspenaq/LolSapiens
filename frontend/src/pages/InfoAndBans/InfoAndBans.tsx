@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import championsData from '../../../../data/champions_data.json';
-import { lanes, tiers } from '../../constants';
-import { ChampionCard, Bans, Select } from '../../components';
+import { useState, useEffect } from "react";
+import championsData from "../../../../data/champions_data.json";
+import { lanes, tiers, modes, spicyList } from "../../constants";
+import { ChampionCard, Bans, Select, Build } from "../../components";
 
 const championList = championsData
   ? Object.values(championsData).sort((a: any, b: any) => {
@@ -12,6 +12,8 @@ const championList = championsData
 function InfoAndBans() {
   const [lane, setLane] = useState("default");
   const [tier, setTier] = useState("gold_plus");
+  const [mode, setMode] = useState("ranked");
+  const [spicy, setSpicy] = useState("0");
   const [champsInfo, setChampsInfo] = useState<any>({});
   const [champ, setChamp] = useState<any>(null);
 
@@ -42,7 +44,6 @@ function InfoAndBans() {
   }
 
   return (
-    // <RouterProvider router={router} />
     <div className="App">
       <section className="card bg__gray selects">
         <Select
@@ -60,9 +61,20 @@ function InfoAndBans() {
           onChangeCallback={setTier}
           defaultValue={tier}
         />
+        <Select
+          itemList={modes}
+          onChangeCallback={setMode}
+          defaultValue={mode}
+        />
+        <Select
+          itemList={spicyList}
+          onChangeCallback={setSpicy}
+          defaultValue={spicy}
+        />
       </section>
-      <ChampionCard champion={champ} />
       <Bans lane={lane} tier={tier} champ={champ} champsInfo={champsInfo} />
+      <ChampionCard champion={champ} />
+      <Build lane={lane} tier={tier} mode={mode} spicy={spicy} champ={champ} />
     </div>
   );
 }

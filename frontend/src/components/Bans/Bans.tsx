@@ -26,7 +26,7 @@ export default function Bans({ champ, lane, tier, champsInfo }: any) {
   return (
     <section className="card bg__gray">
       <h2>
-        Top 10 Bans Lane: {parseSelectValues(lane)}, Tier:{" "}
+        Top 10 Picks/Bans Lane: {parseSelectValues(lane)}, Tier:{" "}
         {parseSelectValues(tier)}
       </h2>
       <div className="topBans">

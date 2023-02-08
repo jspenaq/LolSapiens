@@ -3,5 +3,6 @@ import Select from "./Select/Select";
 import ChampionCard from "./ChampionCard/ChampionCard";
 import Tooltip from "./Tooltip";
 import Portal from "./Portal";
+import Build from "./Build/Build";
 
-export { Bans, Select, ChampionCard, Tooltip, Portal }
+export { Bans, Select, ChampionCard, Tooltip, Portal, Build };
