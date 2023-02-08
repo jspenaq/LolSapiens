@@ -106,3 +106,10 @@ def import_build(build_path: Path, json_file: dict) -> bool:
     with open(system_path, "w+", encoding="UTF-8") as file:
         file.write(json.dumps(json_file, indent=4))
     return True
+
+
+def percentange_division(value: int, total: int) -> float | int:
+    try:
+        return value * 100 / total
+    except ZeroDivisionError:
+        return 0
