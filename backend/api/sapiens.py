@@ -256,7 +256,7 @@ class Sapiens:
         lane: str,
         tier: str,
         mode: str,
-        keystone_id: str,
+        keystone_id: int,
         spicy: int = 0,
     ) -> dict:
         champion_name = self.champions_data[champion_id]["name"]
@@ -267,10 +267,21 @@ class Sapiens:
         region = "all"
         print(f"Searching {champion_name} {lane}")
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
+        # url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
         response = request_get(url)
         return self._get_build_json(
             response, champion_id, lane, tier, queue_mode, keystone_id, spicy
         )
+
+    def __get_runes_names(self, keystone_id: int) -> tuple:
+        keystone_preffix = keystone_id // 100 * 100
+
+        for rune in self.runes_data:
+            if rune["id"] == keystone_preffix:
+                for slot in rune["slots"]:
+                    for reforged in slot["runes"]:
+                        if reforged["id"] == keystone_id:
+                            return reforged["name"], reforged["name_es"]
 
     def _get_build_json(
         self,
@@ -279,7 +290,7 @@ class Sapiens:
         lane: str,
         tier: str,
         queue_mode: str,
-        keystone_id: str,
+        keystone_id: int,
         spicy: int,
     ):
         blocks = {
@@ -294,14 +305,14 @@ class Sapiens:
         }
 
         champion_name = self.champions_data[champion_id]["name"]
-        keystone_name = self.runes_data[keystone_id]["name_en"]
+        (keystone_name, keystone_name_es) = self.__get_runes_names(keystone_id)
         build_txt_path = Path("Champions/recommend_build.txt")
         with open(build_txt_path, "w+", encoding="UTF-8") as build_file:
             build_file.write(
-                f"{champion_name} {lane} - {self.runes_data[keystone_id]['name_en']} ({self.runes_data[keystone_id]['name_es']})\n\n"
+                f"{champion_name} {lane} - {keystone_name} ({keystone_name_es})\n\n"
             )
             build_json = {
-                "title": f"LolSapiens - {lane} {champion_name} - {self.runes_data[keystone_id]['name_en']} ({self.runes_data[keystone_id]['name_es']})",
+                "title": f"LolSapiens - {lane} {champion_name} - {keystone_name} ({keystone_name_es})",
                 "type": "custom",
                 "associatedMaps": [11, 12],
                 "associatedChampions": [int(champion_id)],

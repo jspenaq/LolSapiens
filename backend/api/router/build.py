@@ -18,7 +18,11 @@ def create_build(
     mode: str = Query(
         "ranked", title="mode", description="Queue mode ('ranked', 'aram')"
     ),
-    keystone_id: str = Query(None, title="keystone_id", description="Tier data"),
-    spicy: int = Query(0, title="spicy factor", description="Give a int value (0, 1 or 2) to modify final champion build"),
+    keystone_id: int = Query(None, title="keystone_id", description="Tier data"),
+    spicy: int = Query(
+        0,
+        title="spicy factor",
+        description="Give a int value (0, 1 or 2) to modify final champion build",
+    ),
 ):
-    return s.generate_build(champion_id,lane,tier,mode,keystone_id, spicy)
+    return s.generate_build(champion_id, lane, tier, mode, keystone_id, spicy)

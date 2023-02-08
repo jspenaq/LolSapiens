@@ -82,18 +82,23 @@ def get_runes_data(version: str, write_output: bool = False) -> dict:
         response = request_get(url)
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/es_MX/runesReforged.json"
         response_es = request_get(url)
-        data = {}
+        # data = {}
         for i in range(len(response)):
             for j in range(len(response[i]["slots"])):
                 runes = response[i]["slots"][j]["runes"]
                 for k in range(len(runes)):
-                    data[runes[k]["id"]] = {
-                        "key": response[i]["slots"][j]["runes"][k]["key"],
-                        "name_en": response[i]["slots"][j]["runes"][k]["name"],
-                        "name_es": response_es[i]["slots"][j]["runes"][k]["name"],
-                    }
+                    # data[runes[k]["id"]] = {
+                    #     "key": response[i]["slots"][j]["runes"][k]["key"],
+                    #     "name_en": response[i]["slots"][j]["runes"][k]["name"],
+                    #     "name_es": response_es[i]["slots"][j]["runes"][k]["name"],
+                    # }
+                    del response[i]["slots"][j]["runes"][k]["shortDesc"]
+                    del response[i]["slots"][j]["runes"][k]["longDesc"]
+                    response[i]["slots"][j]["runes"][k]["name_es"] = response_es[i][
+                        "slots"
+                    ][j]["runes"][k]["name"]
         with open(file_name, "w+", encoding="UTF-8") as file:
-            file.write(json.dumps(data, indent=4, ensure_ascii=False))
+            file.write(json.dumps(response, indent=4, ensure_ascii=False))
 
     with open(file_name, "r+", encoding="UTF-8") as file:
         return json.loads(file.read())
