@@ -26,3 +26,19 @@ def create_build(
     ),
 ):
     return s.generate_build(champion_id, lane, tier, mode, keystone_id, spicy)
+
+
+@build_router.get("/runes")
+def get_runes(
+    champion_id: str = Query(None, title="champion_id", description="Champion ID"),
+    lane: str = Query(
+        None,
+        title="lane",
+        description="Lane to play ['top', 'jungle', 'middle', 'bottom', 'support']",
+    ),
+    tier: str = Query("1trick", title="tier", description="Tier data"),
+    queue_mode: str = Query(
+        "ranked", title="queue_mode", description="Queue mode ('ranked', 'aram')"
+    ),
+):
+    return s._get_champion_runes(champion_id, lane, tier, queue_mode)

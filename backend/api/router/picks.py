@@ -5,7 +5,7 @@ from backend.api.constants import s
 picks_router = APIRouter()
 
 
-@picks_router.get("/picks/top10")
+@picks_router.get("/spicy-picks")
 def get_top10_picks(
     lane: str = Query("default", title="lane", description="Lane"),
     tier: str = Query("platinum_plus", title="tier", description="Tier data"),

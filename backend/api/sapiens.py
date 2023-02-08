@@ -259,19 +259,69 @@ class Sapiens:
         keystone_id: int,
         spicy: int = 0,
     ) -> dict:
+
         champion_name = self.champions_data[champion_id]["name"]
         queue_mode = 420
         if mode == "aram":
             queue_mode = 450
             lane = "middle"
         region = "all"
+
         print(f"Searching {champion_name} {lane}")
+        if not keystone_id:
+            key_name = f"win_{tier}"
+            recommend_runes = self._get_champion_runes(
+                champion_id, lane, tier, queue_mode
+            )
+            if not recommend_runes:
+                print(f"Recommend runes not found for {tier}")
+                recommend_runes = self._get_champion_runes(champion_id, lane)
+                key_name = "win_platinum_plus"
+            keystone_id = recommend_runes[key_name]["primary_path"][0]
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
-        # url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
         response = request_get(url)
         return self._get_build_json(
             response, champion_id, lane, tier, queue_mode, keystone_id, spicy
         )
+
+    def _get_champion_runes(
+        self,
+        champion_id: str,
+        lane: str = "default",
+        tier: str = "platinum_plus",
+        queue_mode: str = "ranked",
+    ) -> dict:
+        """Get the runes for a specific champion.
+
+        Args:
+            champion_id (str): The ID of the champion for which to retrieve runes.
+            lane (str, optional): The lane for which to retrieve runes. Defaults to "default".
+            tier (str, optional): The tier for which to retrieve runes. Defaults to "platinum_plus".
+            queue_mode (str, optional): The queue mode for which to retrieve runes. Defaults to "ranked".
+
+        Returns:
+            dict: A dictionary containing the runes information, with keys in the format "{win/pick}_{tier}" and
+            values as dictionaries containing "primary_path", "secondary_path", and "shards".
+            If no runes information is available, an empty dictionary is returned.
+        """
+        region = "all"
+        url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
+        response = request_get(url)
+        if "summary" not in response:
+            return {}
+
+        runes = {}
+        for i in ["win", "pick"]:
+            primary_path = response["summary"]["runes"][i]["set"]["pri"]
+            secondary_path = response["summary"]["runes"][i]["set"]["sec"]
+            shards = response["summary"]["runes"][i]["set"]["mod"]
+            runes[f"{i}_{tier}"] = {
+                "primary_path": primary_path,
+                "secondary_path": secondary_path,
+                "shards": shards,
+            }
+
+        return runes
 
     def __get_runes_names(self, keystone_id: int) -> tuple:
         keystone_preffix = keystone_id // 100 * 100
