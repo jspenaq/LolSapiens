@@ -15,14 +15,14 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
   const getBuild = async () => {
     const res = await fetch(
       "http://localhost:3200/champion/build?" +
-        new URLSearchParams({
-          champion_id: champ?.key,
-          lane,
-          tier,
-          mode,
-          keystone_id: "8128",
-          spicy,
-        })
+      new URLSearchParams({
+        champion_id: champ?.key,
+        lane,
+        tier,
+        mode,
+        keystone_id: "8128",
+        spicy,
+      })
     );
 
     const parsedRes = await res.json();
@@ -39,7 +39,7 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
       <section className="card bg__gray">
         <h2>{build.title}</h2>
         <div className="build">
-          {build.blocks.map((block: any) => (
+          {build.blocks && build.blocks.map((block: any) => (
             <div key={block.type} className="build-block">
               <p>{block.type}</p>
               <div className="build-block__items">
@@ -54,6 +54,7 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
               </div>
             </div>
           ))}
+          {!build.blocks && <h1>No build... 🗿</h1>}
         </div>
       </section>
     )
