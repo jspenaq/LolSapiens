@@ -1,4 +1,3 @@
-# from backend.lolsapiens.lcu.lcu_connection import main_loop
 import os
 import uvicorn
 from backend.api.lol_scraper import main
@@ -35,5 +34,4 @@ if __name__ == "__main__":
         port = int(os.environ.get("PORT", 3200))
         uvicorn.run(app, host="0.0.0.0", port=port)
 
-    # main_loop()
     print("Done")

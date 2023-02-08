@@ -1,5 +1,3 @@
-from abc import abstractmethod
-import json
 import pandas as pd
 from pathlib import Path
 from backend.api.lol_scraper import (
