@@ -7,7 +7,7 @@ export default function Bans({ champ, lane, tier, champsInfo }: any) {
   const [topBans, setTopBans] = useState([]);
   const getTopBans = async () => {
     const res = await fetch(
-      `http://localhost:3200/bans/top10?` +
+      `http://localhost:3200/tierlist/bans/top10?` +
         new URLSearchParams({
           lane,
           tier,

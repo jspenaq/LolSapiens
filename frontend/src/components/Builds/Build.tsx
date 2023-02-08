@@ -14,7 +14,7 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
 
   const getBuild = async () => {
     const res = await fetch(
-      "http://localhost:3200/build?" +
+      "http://localhost:3200/champion/build?" +
         new URLSearchParams({
           champion_id: champ?.key,
           lane,
