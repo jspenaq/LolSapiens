@@ -148,7 +148,8 @@ class Sapiens:
         """
         mean = df["pick_rate"].mean()
         median = df["pick_rate"].median()
-        df = df[df["pick_rate"] > max(mean, median)]
+        p20 = df["ban_rate"].quantile(0.20)
+        df = df[(df["pick_rate"] > max(mean, median)) & (df["ban_rate"] > p20)]
         df = df.sort_values(by="win_rate", ascending=False)
         return df.head(10)[["id", "win_rate", "pick_rate"]]
 
@@ -367,8 +368,8 @@ class Sapiens:
                     if recommended.empty:
                         print("EMPTY")
                         continue
-                    recommended = recommended.head(5) # Maximum 5 items by block
-                    
+                    recommended = recommended.head(5)  # Maximum 5 items by block
+
                     recommended["item_name"] = recommended["item_id"].apply(
                         lambda id: self.items_data[id]["name_en"]
                     )
