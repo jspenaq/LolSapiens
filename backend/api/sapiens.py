@@ -7,7 +7,7 @@ from backend.api.lol_scraper import (
     get_runes_data,
     get_items_data,
 )
-from backend.api.utils import request_get, setup_folders
+from backend.api.utils import percentange_division, request_get, setup_folders
 
 
 class Sapiens:
@@ -61,18 +61,22 @@ class Sapiens:
                         value[0],
                         value[3],
                         value[4],
-                        round(value[3] * 100 / value[4], round_ndigits),
+                        round(percentange_division(value[3], value[4]), round_ndigits),
                         value[5],
-                        round(value[4] * 100 / value[5], round_ndigits),
+                        round(percentange_division(value[4], value[5]), round_ndigits),
                         value[6],
-                        round(value[4] * 100 / total_games_by_tier, round_ndigits),
+                        round(
+                            percentange_division(value[4], total_games_by_tier),
+                            round_ndigits,
+                        ),
                         value[7],
                         value[8],
                         value[9],
                         value[11],
                         value[12],
                         round(
-                            value[3] * 100 / value[4] - value[11] * 100 / value[12],
+                            percentange_division(value[3], value[4])
+                            - percentange_division(value[11], value[12]),
                             round_ndigits,
                         ),
                     ]
@@ -154,7 +158,6 @@ class Sapiens:
         return df.head(10)[["id", "win_rate", "pick_rate"]]
 
     def _analyze_picks(self, df: pd.DataFrame) -> pd.DataFrame:
-
         mean_pickrate = df["pick_rate"].mean()
         median_pickrate = df["pick_rate"].median()
         mean_winrate = df["win_rate"].mean()
@@ -259,7 +262,6 @@ class Sapiens:
         keystone_id: int,
         spicy: int = 0,
     ) -> dict:
-
         champion_name = self.champions_data[champion_id]["name"]
         queue_mode = 420
         if mode == "aram":
