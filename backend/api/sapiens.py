@@ -192,26 +192,34 @@ class Sapiens:
             )
         return data
 
-    def analyze_picks(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _analyze_picks(self, df: pd.DataFrame) -> pd.DataFrame:
 
         mean_pickrate = df["pick_rate"].mean()
         median_pickrate = df["pick_rate"].median()
         mean_winrate = df["win_rate"].mean()
         median_winrate = df["win_rate"].median()
-        df = df[(df["pick_rate"] < max(mean_pickrate, median_pickrate)) & (df["win_rate"] > max(mean_winrate, median_winrate))]
-        df = df.sort_values(by="win_rate", ascending=False)
-        return df.head(10)[["id", "win_rate", "pick_rate"]]
+        df = df[
+            (df["pick_rate"] < max(mean_pickrate, median_pickrate))
+            & (df["win_rate"] > max(mean_winrate, median_winrate))
+            & (df["games_by_lane"] >= 5)
+        ]
+        df = df.sort_values(by="win_rate", ascending=False).reset_index()
+        return df[["id", "win_rate", "pick_rate"]]
 
     def get_top10_picks(
         self,
         lane: str = "default",
         tier: str = "platinum_plus",
+        limit: int = 10,
+        random: int = 0,
     ) -> list:
         """Fetches the top ten spicy champions picks in the given lane and tier.
 
         Args:
             lane (str, optional): the name of the lane to filter the tier list by.
             tier (str, optional): the tier to filter the tier list by.
+            limit (int, optional):
+            random (int, optional):
 
         Returns:
             list: A dictionaries list with the following format:
@@ -224,7 +232,12 @@ class Sapiens:
             }
         """
         df = self._get_tierlist(lane, tier)
-        ids = self.analyze_picks(df)
+        ids = self._analyze_picks(df)
+        limit = min(limit, 20)
+        ids = ids.head(limit)
+        if random > 0:
+            random = min(random, len(ids))
+            ids = ids.sample(random)
         data = []
         for _, row in ids.iterrows():
             champion_id = int(row["id"])
