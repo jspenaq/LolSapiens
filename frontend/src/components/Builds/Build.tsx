@@ -12,6 +12,7 @@ interface BuildProps {
 const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
   const [build, setBuild] = useState<any>(null);
 
+  // !! Arregle esto hpta, está mandando 3 peticiones al tiempo 
   const getBuild = async () => {
     const res = await fetch(
       "http://localhost:3200/champion/build?" +

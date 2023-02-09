@@ -54,25 +54,27 @@ function InfoAndBans() {
         <Select
           itemList={lanes}
           onChangeCallback={setLane}
-          defaultValue={tier}
+          defaultValue={lanes.find((el) => el.id === lane)?.name}
         />
         <Select
           itemList={tiers}
           onChangeCallback={setTier}
-          defaultValue={tier}
+          defaultValue={tiers.find((el) => el.id === tier)?.name}
         />
         <Select
           itemList={modes}
           onChangeCallback={setMode}
-          defaultValue={mode}
+          defaultValue={modes.find((el) => el.id === mode)?.name}
         />
         <Select
           itemList={spicyList}
           onChangeCallback={setSpicy}
-          defaultValue={spicy}
+          defaultValue={spicyList.find((el) => el.id === spicy)?.name}
         />
       </section>
-      <Bans lane={lane} tier={tier} champ={champ} champsInfo={champsInfo} />
+      { mode === 'ranked' &&
+        <Bans lane={lane} tier={tier} champ={champ} champsInfo={champsInfo} />
+      }
       <ChampionCard champion={champ} />
       <Build lane={lane} tier={tier} mode={mode} spicy={spicy} champ={champ} />
     </div>

@@ -1,6 +1,6 @@
 import "./App.scss";
 import {
-  createBrowserRouter,
+  createHashRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
@@ -17,7 +17,7 @@ function ErrorBoundary() {
   return <div>Dang!</div>;
 }
 
-const router = createBrowserRouter(
+const router = createHashRouter(
   createRoutesFromElements(
     <Route
       path="/"

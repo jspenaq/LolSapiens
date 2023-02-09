@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import caretIcon from '../../assets/caret.svg';
 import './select.scss'
 
 type itemList = {
@@ -12,21 +14,45 @@ interface ISelectProps {
   [x: string]: any;
 }
 
+// TODO: Add overflow scrolling, unit testing, overlay for outside clicks, correct some styling issues.
+// TODO: 2. Accessibility
 export default function Select({ itemList, onChangeCallback, ...props }: ISelectProps) {
+
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const onSelectionClicked = (id: string) => {
+    console.log(id);
+    onChangeCallback(id);
+    setIsOpen(false); 
+  }
+
   return (
-    <select
-      onChange={(e) => onChangeCallback(e.target.value)}
-      // defaultValue="Aatrox"
-      {...props}
-      className="select"
-    >
-      {itemList.map(({ id, name }: any) => {
-        return (
-          <option value={id || name} key={id || name}>
-            {name}
-          </option>
-        );
-      })}
-    </select>
+    <div className="select">
+      <button
+        className="select__toggle"
+        onClick={() => setIsOpen((prevState) => !prevState)}
+      >
+        {props.defaultValue}
+        <img 
+          className={`select__toggle-caret ${isOpen ? 'select__toggle-caret--open' : ''}`}
+          src={caretIcon}
+        />
+      </button>
+      {isOpen && (
+        <ul className="select__item-container">
+          {itemList.map(({ id, name }: itemList) => {
+            return (
+              <li
+                className="select__item"
+                value={id || name}
+                key={id || name}
+                onClick={ () => onSelectionClicked(id || '') }>
+                  {name}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }
