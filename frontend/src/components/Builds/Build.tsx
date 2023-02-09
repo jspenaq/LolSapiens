@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import path from "path";
+import fs from "fs";
+// import { remote } from "electron";
 import "./build.scss";
 
 interface BuildProps {
@@ -21,7 +24,6 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
         lane,
         tier,
         mode,
-        keystone_id: "8128",
         spicy,
       })
     );
@@ -31,6 +33,24 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
     console.log(parsedRes);
   };
 
+  const importBuild = () => {
+    console.log("Importing...");
+    
+    // const lolDirectory = path.dirname("C:/Riot Games/League of Legends");
+    // const lolDirectory = path.join("/Users/sebasp/Documents/VSCode/LolSapiens/data");
+    // const myFile = path.join(lolDirectory, "testing.txt");
+    // console.log(myFile);
+
+    // fs.writeFile(lolDirectory, "Un string!", (error) => {
+    //   if (error) {
+    //     console.log(error);
+    //     return;
+    //   }
+    //   console.log(`File saved into ${myFile}`);
+      
+    // })
+  }
+
   useEffect(() => {
     if (champ && tier && lane && mode && spicy) getBuild();
   }, [champ, tier, lane, mode, spicy]);
@@ -39,6 +59,7 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
     build && (
       <section className="card bg__gray">
         <h2>{build.title}</h2>
+        <button onClick={importBuild}>Import 🐶</button>
         <div className="build">
           {build.blocks && build.blocks.map((block: any) => (
             <div key={block.type} className="build-block">
