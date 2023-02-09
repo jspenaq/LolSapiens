@@ -9,6 +9,7 @@ import {
   useRouteError,
 } from "react-router-dom";
 import { InfoAndBans } from "./pages";
+import { ReactComponent as LolSapiensLogo } from "../public/logo_1.svg";
 
 function ErrorBoundary() {
   let error = useRouteError();
@@ -23,7 +24,10 @@ const router = createHashRouter(
       path="/"
       element={
         <div className="App">
-          <h1>LoL Sapiens</h1>
+          <hgroup className="App__title">
+            <LolSapiensLogo width={72} height={72} />
+            <h1>LoL Sapiens</h1>
+          </hgroup>
           <Outlet />
         </div>
       }

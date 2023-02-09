@@ -7,6 +7,12 @@
 
 .App {
   width: 100%;
+
+  &__title {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
 }
 
 .bg__gray {

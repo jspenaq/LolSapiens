@@ -72,9 +72,9 @@ function InfoAndBans() {
           defaultValue={spicyList.find((el) => el.id === spicy)?.name}
         />
       </section>
-      { mode === 'ranked' &&
+      {mode === "ranked" && (
         <Bans lane={lane} tier={tier} champ={champ} champsInfo={champsInfo} />
-      }
+      )}
       <ChampionCard champion={champ} />
       <Build lane={lane} tier={tier} mode={mode} spicy={spicy} champ={champ} />
     </div>

@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import caretIcon from '../../assets/caret.svg';
-import './select.scss'
+import { useState } from "react";
+import { ReactComponent as CaretIcon } from "../../assets/caret.svg";
+import "./select.scss";
 
 type itemList = {
-    id?: string,
-    name?: string,
-}
+  id?: string;
+  name?: string;
+};
 
 interface ISelectProps {
   itemList: itemList & Record<string, any>;
@@ -16,15 +16,18 @@ interface ISelectProps {
 
 // TODO: Add overflow scrolling, unit testing, overlay for outside clicks, correct some styling issues.
 // TODO: 2. Accessibility
-export default function Select({ itemList, onChangeCallback, ...props }: ISelectProps) {
-
+export default function Select({
+  itemList,
+  onChangeCallback,
+  ...props
+}: ISelectProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const onSelectionClicked = (id: string) => {
     console.log(id);
     onChangeCallback(id);
-    setIsOpen(false); 
-  }
+    setIsOpen(false);
+  };
 
   return (
     <div className="select">
@@ -33,9 +36,10 @@ export default function Select({ itemList, onChangeCallback, ...props }: ISelect
         onClick={() => setIsOpen((prevState) => !prevState)}
       >
         {props.defaultValue}
-        <img 
-          className={`select__toggle-caret ${isOpen ? 'select__toggle-caret--open' : ''}`}
-          src={caretIcon}
+        <CaretIcon
+          className={`select__toggle-caret ${
+            isOpen ? "select__toggle-caret--open" : ""
+          }`}
         />
       </button>
       {isOpen && (
@@ -46,8 +50,9 @@ export default function Select({ itemList, onChangeCallback, ...props }: ISelect
                 className="select__item"
                 value={id || name}
                 key={id || name}
-                onClick={ () => onSelectionClicked(id || '') }>
-                  {name}
+                onClick={() => onSelectionClicked(id || "")}
+              >
+                {name}
               </li>
             );
           })}
