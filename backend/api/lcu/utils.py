@@ -66,7 +66,7 @@ async def update_game_mode(connection, event):
 
 async def update_current_champion_and_runes(connection, event):
     champion_id = event.data
-    name = input('What is your name?\n') 
+    name = input("What is your name?\n")
     print(name)
     # if not current_champion:
     #     return
