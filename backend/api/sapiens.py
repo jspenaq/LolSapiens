@@ -19,6 +19,7 @@ class Sapiens:
         self.runes_data = get_runes_data(self.current_patch)
         self.items_data = get_items_data(self.current_patch)
         self.base_url = "https://axe.lolalytics.com"  # LoLalytics
+        self.current_patch = "13.3.1" # Hardcoded because datadragon is useless
         self.patch = ".".join(self.current_patch.split(".")[:2])
         self.tierlist = self._get_tierlist()
 
