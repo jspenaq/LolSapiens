@@ -23,7 +23,6 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
         lane,
         tier,
         mode,
-        keystone_id: "8128",
         spicy,
       })
     );
