@@ -1,7 +1,9 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const isDev = require("electron-is-dev");
+const fs = require("fs");
+const platform = process.platform;
 
 const createWindow = () => {
   // Create the browser window.
@@ -9,10 +11,34 @@ const createWindow = () => {
     width: 1024,
     height: 720,
     icon: path.join(__dirname, "public/logo_1.png"),
+    webPreferences: {
+      preload: path.join(__dirname, "preload/electronApi.js"),
+    },
   });
 
-  // and load the index.html of the app.
-  // mainWindow.loadFile(__dirname + "/index.html");
+  ipcMain.on("import:build", (event, data) => {
+    let basePath = "";
+    const { championName, build } = data;
+
+    if (platform === "darwin") {
+      basePath = "/Applications/League of Legends.app/Contents/LoL";
+    } else if (platform === "win32") {
+      basePath = "C:/Riot Games/League of Legends";
+    } else {
+      return;
+    }
+
+    const dir = `${basePath}/Config/Champions/${championName}/Recommended/`;
+
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(
+      path.join(dir, "build.json"),
+      JSON.stringify(build, null, 2)
+    );
+  });
 
   if (isDev) {
     mainWindow.loadURL("http://localhost:5173/");
@@ -29,7 +55,6 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   createWindow();
-
   app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.

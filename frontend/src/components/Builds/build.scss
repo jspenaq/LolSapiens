@@ -26,8 +26,24 @@
 }
 
 .build {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
+  &__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__result {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  &__error {
+    font-size: 2rem;
+    font-weight: bold;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
 }
