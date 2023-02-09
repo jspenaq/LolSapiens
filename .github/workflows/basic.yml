@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/*
 
 # env:
 #   APP_NAME: <Your app name>
@@ -36,7 +35,7 @@ jobs:
 
     - name: Test backend
       run: |
-        pytest -v
+        pytest -vv
 
     - name: Set up Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
@@ -48,9 +47,6 @@ jobs:
         cd frontend
         npm ci
     
-    - name: LS
-      run: ls
-
     # - name: Lint frontend code
     #   run: |
     #     cd frontend
