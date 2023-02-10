@@ -49,7 +49,7 @@ function InfoAndBans() {
         <Select
           itemList={championList}
           onChangeCallback={getChampInfo}
-          defaultValue={champ.name || "Aatrox"}
+          defaultValue={champ?.name || "Aatrox"}
         />
         <Select
           itemList={lanes}
