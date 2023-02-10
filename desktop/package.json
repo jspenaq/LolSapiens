@@ -1,0 +1,29 @@
+{
+  "name": "lolsapiens",
+  "version": "1.0.0",
+  "description": "LolSapiens desktop app",
+  "main": "dist/index.js",
+  "scripts": {
+    "compile": "tsc",
+    "electron": "npm run compile && electron .",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "cd ../frontend && npm run build && cd ../desktop && electron-forge make"
+  },
+  "author": "Juan Sebatian Peña Quintero",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.5",
+    "@electron-forge/maker-deb": "^6.0.5",
+    "@electron-forge/maker-rpm": "^6.0.5",
+    "@electron-forge/maker-squirrel": "^6.0.5",
+    "@electron-forge/maker-zip": "^6.0.5",
+    "@types/node": "^18.13.0",
+    "electron": "^23.0.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "electron-is-dev": "^2.0.0",
+    "electron-squirrel-startup": "^1.0.0"
+  }
+}

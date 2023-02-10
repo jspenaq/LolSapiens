@@ -1,7 +1,6 @@
 module.exports = {
   packagerConfig: {
-    name: "LolSapiens",
-    icon: "./public/logo_1.ico",
+    extraResource: ["../frontend/dist"],
   },
   rebuildConfig: {},
   makers: [
