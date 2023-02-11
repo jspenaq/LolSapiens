@@ -51,7 +51,7 @@ class Sapiens:
                 file.write(",".join(columns))
                 file.write("\n")
                 total_games_by_tier = response["pick"]
-                round_ndigits = 4
+                round_ndigits = 6
 
                 for champion_id, value in response["cid"].items():
                     # value:
