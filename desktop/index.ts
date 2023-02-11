@@ -10,7 +10,12 @@ const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
     width: 1024,
     height: 720,
-    icon: path.join(__dirname, "assets/logo.ico"),
+    icon: path.join(
+      __dirname,
+      process.platform === "darwin"
+        ? "assets/logo_darwin.icns"
+        : "assets/logo.ico"
+    ),
     webPreferences: {
       preload: path.join(__dirname, "preload/electronApi.js"),
     },
