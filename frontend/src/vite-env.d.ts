@@ -5,6 +5,9 @@ export {};
 
 declare global {
   interface Window {
-    electronApi: any;
+    electronApi: {
+      importBuild: (data: any) => void;
+      buildImported: (callback: () => void) => void;
+    };
   }
 }

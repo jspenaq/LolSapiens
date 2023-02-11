@@ -45,6 +45,17 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps): JSX.Element => {
     if (champ && tier && lane && mode && spicy) getBuild();
   }, [champ, tier, lane, mode, spicy]);
 
+  useEffect(() => {
+    // No muy seguro de si es lo correcto en estos casos
+    window.electronApi.buildImported(() => {
+      alert("Build imported successfully");
+    });
+
+    return () => {
+      window.electronApi.buildImported(() => {});
+    };
+  }, []);
+
   return (
     build && (
       <section className="card bg__gray build">
