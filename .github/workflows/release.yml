@@ -6,8 +6,8 @@ on:
       - release
       - feature/*
 
-# env:
-#   APP_NAME: <Your app name>
+env:
+  APP_NAME: LolSapiens
 
 jobs:
   build-app:
@@ -53,7 +53,15 @@ jobs:
       
       - name: Build electron app
         run: |
-          ls
           cd desktop
           npm run make
           ls
+          cd out
+          ls
+          cd make
+          ls
+
+      - name: Create zip file
+        run: |
+          ls
+          tar -h
