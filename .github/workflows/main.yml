@@ -14,7 +14,7 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11"]
         node-version: [14.x, 16.x]
-    
+
     runs-on: ubuntu-latest
 
     steps:
@@ -43,7 +43,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies
+      - name: Install dependencies (frontend)
         run: |
           cd frontend
           npm i
@@ -52,6 +52,11 @@ jobs:
         run: |
           cd frontend
           npm run lint
+
+      - name: Install dependencies (desktop)
+        run: |
+          cd desktop
+          npm i
 
       - name: Lint desktop code
         run: |
@@ -63,5 +68,3 @@ jobs:
     #     cd frontend
     #     npm run build
     #     npm test
-
-
