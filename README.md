@@ -61,6 +61,14 @@ Use Electron to build and run the desktop application:
 npm run electron
 ```
 
+To compile Electron app:
+
+```bash
+npm run make
+```
+
+<img src="https://user-images.githubusercontent.com/36420972/218279770-1ccaa9ae-7372-46a8-99bb-6ba25281ce83.png" height="500" /> 
+
 ## Contributing
 If you want to contribute to the project, please fork the repository and make the necessary changes. Once you're ready, you can submit a pull request for review.
 
