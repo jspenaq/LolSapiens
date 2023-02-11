@@ -40,12 +40,12 @@ jobs:
       - name: Install dependencies (frontend)
         run: |
           cd frontend
-          npm ci
+          npm i
       
       - name: Install dependencies (desktop)
         run: |
           cd desktop
-          npm ci
+          npm i
       
       - name: Build electron app
         run: |
