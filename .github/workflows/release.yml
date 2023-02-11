@@ -1,0 +1,64 @@
+name: Publish electron app
+
+on:
+  push:
+    branches:
+      - release
+
+env:
+  APP_NAME: LolSapiens
+
+jobs:
+  build-app:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+        python-version: ["3.10"]
+        node-version: [16.x]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies (backend)
+        run: |
+          pip install -r requirements.txt
+
+      - name: Set up data folder (backend)
+        run: |
+          python main.py
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies (frontend)
+        run: |
+          cd frontend
+          npm i
+      
+      - name: Install dependencies (desktop)
+        run: |
+          cd desktop
+          npm i
+      
+      - name: Build electron app
+        run: |
+          cd desktop
+          npm run make
+          cd out
+          ls
+          cd make
+          ls
+
+      - name: Publish artifact
+        run: |
+          echo "Publish artifacts.."
