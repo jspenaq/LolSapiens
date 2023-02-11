@@ -55,7 +55,6 @@ jobs:
         run: |
           cd desktop
           npm run make
-          ls
           cd out
           ls
           cd make
@@ -63,5 +62,4 @@ jobs:
 
       - name: Create zip file
         run: |
-          ls
           tar -h

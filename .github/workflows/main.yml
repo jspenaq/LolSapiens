@@ -48,10 +48,15 @@ jobs:
           cd frontend
           npm i
 
-    # - name: Lint frontend code
-    #   run: |
-    #     cd frontend
-    #     npm run lint
+      - name: Lint frontend code
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: Lint desktop code
+        run: |
+          cd desktop
+          npm run lint
 
     # - name: Build and test frontend
     #   run: |
