@@ -11,7 +11,7 @@ const championList = championsData
 
 function InfoAndBans() {
   const [lane, setLane] = useState("default");
-  const [tier, setTier] = useState("gold_plus");
+  const [tier, setTier] = useState("platinum_plus");
   const [mode, setMode] = useState("ranked");
   const [spicy, setSpicy] = useState("0");
   const [champsInfo, setChampsInfo] = useState<any>({});
