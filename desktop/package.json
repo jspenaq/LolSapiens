@@ -8,7 +8,8 @@
     "electron": "npm run compile && electron .",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "cd ../frontend && npm run build && cd ../desktop && npm run compile && electron-forge make"
+    "make": "cd ../frontend && npm run build && cd ../desktop && npm run compile && electron-forge make",
+    "lint": "eslint ."
   },
   "author": "Juan Sebatian Peña Quintero",
   "license": "ISC",
@@ -19,7 +20,15 @@
     "@electron-forge/maker-squirrel": "^6.0.5",
     "@electron-forge/maker-zip": "^6.0.5",
     "@types/node": "^18.13.0",
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
     "electron": "^23.0.0",
+    "eslint": "^8.34.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-standard-with-typescript": "^34.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "prettier": "2.8.4",
     "typescript": "^4.9.5"
   },
   "dependencies": {

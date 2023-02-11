@@ -5,7 +5,7 @@ import isDev from "electron-is-dev";
 import fs from "fs";
 const platform = process.platform;
 
-const createWindow = () => {
+const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1024,
@@ -28,7 +28,9 @@ const createWindow = () => {
       return;
     }
 
-    const dir = `${basePath}/Config/Champions/${championName}/Recommended/`;
+    const dir = `${basePath}/Config/Champions/${
+      championName as string
+    }/Recommended/`;
 
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -41,8 +43,10 @@ const createWindow = () => {
   });
 
   if (isDev) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     mainWindow.loadURL("http://localhost:5173/");
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     mainWindow.loadFile(path.join(process.resourcesPath, "/dist/index.html"));
   }
 
@@ -53,15 +57,18 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  createWindow();
+app
+  .whenReady()
+  .then(() => {
+    createWindow();
 
-  app.on("activate", () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
+    app.on("activate", () => {
+      // On macOS it's common to re-create a window in the app when the
+      // dock icon is clicked and there are no other windows open.
+      if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+  })
+  .catch(console.log);
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

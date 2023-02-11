@@ -7,5 +7,6 @@
     "strict": true,
     "skipLibCheck": true,
     "outDir": "dist"
-  }
+  },
+  "include": ["index.ts", "preload/**/*"]
 }
