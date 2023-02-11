@@ -61,6 +61,14 @@ Use Electron to build and run the desktop application:
 npm run electron
 ```
 
+To compile Electron app:
+
+```bash
+npm run make
+```
+
+<img src="https://user-images.githubusercontent.com/36420972/218279770-1ccaa9ae-7372-46a8-99bb-6ba25281ce83.png" height="500" /> 
+
 ## Contributing
 If you want to contribute to the project, please fork the repository and make the necessary changes. Once you're ready, you can submit a pull request for review.
 
@@ -72,7 +80,7 @@ LolSapiens is an independent software application and is not endorsed, sponsored
 
 ## Acknowledgments
 - [jspenaq](https://github.com/jspenaq) - The mastermind behind the project and the king of Python.
-- [Anvido](https://github.com/Anvido) - The wizard of frontend development who brought the app to life with React and TypeScript.
+- [Anvido](https://github.com/Anvido) - The wizard of frontend development who brought the app to life with React, TypeScript and Electron.
 - [dfcastanedat](https://github.com/dfcastanedat) - The frontend ninja who made sure the app is smooth and responsive.
 - [LAHIGUARANS](https://github.com/LAHIGUARANS) - The designer who made the logo look stunning and the tester who made sure everything works as expected.
 - [jsbecerrab](https://github.com/jsbecerrab) - The copy-paster who contributed to the project by finding and using some useful code snippets from StackOverflow.
