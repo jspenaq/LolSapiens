@@ -69,7 +69,7 @@ This project is licensed under the [GNU GENERAL PUBLIC LICENSE Version 3](https:
 
 ## Acknowledgments
 - [jspenaq](https://github.com/jspenaq) - The mastermind behind the project and the king of Python.
-- [Anvido](https://github.com/Anvido) - The wizard of frontend development who brought the app to life with React and TypeScript.
+- [Anvido](https://github.com/Anvido) - The wizard of frontend development who brought the app to life with React, TypeScript and Electron.
 - [dfcastanedat](https://github.com/dfcastanedat) - The frontend ninja who made sure the app is smooth and responsive.
 - [LAHIGUARANS](https://github.com/LAHIGUARANS) - The designer who made the logo look stunning and the tester who made sure everything works as expected.
 - [jsbecerrab](https://github.com/jsbecerrab) - The copy-paster who contributed to the project by finding and using some useful code snippets from StackOverflow.
