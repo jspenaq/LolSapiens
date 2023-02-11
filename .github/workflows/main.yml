@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/*
 
 # env:
 #   APP_NAME: <Your app name>
@@ -33,7 +32,7 @@ jobs:
 
       - name: Lint backend code
         run: |
-          black .
+          black backend/
 
       - name: Test backend
         run: |
@@ -60,21 +59,4 @@ jobs:
     #     npm run build
     #     npm test
 
-  build-app:
-    needs: test
 
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
-
-    runs-on: ${{ matrix.os }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Just a test
-        run: |
-          pwd
-          ls
-          echo "Hey"

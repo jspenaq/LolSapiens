@@ -1,0 +1,54 @@
+name: Publish electron app
+
+on:
+  push:
+    branches:
+      - release
+      - feature/*
+
+# env:
+#   APP_NAME: <Your app name>
+
+jobs:
+  build-app:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+        python-version: ["3.10"]
+        node-version: [16.x]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies (backend)
+        run: |
+          pip install -r requirements.txt
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies (frontend)
+        run: |
+          cd frontend
+          npm ci
+      
+      - name: Install dependencies (desktop)
+        run: |
+          cd desktop
+          npm ci
+      
+      - name: Build electron app
+        run: |
+          cd desktop
+          npm run make
+          ls
