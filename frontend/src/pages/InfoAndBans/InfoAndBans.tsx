@@ -17,7 +17,7 @@ function InfoAndBans(): JSX.Element {
   const [champsInfo, setChampsInfo] = useState<any>({});
   const [champ, setChamp] = useState<any>(null);
 
-  const getChampInfo = async (champName: string) => {
+  const getChampInfo = async (champName: string): Promise<void> => {
     const res = await fetch(
       `http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion/${champName}.json`
     );
@@ -31,9 +31,8 @@ function InfoAndBans(): JSX.Element {
         "https://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json"
       );
       const parsedRes = await res.json();
-      setChampsInfo(parsedRes.data as any);
+      setChampsInfo(parsedRes.data);
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getChamps();
     return () => {
       setChampsInfo([]);
@@ -41,7 +40,6 @@ function InfoAndBans(): JSX.Element {
   }, []);
 
   if (champsInfo && !champ) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getChampInfo("Aatrox");
   }
 
@@ -50,6 +48,7 @@ function InfoAndBans(): JSX.Element {
       <section className="card bg__gray selects">
         <Select
           itemList={championList}
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onChangeCallback={getChampInfo}
           defaultValue={champ?.name || "Aatrox"}
         />

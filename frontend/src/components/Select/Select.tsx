@@ -9,7 +9,7 @@ interface itemList {
 
 interface ISelectProps {
   itemList: itemList & Record<string, any>;
-  onChangeCallback: Function;
+  onChangeCallback: (val: string) => void;
   // Rest props
   [x: string]: any;
 }
@@ -53,10 +53,10 @@ export default function Select({
             return (
               <li
                 className="select__item"
-                value={id || name}
-                key={id || name}
+                value={id ?? name}
+                key={id ?? name}
                 onClick={() => {
-                  onSelectionClicked(id || "");
+                  onSelectionClicked(id ?? "");
                 }}
               >
                 {name}

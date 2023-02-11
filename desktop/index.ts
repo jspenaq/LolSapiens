@@ -48,10 +48,8 @@ const createWindow = (): void => {
   });
 
   if (isDev) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     mainWindow.loadURL("http://localhost:5173/");
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     mainWindow.loadFile(path.join(process.resourcesPath, "/dist/index.html"));
   }
 

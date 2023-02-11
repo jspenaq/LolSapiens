@@ -9,12 +9,13 @@ interface BuildProps {
   spicy: string;
 }
 
-const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
+const Build = ({ champ, lane, tier, mode, spicy }: BuildProps): JSX.Element => {
   const [build, setBuild] = useState<any>(null);
 
   // !! Arregle esto hpta, está mandando 3 peticiones al tiempo
-  const getBuild = async () => {
+  const getBuild = async (): Promise<void> => {
     const res = await fetch(
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       "http://localhost:3200/champion/build?" +
         new URLSearchParams({
           champion_id: champ?.key,
@@ -30,7 +31,7 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
     console.log(parsedRes);
   };
 
-  const importBuild = () => {
+  const importBuild = (): void => {
     if (window.electronApi) {
       window.electronApi.importBuild({ championName: champ.id, build });
     } else {
@@ -55,22 +56,23 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps) => {
         )}
 
         <div className="build__result">
-          {build.blocks &&
-            build.blocks.map((block: any) => (
-              <div key={block.type} className="build-block">
-                <p>{block.type}</p>
-                <div className="build-block__items">
-                  {block.items.map((item: any, index: number) => (
-                    // Se usa el index porque Sebastian manda items repetidos :/
-                    <img
-                      key={`${item.id}-${index}`}
-                      src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/item/${item.id}.png`}
-                      alt={`item-${item.id}`}
-                    />
-                  ))}
-                </div>
+          {build.blocks?.map((block: any) => (
+            <div key={block.type} className="build-block">
+              <p>{block.type}</p>
+              <div className="build-block__items">
+                {block.items.map((item: any, index: number) => (
+                  // Se usa el index porque Sebastian manda items repetidos :/
+                  <img
+                    key={`${item.id as string}-${index}`}
+                    src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/item/${
+                      item.id as string
+                    }.png`}
+                    alt={`item-${item.id as string}`}
+                  />
+                ))}
               </div>
-            ))}
+            </div>
+          ))}
           {!build.blocks && (
             <p className="build__error">
               Your parameters seem to be too Spicy 🔥🔥🔥

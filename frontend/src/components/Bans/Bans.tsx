@@ -3,10 +3,16 @@ import { parseSelectValues } from "../../utils";
 import Tooltip from "../Tooltip";
 import "./bans.scss";
 
-export default function Bans({ champ, lane, tier, champsInfo }: any) {
+export default function Bans({
+  champ,
+  lane,
+  tier,
+  champsInfo,
+}: any): JSX.Element {
   const [topBans, setTopBans] = useState([]);
-  const getTopBans = async () => {
+  const getTopBans = async (): Promise<void> => {
     const res = await fetch(
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
       `http://localhost:3200/tierlist/bans/top10?` +
         new URLSearchParams({
           lane,
@@ -33,7 +39,7 @@ export default function Bans({ champ, lane, tier, champsInfo }: any) {
         {Boolean(topBans.length) &&
           topBans.map((champion: any) => {
             const { id, name, value, win_rate, pick_rate } = champion;
-            const imgPath = champsInfo[value]?.image.full;
+            const imgPath: string = champsInfo[value]?.image.full;
             return (
               <div key={id} className="topBans__champion">
                 <Tooltip text={name}>

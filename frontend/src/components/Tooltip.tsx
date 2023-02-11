@@ -1,5 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-import { ReactNode, useState } from "react";
+import type { ReactNode } from "react";
+import { useState } from "react";
 
 const Tooltip = ({
   children,
@@ -25,8 +25,8 @@ const Tooltip = ({
       {
         show &&
           // <Portal>l{
-          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-          (tooltipContent || <div className="tooltip">{text}</div>)
+
+          (tooltipContent ?? <div className="tooltip">{text}</div>)
         // }</Portal>
       }
     </div>

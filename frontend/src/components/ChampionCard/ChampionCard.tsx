@@ -37,7 +37,7 @@ export default function ChampionCard({
     labels: labelInfo || [],
     datasets: [
       {
-        label: `${champion?.name} stats`,
+        label: `${champion?.name as string} stats`,
         data: statDataInfo,
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         borderColor: "rgba(255, 99, 132, 1)",
@@ -51,7 +51,7 @@ export default function ChampionCard({
       {champion?.image && (
         <img
           src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/champion/${
-            champion.image?.full || ""
+            (champion.image?.full as string) || ""
           }`}
         />
       )}
@@ -73,7 +73,7 @@ export default function ChampionCard({
               <img
                 height={48}
                 src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/passive/${
-                  champion.passive.image?.full || ""
+                  (champion.passive.image?.full as string) || ""
                 }`}
               />
             </Tooltip>
@@ -84,7 +84,7 @@ export default function ChampionCard({
                 <img
                   height={48}
                   src={`https://ddragon.leagueoflegends.com/cdn/13.1.1/img/spell/${
-                    spell.image?.full || ""
+                    (spell.image?.full as string) || ""
                   }`}
                 />
               </Tooltip>
