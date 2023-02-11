@@ -11,8 +11,8 @@ import {
 import { InfoAndBans } from "./pages";
 import { ReactComponent as LolSapiensLogo } from "../public/logo_1.svg";
 
-function ErrorBoundary() {
-  let error = useRouteError();
+function ErrorBoundary(): JSX.Element {
+  const error = useRouteError();
   console.error(error);
   // Uncaught ReferenceError: path is not defined
   return <div>Dang!</div>;
@@ -40,7 +40,7 @@ const router = createHashRouter(
   )
 );
 
-function SapiensRouter() {
+function SapiensRouter(): JSX.Element {
   return <RouterProvider router={router} />;
 }
 

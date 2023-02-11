@@ -2,10 +2,10 @@ import { useState } from "react";
 import { ReactComponent as CaretIcon } from "../../assets/caret.svg";
 import "./select.scss";
 
-type itemList = {
+interface itemList {
   id?: string;
   name?: string;
-};
+}
 
 interface ISelectProps {
   itemList: itemList & Record<string, any>;
@@ -20,10 +20,10 @@ export default function Select({
   itemList,
   onChangeCallback,
   ...props
-}: ISelectProps) {
+}: ISelectProps): JSX.Element {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const onSelectionClicked = (id: string) => {
+  const onSelectionClicked = (id: string): void => {
     console.log(id);
     onChangeCallback(id);
     setIsOpen(false);
@@ -33,9 +33,14 @@ export default function Select({
     <div className="select">
       <button
         className="select__toggle"
-        onClick={() => setIsOpen((prevState) => !prevState)}
+        onClick={() => {
+          setIsOpen((prevState) => !prevState);
+        }}
       >
-        {props.defaultValue}
+        {
+          // eslint-disable-next-line react/prop-types
+          props.defaultValue
+        }
         <CaretIcon
           className={`select__toggle-caret ${
             isOpen ? "select__toggle-caret--open" : ""
@@ -50,7 +55,9 @@ export default function Select({
                 className="select__item"
                 value={id || name}
                 key={id || name}
-                onClick={() => onSelectionClicked(id || "")}
+                onClick={() => {
+                  onSelectionClicked(id || "");
+                }}
               >
                 {name}
               </li>

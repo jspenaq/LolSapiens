@@ -1,7 +1,3 @@
-import React from 'react'
-
-export default function SpicyPicks() {
-  return (
-    <div>SpicyPicks</div>
-  )
+export default function SpicyPicks(): JSX.Element {
+  return <div>SpicyPicks</div>;
 }

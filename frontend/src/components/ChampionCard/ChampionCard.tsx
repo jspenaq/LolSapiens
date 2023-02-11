@@ -9,7 +9,7 @@ import {
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
 import Tooltip from "../Tooltip";
-import './championCard.scss';
+import "./championCard.scss";
 
 ChartJS.register(
   RadialLinearScale,
@@ -20,16 +20,18 @@ ChartJS.register(
   Legend
 );
 
-export default function ChampionCard({ champion }: { champion: any }) {
+export default function ChampionCard({
+  champion,
+}: {
+  champion: any;
+}): JSX.Element {
   const statsToParse = champion ? Object.entries(champion?.info) : [];
-  const labelInfo =
-    statsToParse?.map((stat) => {
-      return stat[0];
-    }) || [];
-  const statDataInfo =
-    statsToParse?.map((stat) => {
-      return stat[1];
-    }) || [];
+  const labelInfo = statsToParse?.map((stat) => {
+    return stat[0];
+  });
+  const statDataInfo = statsToParse?.map((stat) => {
+    return stat[1];
+  });
 
   const data = {
     labels: labelInfo || [],

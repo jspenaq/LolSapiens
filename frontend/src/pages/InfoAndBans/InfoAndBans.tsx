@@ -9,7 +9,7 @@ const championList = championsData
     })
   : [];
 
-function InfoAndBans() {
+function InfoAndBans(): JSX.Element {
   const [lane, setLane] = useState("default");
   const [tier, setTier] = useState("platinum_plus");
   const [mode, setMode] = useState("ranked");
@@ -26,13 +26,14 @@ function InfoAndBans() {
   };
 
   useEffect(() => {
-    async function getChamps() {
+    async function getChamps(): Promise<void> {
       const res = await fetch(
         "https://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json"
       );
       const parsedRes = await res.json();
       setChampsInfo(parsedRes.data as any);
     }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getChamps();
     return () => {
       setChampsInfo([]);
@@ -40,6 +41,7 @@ function InfoAndBans() {
   }, []);
 
   if (champsInfo && !champ) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     getChampInfo("Aatrox");
   }
 
