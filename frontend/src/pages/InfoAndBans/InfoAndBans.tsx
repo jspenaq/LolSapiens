@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import championsData from "../../../../data/champions_data.json";
 import { lanes, tiers, modes, spicyList } from "../../constants";
-import { ChampionCard, Bans, Select, Build } from "../../components";
+import { ChampionCard, Bans, Select, Build, Summoner } from "../../components";
 
 const championList = championsData
   ? Object.values(championsData).sort((a: any, b: any) => {
@@ -46,6 +46,7 @@ function InfoAndBans(): JSX.Element {
   return (
     <div className="App">
       <section className="card bg__gray selects">
+        <Summoner />
         <Select
           itemList={championList}
           // eslint-disable-next-line @typescript-eslint/no-misused-promises

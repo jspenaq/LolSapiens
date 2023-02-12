@@ -1,0 +1,19 @@
+.summoner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+
+  img {
+    height: 128px;
+    border-radius: 9999px;
+  }
+
+  h2 {
+    margin: 0;
+  }
+
+  span {
+    font-weight: bold;
+  }
+}

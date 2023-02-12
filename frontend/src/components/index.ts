@@ -4,5 +4,6 @@ import ChampionCard from "./ChampionCard/ChampionCard";
 import Tooltip from "./Tooltip";
 import Portal from "./Portal";
 import Build from "./Builds/Build";
+import Summoner from "./Summoner/Summoner";
 
-export { Bans, Select, ChampionCard, Tooltip, Portal, Build };
+export { Bans, Select, ChampionCard, Tooltip, Portal, Build, Summoner };

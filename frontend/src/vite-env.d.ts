@@ -8,6 +8,7 @@ declare global {
     electronApi: {
       importBuild: (data: any) => void;
       buildImported: (callback: () => void) => void;
+      summonerDetected: (callback: (event: any, summoner: any) => void) => void;
     };
   }
 }
