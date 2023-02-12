@@ -47,12 +47,12 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps): JSX.Element => {
 
   useEffect(() => {
     // No muy seguro de si es lo correcto en estos casos
-    window.electronApi.buildImported(() => {
+    window.electronApi?.buildImported(() => {
       alert("Build imported successfully");
     });
 
     return () => {
-      window.electronApi.buildImported(() => {});
+      window.electronApi?.buildImported(() => {});
     };
   }, []);
 
