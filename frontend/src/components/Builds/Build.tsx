@@ -23,6 +23,7 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps): JSX.Element => {
           tier,
           mode,
           spicy,
+          keystone_id: "8128",
         })
     );
 
