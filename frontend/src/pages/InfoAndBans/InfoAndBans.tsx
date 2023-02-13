@@ -16,9 +16,6 @@ function InfoAndBans(): JSX.Element {
   const [spicy, setSpicy] = useState("0");
   const [champsInfo, setChampsInfo] = useState<any>({});
   const [champ, setChamp] = useState<any>(null);
-  const [isLeagueClientConnected, setIsLeagueClientConnected] =
-    useState<boolean>(false);
-  const [summoner, setSummoner] = useState<any>(null);
 
   const getChampInfo = async (champName: string): Promise<void> => {
     const res = await fetch(
@@ -27,40 +24,6 @@ function InfoAndBans(): JSX.Element {
     const parsedRes = await res.json();
     setChamp(parsedRes.data[champName]);
   };
-
-  // Set electron handlers
-  useEffect(() => {
-    console.log("//Setting electronApi handlers");
-    window.electronApi?.clientStatusChange(
-      (event: any, isConnected: boolean) => {
-        setIsLeagueClientConnected(isConnected);
-      }
-    );
-
-    window.electronApi?.summonerDetected((event: any, summoner: any) => {
-      console.log("Summoner: ", summoner);
-      setSummoner(summoner);
-    });
-
-    // Get current client status
-    window.electronApi?.clientStatus();
-    return () => {
-      window.electronApi?.clientStatusChange(() => {});
-      window.electronApi?.summonerDetected(() => {});
-    };
-  }, []);
-
-  // Get current summoner when connection is ready
-  useEffect(() => {
-    if (isLeagueClientConnected) {
-      console.log("Client connected");
-      window.electronApi?.getCurrentSummoner();
-    } else {
-      console.log("Client disconnected");
-      // TODO: clear all info obtained from LeagueClient
-      setSummoner(null);
-    }
-  }, [isLeagueClientConnected]);
 
   // Champions info
   useEffect(() => {
@@ -84,7 +47,7 @@ function InfoAndBans(): JSX.Element {
   return (
     <div className="App">
       <section className="card bg__gray selects">
-        <Summoner summoner={summoner} />
+        <Summoner />
         <Select
           itemList={championList}
           // eslint-disable-next-line @typescript-eslint/no-misused-promises

@@ -1,4 +1,3 @@
-import "./App.scss";
 import {
   createHashRouter,
   createRoutesFromElements,
@@ -10,6 +9,9 @@ import {
 } from "react-router-dom";
 import { InfoAndBans } from "./pages";
 import { ReactComponent as LolSapiensLogo } from "../public/logo_1.svg";
+import { useAppDispatch, useAppSelector } from "./hooks/reduxHooks";
+import { useEffect } from "react";
+import { updateSummoner } from "./store/leagueClientSlice";
 
 function ErrorBoundary(): JSX.Element {
   const error = useRouteError();
@@ -41,6 +43,20 @@ const router = createHashRouter(
 );
 
 function SapiensRouter(): JSX.Element {
+  const isConnected = useAppSelector((state) => state.leagueClient.isConnected);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (isConnected) {
+      console.log("Client connected");
+      window.electronApi?.getCurrentSummoner();
+    } else {
+      console.log("Client disconnected");
+      // TODO: Clear all leagueClient data
+      dispatch(updateSummoner(null));
+    }
+  }, [isConnected]);
+
   return <RouterProvider router={router} />;
 }
 

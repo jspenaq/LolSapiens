@@ -1,6 +1,9 @@
+import { useAppSelector } from "../../hooks/reduxHooks";
 import "./summoner.scss";
 
-const Summoner = ({ summoner }: { summoner: any }): JSX.Element => {
+const Summoner = (): JSX.Element => {
+  const summoner = useAppSelector((state) => state.leagueClient.summoner);
+
   if (!summoner) return <></>;
 
   return (
