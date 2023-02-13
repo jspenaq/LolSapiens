@@ -1,3 +1,4 @@
+import datetime
 import pandas as pd
 from pathlib import Path
 from backend.api.lol_scraper import (
@@ -26,7 +27,14 @@ class Sapiens:
         self, lane: str = "default", tier: str = "platinum_plus"
     ) -> pd.DataFrame:
         file_name = Path(f"data/tierlist_{lane}_{tier}.csv")
-        if not file_name.exists():
+        time_limit = 6 * 60 * 60  # 6 hours (in seconds)
+        exists_flag = file_name.exists()
+        if exists_flag:
+            # Recent data modification
+            time_diff = datetime.datetime.now() - datetime.datetime.fromtimestamp(
+                file_name.stat().st_mtime
+            )
+        if not exists_flag or time_diff.total_seconds() > time_limit:
             url = f"{self.base_url}/tierlist/2/?lane={lane}&patch={self.patch}&tier={tier}&queue=420&region=all"
             response = request_get(url)
             with open(file_name, "w+", encoding="UTF-8") as file:
@@ -132,9 +140,9 @@ class Sapiens:
             case 4:
                 recommended = df[df["games"] >= q2]
             case 5:
-                recommended = df[df["games"] >= p60]
-            case 6:
                 recommended = df[df["games"] >= q1]
+            case 6:
+                recommended = df[df["games"] >= p20]
 
         recommended_sorted = recommended.sort_values(by="win_rate", ascending=False)
         recommended_sorted["item_id"] = recommended_sorted["item_id"].astype(str)
@@ -280,7 +288,8 @@ class Sapiens:
                 recommend_runes = self._get_champion_runes(champion_id, lane)
                 key_name = "win_platinum_plus"
             keystone_id = recommend_runes[key_name]["primary_path"][0]
-        url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
+        # url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
+        url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
         response = request_get(url)
         return self._get_build_json(
             response, champion_id, lane, tier, queue_mode, keystone_id, spicy
