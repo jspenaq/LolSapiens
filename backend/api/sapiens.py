@@ -304,21 +304,22 @@ class Sapiens:
         region = "all"
 
         print(f"Searching {champion_name} {lane}")
-        if not keystone_id:
-            key_name = f"win_{tier}"
+        if keystone_id == 0:
+            # key_name = f"win_{tier}"
             recommend_runes = self._get_champion_runes(
-                champion_id, lane, tier, queue_mode
+                champion_id, lane, tier, queue_mode, spicy
             )
-            if not recommend_runes:
-                print(f"Recommend runes not found for {tier}")
-                recommend_runes = self._get_champion_runes(champion_id, lane, spicy)
-                key_name = "win_platinum_plus"
-            keystone_id = recommend_runes[key_name]["primary_path"][0]
+            # if not recommend_runes:
+            #     print(f"Recommend runes not found for {tier}")
+            #     recommend_runes = self._get_champion_runes(champion_id, lane, spicy)
+            #     key_name = "win_platinum_plus"
+
+            keystone_id = int(recommend_runes[0])
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
         # url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
         response = request_get(url)
         return self._get_build_json(
-            response, champion_id, lane, tier, queue_mode, keystone_id, spicy
+            response, champion_id, lane, tier, keystone_id, spicy
         )
 
     def _get_champion_runes(
@@ -328,7 +329,7 @@ class Sapiens:
         tier: str = "platinum_plus",
         queue_mode: str = "ranked",
         spicy: int = 0,
-    ) -> dict:
+    ) -> list:
         """Get the runes for a specific champion.
 
         Args:
@@ -387,7 +388,6 @@ class Sapiens:
         champion_id: str,
         lane: str,
         tier: str,
-        queue_mode: str,
         keystone_id: int,
         spicy: int,
     ):
