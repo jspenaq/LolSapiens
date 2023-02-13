@@ -109,6 +109,7 @@ class Sapiens:
         standard = df["games"].std(ddof=0)  # Normalize by N instead of N-1
         mean = df["games"].mean()
         cv = standard / mean
+        p10 = df["games"].quantile(0.10)
         p20 = df["games"].quantile(0.20)
         q1 = df["games"].quantile(0.25)
         q2 = df["games"].quantile(0.50)
@@ -136,7 +137,7 @@ class Sapiens:
             method -= 1
 
         method = max(method, 0)  # method < 0
-        method = min(method, 6)  # method > 6
+        method = min(method, 8)  # method > 8
         match method:
             case 0:
                 df = df[df["games"] >= (maximum - 1 * standard)]
@@ -152,20 +153,25 @@ class Sapiens:
                 df = df[df["games"] >= q1]
             case 6:
                 df = df[df["games"] >= p20]
+            case 7:
+                df = df[df["games"] >= p10]
+            case 8:
+                pass
 
         if len(df) == 1:
             recommended = df.copy()
         else:
-            weight_1 = 0.5
-            weight_2 = 0.5
+            weight_1 = 0.6
+            weight_2 = 0.4
 
             scaler = MinMaxScaler()
-
             df["games_normalized"] = scaler.fit_transform(df[["games"]])
-            df["weighted_result"] = df["win_rate"] * weight_1 + df["pick_rate"] * weight_2
+            df["weighted_result"] = (
+                df["win_rate"] * weight_1 + df["games_normalized"] * weight_2
+            )
             recommended = df.sort_values(by="weighted_result", ascending=False)
-        
-        recommended["item_id"] = recommended["item_id"].astype(str)
+
+        recommended["id"] = recommended["id"].astype(str)
         return recommended.reset_index()
 
     def _analyze_bans(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -235,7 +241,7 @@ class Sapiens:
             )
         return data
 
-    def get_top10_picks(
+    def get_spicy_picks(
         self,
         lane: str = "default",
         tier: str = "platinum_plus",
@@ -305,7 +311,7 @@ class Sapiens:
             )
             if not recommend_runes:
                 print(f"Recommend runes not found for {tier}")
-                recommend_runes = self._get_champion_runes(champion_id, lane)
+                recommend_runes = self._get_champion_runes(champion_id, lane, spicy)
                 key_name = "win_platinum_plus"
             keystone_id = recommend_runes[key_name]["primary_path"][0]
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
@@ -321,6 +327,7 @@ class Sapiens:
         lane: str = "default",
         tier: str = "platinum_plus",
         queue_mode: str = "ranked",
+        spicy: int = 0,
     ) -> dict:
         """Get the runes for a specific champion.
 
@@ -341,23 +348,28 @@ class Sapiens:
         if "runes" not in response:
             return {}
 
+        matrix = []
         for key in self.keystones:
             values = response["runes"]["stats"][str(key)][0]
             # values
             # [0]: pick_rate, [1]: win_rate, [2]: games
-            print()
-        runes = {}
-        for i in ["win", "pick"]:
-            primary_path = response["summary"]["runes"][i]["set"]["pri"]
-            secondary_path = response["summary"]["runes"][i]["set"]["sec"]
-            shards = response["summary"]["runes"][i]["set"]["mod"]
-            runes[f"{i}_{tier}"] = {
-                "primary_path": primary_path,
-                "secondary_path": secondary_path,
-                "shards": shards,
-            }
+            matrix.append([key, values[1], values[2]])
 
-        return runes
+        columns = ["id", "win_rate", "games"]
+        df = pd.DataFrame(matrix, columns=columns)
+        recommend = self._analyze(df, spicy * 2)
+        # runes = {}
+        # for i in ["win", "pick"]:
+        #     primary_path = response["summary"]["runes"][i]["set"]["pri"]
+        #     secondary_path = response["summary"]["runes"][i]["set"]["sec"]
+        #     shards = response["summary"]["runes"][i]["set"]["mod"]
+        #     runes[f"{i}_{tier}"] = {
+        #         "primary_path": primary_path,
+        #         "secondary_path": secondary_path,
+        #         "shards": shards,
+        #     }
+
+        return recommend.head(5)["id"].tolist()
 
     def __get_runes_names(self, keystone_id: int) -> tuple:
         keystone_preffix = keystone_id // 100 * 100
@@ -429,7 +441,7 @@ class Sapiens:
                 if len(items) > 7:
                     items = items[:7]
 
-                columns = ["item_id", "win_rate", "pick_rate", "games", "time"]
+                columns = ["id", "win_rate", "pick_rate", "games", "time"]
                 if b == "startSet":
                     columns = columns[:4]
 
@@ -438,17 +450,17 @@ class Sapiens:
 
                 if b == "startSet":
                     # split cases such as: "3850_2003_2003" into [3850, 2003, 2003]
-                    recommended["item_name"] = recommended["item_id"].apply(
+                    recommended["item_name"] = recommended["id"].apply(
                         lambda id: ", ".join(
                             [self.items_data[x]["name_en"] for x in id.split("_")]
                         )
                     )
-                    recommended["item_name_es"] = recommended["item_id"].apply(
+                    recommended["item_name_es"] = recommended["id"].apply(
                         lambda id: ", ".join(
                             [self.items_data[x]["name_es"] for x in id.split("_")]
                         )
                     )
-                    starting_set = recommended["item_id"][0].split("_")
+                    starting_set = recommended["id"][0].split("_")
                     # starting_set.append([]) # todo: add wards, lens
                     build_json["blocks"].append(
                         {
@@ -457,9 +469,9 @@ class Sapiens:
                         }
                     )
                 else:
-                    if "9999" in recommended["item_id"].values:  # No boots
+                    if "9999" in recommended["id"].values:  # No boots
                         recommended.drop(
-                            recommended[recommended["item_id"] == "9999"].index,
+                            recommended[recommended["id"] == "9999"].index,
                             inplace=True,
                         )
                     if recommended.empty:
@@ -467,16 +479,16 @@ class Sapiens:
                         continue
                     recommended = recommended.head(5)  # Maximum 5 items by block
 
-                    recommended["item_name"] = recommended["item_id"].apply(
+                    recommended["item_name"] = recommended["id"].apply(
                         lambda id: self.items_data[id]["name_en"]
                     )
-                    recommended["item_name_es"] = recommended["item_id"].apply(
+                    recommended["item_name_es"] = recommended["id"].apply(
                         lambda id: self.items_data[id]["name_es"]
                     )
                     build_json["blocks"].append(
                         {
                             "items": convert_item_to_lol_jsons(
-                                list(recommended["item_id"])
+                                list(recommended["id"])
                             ),
                             "type": blocks[b],
                         }

@@ -25,11 +25,23 @@ def create_build(
     return s.generate_build(champion_id, lane, tier, mode, keystone_id, spicy)
 
 
-@build_router.get("/runes")
-def get_runes(
+@build_router.get("/keystones")
+def get_keystones(
     champion_id: str = champion_id_param,
     lane: str = lane_param,
     tier: str = tier_param,
     queue_mode: str = queue_mode_param,
+    spicy: int = spicy_param,
 ):
-    return s._get_champion_runes(champion_id, lane, tier, queue_mode)
+    return s._get_champion_runes(champion_id, lane, tier, queue_mode, spicy)
+
+
+# @build_router.get("/runes")
+# def get_runes(
+#     champion_id: str = champion_id_param,
+#     lane: str = lane_param,
+#     tier: str = tier_param,
+#     queue_mode: str = queue_mode_param,
+#     spicy: int = spicy_param,
+# ):
+#     return s._get_champion_runes(champion_id, lane, tier, queue_mode, spicy)

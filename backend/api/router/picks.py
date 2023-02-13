@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Query
-from backend.api.constants import s
+from backend.api.constants import s, lane_param, tier_param
 
 
 picks_router = APIRouter()
 
 
 @picks_router.get("/spicy-picks")
-def get_top10_picks(
-    lane: str = Query("default", title="lane", description="Lane"),
-    tier: str = Query("platinum_plus", title="tier", description="Tier data"),
+def get_spicy_picks(
+    lane: str = lane_param,
+    tier: str = tier_param,
     limit: int = Query(10, title="limit", description="Limit size"),
     random: int = Query(0, title="random", description="Return a sample of size given"),
 ):
-    return s.get_top10_picks(lane, tier, limit, random)
+    return s.get_spicy_picks(lane, tier, limit, random)

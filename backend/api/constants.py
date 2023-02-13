@@ -31,5 +31,5 @@ keystone_id_param = Query(
 spicy_param = Query(
     0,
     title="spicy factor",
-    description="Spicy factor, an int value between 0 and 2. Default: 0",
+    description="Spicy factor, an int value between 0 and 4. Default: 0",
 )
