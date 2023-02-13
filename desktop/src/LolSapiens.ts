@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain, type IpcMainEvent } from "electron";
+import LeagueClient, { LeagueClientEvents } from "./utils/LeagueClient";
 import path from "path";
 import fs from "fs";
-import LeagueClient from "./utils/LeagueClient";
 
 export default class LolSapiens extends BrowserWindow {
   private readonly _leagueClient = new LeagueClient();
@@ -25,7 +25,8 @@ export default class LolSapiens extends BrowserWindow {
   start(): void {
     // call subscriptions
     this.setImportBuildEvent();
-    this.setLeagueClientEvent();
+    this.setLeagueClientEvents();
+    this.setClientStatusEvent();
     this.setCurrentSummonerEvent();
   }
 
@@ -59,14 +60,24 @@ export default class LolSapiens extends BrowserWindow {
     });
   }
 
-  setLeagueClientEvent(): void {
-    this._leagueClient.connectorStatus.on(
-      "is-connected",
+  setLeagueClientEvents(): void {
+    this._leagueClient.events.on(
+      LeagueClientEvents.IS_CONNECTED,
       (isConnected: boolean) => {
+        console.log("send connected event from leagueClient :", isConnected);
         this.webContents.send("client-status:change", isConnected);
       }
     );
 
+    this._leagueClient.events.on(
+      LeagueClientEvents.CURRENT_SUMMONER,
+      (summoner: any) => {
+        this.webContents.send("summoner:detected", summoner);
+      }
+    );
+  }
+
+  setClientStatusEvent(): void {
     ipcMain.on("client:status", (event: IpcMainEvent): void => {
       this.webContents.send(
         "client-status:change",
@@ -75,7 +86,6 @@ export default class LolSapiens extends BrowserWindow {
     });
   }
 
-  // TODO: handle errors, connection errors
   async setCurrentSummonerEvent(): Promise<void> {
     ipcMain.on("summoner:get", (event: IpcMainEvent) => {
       this._leagueClient.currentSummoner().then((summoner) => {

@@ -30,9 +30,9 @@ function InfoAndBans(): JSX.Element {
 
   // Set electron handlers
   useEffect(() => {
+    console.log("//Setting electronApi handlers");
     window.electronApi?.clientStatusChange(
       (event: any, isConnected: boolean) => {
-        console.log("League client connected: ", isLeagueClientConnected);
         setIsLeagueClientConnected(isConnected);
       }
     );
@@ -54,8 +54,11 @@ function InfoAndBans(): JSX.Element {
   useEffect(() => {
     if (isLeagueClientConnected) {
       console.log("Client connected");
+      window.electronApi?.getCurrentSummoner();
     } else {
       console.log("Client disconnected");
+      // TODO: clear all info obtained from LeagueClient
+      setSummoner(null);
     }
   }, [isLeagueClientConnected]);
 

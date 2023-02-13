@@ -1,6 +1,7 @@
 import LCUConnector from "lcu-connector";
 import axios from "axios";
 import EventEmitter from "events";
+import RiotWSProtocol from "./RiotWSProtocol";
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 export interface Credentials {
@@ -11,9 +12,20 @@ export interface Credentials {
   protocol: string;
 }
 
-enum RiotEndpoints {
+enum RiotClientEvents {
+  CURRENT_SUMMONER = "OnJsonApiEvent_lol-summoner_v1_current-summoner",
+}
+
+enum RiotClientEndpoints {
   CURRENT_SUMMONER = "/lol-summoner/v1/current-summoner",
 }
+
+export enum LeagueClientEvents {
+  IS_CONNECTED = "is-connected",
+  CURRENT_SUMMONER = "current-summoner",
+}
+
+const WS_RECONNECT_INTERVAL = 3000;
 
 // El frontend pregunta si existe conexion para almacenar en estado 1re caso \
 // Si se desconecta (limpiar credenciales) regresa evento de desconexion. Si se vuelve a conectar regresa evento de conexion 2do caso
@@ -23,7 +35,9 @@ export default class LeagueClient {
   private _credentials: Credentials | null = null;
   private _baseUrl: string = "";
   private _authorization: string = "";
-  connectorStatus = new EventEmitter();
+  private _ws: RiotWSProtocol | null = null;
+  private _wsTimeOutRef: NodeJS.Timeout | null = null;
+  events = new EventEmitter();
 
   constructor() {
     this.initConnector();
@@ -37,14 +51,16 @@ export default class LeagueClient {
       this._authorization = `Basic ${Buffer.from(
         `${username}:${password}`
       ).toString("base64")}`;
-      this.connectorStatus.emit("is-connected", true);
+      this.events.emit(LeagueClientEvents.IS_CONNECTED, true);
+      this.setClientWebSocket(credentials);
     });
 
     this._connector.on("disconnect", () => {
       // TODO: Send disconnected event
-      console.log("LeagueClient was disconnected");
+      console.log("LeagueClient disconnected");
       this._credentials = null;
-      this.connectorStatus.emit("is-connected", false);
+      this.events.emit(LeagueClientEvents.IS_CONNECTED, false);
+      this._ws?.close();
     });
     this._connector.start();
   }
@@ -59,24 +75,69 @@ export default class LeagueClient {
     return Boolean(this._credentials);
   }
 
+  private setClientWebSocket(credentials: Credentials): void {
+    this._ws = new RiotWSProtocol(credentials);
+    this._ws.on("close", () => {
+      console.log("WebSocket Closed");
+    });
+    this._ws.on("error", (error: any) => {
+      console.log("ERROR: ", error.code);
+      if (error.code === "ECONNREFUSED") {
+        // The ws will close so schedule a new try in x ms
+        this._wsTimeOutRef = setTimeout(() => {
+          this.setClientWebSocket(credentials);
+        }, WS_RECONNECT_INTERVAL);
+      }
+    });
+    this._ws.on("open", () => {
+      console.log("WebSocket Opened");
+      this.setClientWebSocketSubscriptions();
+    });
+  }
+
+  private setClientWebSocketSubscriptions(): void {
+    if (this._wsTimeOutRef != null) {
+      clearTimeout(this._wsTimeOutRef);
+      this._wsTimeOutRef = null;
+    }
+    // Maybe extract this into a function
+    // TODO: important remove all listeners/ unsubscribe when ws is closed
+    this._ws?.subscribe(RiotClientEvents.CURRENT_SUMMONER, (event: any) => {
+      if (event.uri === RiotClientEndpoints.CURRENT_SUMMONER) {
+        const summoner = {
+          displayName: event.data.displayName,
+          percentCompleteForNextLevel: event.data.percentCompleteForNextLevel,
+          profileIconId: event.data.profileIconId,
+          summonerLevel: event.data.summonerLevel,
+        };
+        this.events.emit(LeagueClientEvents.CURRENT_SUMMONER, summoner);
+      }
+    });
+  }
+
   async currentSummoner(): Promise<any> {
     try {
       const response: any = await axios(
-        `${this._baseUrl}${RiotEndpoints.CURRENT_SUMMONER}`,
+        `${this._baseUrl}${RiotClientEndpoints.CURRENT_SUMMONER}`,
         {
           headers: { Authorization: this._authorization },
         }
       );
 
       return {
-        displayName: response.displayName,
-        percentCompleteForNextLevel: response.percentCompleteForNextLevel,
-        profileIconId: response.profileIconId,
-        summonerLevel: response.summonerLevel,
+        displayName: response.data.displayName,
+        percentCompleteForNextLevel: response.data.percentCompleteForNextLevel,
+        profileIconId: response.data.profileIconId,
+        summonerLevel: response.data.summonerLevel,
       };
-    } catch (error) {
+    } catch (error: any) {
+      // Possible common error error.code === "ECONNREFUSED"
       console.error("Error getting current summoner data");
-      console.error(error);
+      if (error.code === "ECONNREFUSED") {
+        console.log("ERROR: ", error.code);
+      } else {
+        throw error;
+      }
     }
   }
 }

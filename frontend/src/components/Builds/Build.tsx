@@ -28,7 +28,6 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps): JSX.Element => {
 
     const parsedRes = await res.json();
     setBuild(parsedRes);
-    console.log(parsedRes);
   };
 
   const importBuild = (): void => {

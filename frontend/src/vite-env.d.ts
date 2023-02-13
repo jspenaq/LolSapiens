@@ -14,7 +14,6 @@ declare global {
       ) => void;
       clientStatus: () => void;
       getCurrentSummoner: () => void;
-  },
     };
   }
 }
