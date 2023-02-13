@@ -1,3 +1,4 @@
+import datetime
 import pandas as pd
 from pathlib import Path
 from backend.api.lol_scraper import (
@@ -8,6 +9,7 @@ from backend.api.lol_scraper import (
     get_items_data,
 )
 from backend.api.utils import percentange_division, request_get, setup_folders
+from sklearn.preprocessing import MinMaxScaler
 
 
 class Sapiens:
@@ -17,16 +19,33 @@ class Sapiens:
         self.current_patch = get_current_patch()
         self.champions_data = get_champions_data(self.current_patch)
         self.runes_data = get_runes_data(self.current_patch)
+        self.keystones = self._get_keystones()
         self.items_data = get_items_data(self.current_patch)
         self.base_url = "https://axe.lolalytics.com"  # LoLalytics
         self.patch = ".".join(self.current_patch.split(".")[:2])
         self.tierlist = self._get_tierlist()
 
+    def _get_keystones(self):
+        runes = self.runes_data
+        keystones = []
+        for i in range(len(runes)):
+            slots = runes[i]["slots"][0]["runes"]
+            for j in range(len(slots)):
+                keystones.append(slots[j]["id"])
+        return keystones
+
     def _get_tierlist(
         self, lane: str = "default", tier: str = "platinum_plus"
     ) -> pd.DataFrame:
         file_name = Path(f"data/tierlist_{lane}_{tier}.csv")
-        if not file_name.exists():
+        time_limit = 6 * 60 * 60  # 6 hours (in seconds)
+        exists_flag = file_name.exists()
+        if exists_flag:
+            # Recent data modification
+            time_diff = datetime.datetime.now() - datetime.datetime.fromtimestamp(
+                file_name.stat().st_mtime
+            )
+        if not exists_flag or time_diff.total_seconds() > time_limit:
             url = f"{self.base_url}/tierlist/2/?lane={lane}&patch={self.patch}&tier={tier}&queue=420&region=all"
             response = request_get(url)
             with open(file_name, "w+", encoding="UTF-8") as file:
@@ -97,9 +116,7 @@ class Sapiens:
         q3 = df["games"].quantile(0.75)
         maximum = df["games"].max()
         iqr = q3 - q1
-        # outliers = df[
-        #     ((df["games"] < (q1 - 1.5 * iqr)) | (df["games"] > (q3 + 1.5 * iqr)))
-        # ]
+
         upper_outliers = df[(df["games"] > (q3 + 1.5 * iqr))]
         upper_outliers = len(upper_outliers) > 0
 
@@ -122,23 +139,34 @@ class Sapiens:
         method = min(method, 6)  # method > 6
         match method:
             case 0:
-                recommended = df[df["games"] >= (maximum - 1 * standard)]
+                df = df[df["games"] >= (maximum - 1 * standard)]
             case 1:
-                recommended = df[df["games"] >= (maximum - 1.5 * standard)]
+                df = df[df["games"] >= (maximum - 1.5 * standard)]
             case 2:
-                recommended = df[df["games"] >= q3]
+                df = df[df["games"] >= q3]
             case 3:
-                recommended = df[df["games"] >= p60]
+                df = df[df["games"] >= p60]
             case 4:
-                recommended = df[df["games"] >= q2]
+                df = df[df["games"] >= q2]
             case 5:
-                recommended = df[df["games"] >= p60]
+                df = df[df["games"] >= q1]
             case 6:
-                recommended = df[df["games"] >= q1]
+                df = df[df["games"] >= p20]
 
-        recommended_sorted = recommended.sort_values(by="win_rate", ascending=False)
-        recommended_sorted["item_id"] = recommended_sorted["item_id"].astype(str)
-        return recommended_sorted.reset_index()
+        if len(df) == 1:
+            recommended = df.copy()
+        else:
+            weight_1 = 0.5
+            weight_2 = 0.5
+
+            scaler = MinMaxScaler()
+
+            df["games_normalized"] = scaler.fit_transform(df[["games"]])
+            df["weighted_result"] = df["win_rate"] * weight_1 + df["pick_rate"] * weight_2
+            recommended = df.sort_values(by="weighted_result", ascending=False)
+        
+        recommended["item_id"] = recommended["item_id"].astype(str)
+        return recommended.reset_index()
 
     def _analyze_bans(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -281,6 +309,7 @@ class Sapiens:
                 key_name = "win_platinum_plus"
             keystone_id = recommend_runes[key_name]["primary_path"][0]
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
+        # url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
         response = request_get(url)
         return self._get_build_json(
             response, champion_id, lane, tier, queue_mode, keystone_id, spicy
@@ -309,9 +338,14 @@ class Sapiens:
         region = "all"
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
         response = request_get(url)
-        if "summary" not in response:
+        if "runes" not in response:
             return {}
 
+        for key in self.keystones:
+            values = response["runes"]["stats"][str(key)][0]
+            # values
+            # [0]: pick_rate, [1]: win_rate, [2]: games
+            print()
         runes = {}
         for i in ["win", "pick"]:
             primary_path = response["summary"]["runes"][i]["set"]["pri"]

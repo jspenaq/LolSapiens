@@ -19,7 +19,7 @@ def request_get(url: str):
     """
     headers = {"accept": "application/json"}
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, verify=False)
         response.raise_for_status()
 
         if response.headers.get("Content-Type") == "application/json":
