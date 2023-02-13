@@ -13,8 +13,8 @@ export default class LolSapiens extends BrowserWindow {
       icon: path.join(
         __dirname,
         process.platform === "darwin"
-          ? "assets/logo_darwin.icns"
-          : "assets/logo.ico"
+          ? "../assets/logo_darwin.icns"
+          : "../assets/logo.ico"
       ),
       webPreferences: {
         preload: path.join(__dirname, "preload/electronApi.js"),
