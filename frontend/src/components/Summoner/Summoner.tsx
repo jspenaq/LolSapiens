@@ -1,18 +1,6 @@
-import { useEffect, useState } from "react";
 import "./summoner.scss";
 
-const Summoner = (): JSX.Element => {
-  const [summoner, setSummoner] = useState<any>(null);
-
-  useEffect(() => {
-    window.electronApi?.summonerDetected((event: any, summoner: any) => {
-      setSummoner(summoner);
-    });
-    return () => {
-      window.electronApi?.summonerDetected(() => {});
-    };
-  }, []);
-
+const Summoner = ({ summoner }: { summoner: any }): JSX.Element => {
   if (!summoner) return <></>;
 
   return (

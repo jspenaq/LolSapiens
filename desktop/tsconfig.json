@@ -8,5 +8,5 @@
     "skipLibCheck": true,
     "outDir": "dist"
   },
-  "include": ["index.ts", "./preload/**/*.ts", "./utils/**/*.ts"]
+  "include": ["src/**/*.ts"]
 }

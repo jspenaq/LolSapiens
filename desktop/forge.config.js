@@ -5,7 +5,7 @@ module.exports = {
       process.platform === "darwin"
         ? "assets/logo_darwin.icns"
         : "assets/logo.ico",
-    name: "LolSapiens"
+    name: "LolSapiens",
   },
   rebuildConfig: {},
   makers: [

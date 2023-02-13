@@ -1,13 +1,6 @@
 // Code from gist.github.com/Pupix/eb662b1b784bb704a1390643738a8c15
 import WebSocket from "ws";
-
-interface Credentials {
-  username: string;
-  password: string;
-  address: string;
-  port: string;
-  protocol: string;
-}
+import { type Credentials } from "./LeagueClient";
 
 export const MESSAGE_TYPES = {
   WELCOME: 0,

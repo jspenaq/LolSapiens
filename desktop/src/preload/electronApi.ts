@@ -9,4 +9,13 @@ contextBridge.exposeInMainWorld("electronApi", {
   summonerDetected: (
     callback: (event: IpcRendererEvent, summoner: any) => void
   ) => ipcRenderer.on("summoner:detected", callback),
+  clientStatusChange: (
+    callback: (event: IpcRendererEvent, isConnected: boolean) => void
+  ) => ipcRenderer.on("client-status:change", callback),
+  clientStatus: () => {
+    ipcRenderer.send("client:status");
+  },
+  getCurrentSummoner: () => {
+    ipcRenderer.send("summoner:get");
+  },
 });
