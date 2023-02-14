@@ -12,11 +12,13 @@ interface BuildProps {
 const Build = ({ champ, lane, tier, mode, spicy }: BuildProps): JSX.Element => {
   const [build, setBuild] = useState<any>(null);
 
-  // !! Arregle esto hpta, está mandando 3 peticiones al tiempo
+  // TODO:!! Arregle esto hpta, está mandando 3 peticiones al tiempo
   const getBuild = async (): Promise<void> => {
-    const res = await fetch(
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-      "http://localhost:3200/champion/build?" +
+    try {
+      const res = await fetch(
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+        // Construct the URL using query parameters
+        "http://localhost:3200/champion/build?" +
         new URLSearchParams({
           champion_id: champ?.key,
           lane,
@@ -24,37 +26,47 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps): JSX.Element => {
           mode,
           spicy,
         })
-    );
+      );
 
-    const parsedRes = await res.json();
-    setBuild(parsedRes);
+      // Parse the response and set the build state
+      const parsedRes = await res.json();
+      setBuild(parsedRes);
+    } catch (error) {
+      console.error("Error fetching build:", error);
+    }
   };
 
+  // Function to import the build into the desktop app (if running in Electron)
   const importBuild = (): void => {
     if (window.electronApi) {
       window.electronApi.importBuild({ championName: champ.id, build });
     } else {
+      // Show an alert if not running in Electron
       alert(
         "Browser mode, If you want to import the build please use desktop app"
       );
     }
   };
 
+  // Fetch the build data when any of the input parameters change
   useEffect(() => {
     if (champ && tier && lane && mode && spicy) getBuild();
   }, [champ, tier, lane, mode, spicy]);
 
+  // Set up a listener for the buildImported event (if running in Electron)
   useEffect(() => {
     // No muy seguro de si es lo correcto en estos casos
     window.electronApi?.buildImported(() => {
       alert("Build imported successfully");
     });
 
+    // Remove the listener when the component unmounts
     return () => {
-      window.electronApi?.buildImported(() => {});
+      window.electronApi?.buildImported(() => { });
     };
   }, []);
 
+  // Render the build data if it exists
   return (
     build && (
       <section className="card bg__gray build">
@@ -74,9 +86,8 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps): JSX.Element => {
                   // Se usa el index porque Sebastian manda items repetidos :/
                   <img
                     key={`${item.id as string}-${index}`}
-                    src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/item/${
-                      item.id as string
-                    }.png`}
+                    src={`http://ddragon.leagueoflegends.com/cdn/13.1.1/img/item/${item.id as string
+                      }.png`}
                     alt={`item-${item.id as string}`}
                   />
                 ))}
