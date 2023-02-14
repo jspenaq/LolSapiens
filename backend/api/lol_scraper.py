@@ -4,7 +4,6 @@ from os.path import exists
 from pathlib import Path
 from backend.api.utils import (
     create_parser,
-    import_build,
     setup_folders,
     request_get,
 )
