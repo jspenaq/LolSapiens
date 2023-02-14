@@ -8,7 +8,7 @@ export default class LolSapiens extends BrowserWindow {
 
   constructor() {
     super({
-      width: 1024,
+      width: 1280,
       height: 720,
       icon: path.join(
         __dirname,

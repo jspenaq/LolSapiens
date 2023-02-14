@@ -1,36 +1,49 @@
+@import "./scss/variables";
+
+// @font-face {
+//   font-family: "Google Material Icons";
+//   font-style: normal;
+//   font-weight: 400;
+//   src: url("assets/fonts/DMSerifText-Regular.ttf") format("woff2");
+// }
+
+// Resets
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  color: $text-primary;
+}
+
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Montserrat, Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-
-  &:hover {
-    color: #535bf2;
-  }
+  width: 100vw;
 }
 
 body {
   margin: 0;
   display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  align-items: stretch;
+  background-color: $background;
+
+  main {
+    flex: 1;
+    padding: 2rem;
+  }
 }
 
 h1 {
@@ -45,12 +58,14 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  // background-color: #1a1a1a;
+  background-color: $primary;
   cursor: pointer;
   transition: border-color 0.25s;
 
   &:hover {
-    border-color: #646cff;
+    // border-color: #646cff;
+    background-color: $secondary;
   }
 
   &:focus,
@@ -63,6 +78,8 @@ button {
   margin: 1rem 0;
   padding: 2rem;
   border-radius: 15px;
+  backdrop-filter: blur(20px);
+  background-color: rgba(#10121b, 0.25);
 }
 
 // @media (prefers-color-scheme: light) {

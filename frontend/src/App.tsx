@@ -1,8 +1,8 @@
 import { useAppDispatch } from "./hooks/reduxHooks";
 import { useEffect } from "react";
 import { updateClientStatus, updateSummoner } from "./store/leagueClientSlice";
-import "./App.scss";
-import SapiensRouter from "./SapiensRouter";
+import { Outlet } from "react-router-dom";
+import Navigation from "./components/Navigation/Navigation";
 
 const App = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -31,8 +31,10 @@ const App = (): JSX.Element => {
 
   return (
     <>
-      {/* TODO: Put the side navigation Here. Check the possibility to use Outlet */}
-      <SapiensRouter />
+      <Navigation />
+      <main>
+        <Outlet />
+      </main>
     </>
   );
 };

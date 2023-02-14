@@ -3,12 +3,7 @@ import { parseSelectValues } from "../../utils";
 import Tooltip from "../Tooltip";
 import "./bans.scss";
 
-export default function Bans({
-  champ,
-  lane,
-  tier,
-  champsInfo,
-}: any): JSX.Element {
+export default function Bans({ lane, tier, champsInfo }: any): JSX.Element {
   const [topBans, setTopBans] = useState([]);
   const getTopBans = async (): Promise<void> => {
     const res = await fetch(

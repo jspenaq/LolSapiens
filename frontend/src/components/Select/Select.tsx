@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ReactComponent as CaretIcon } from "../../assets/caret.svg";
+import { ReactComponent as CaretIcon } from "../../assets/images/caret.svg";
 import "./select.scss";
 
 interface itemList {

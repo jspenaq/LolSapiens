@@ -76,7 +76,7 @@ function InfoAndBans(): JSX.Element {
         />
       </section>
       {mode === "ranked" && (
-        <Bans lane={lane} tier={tier} champ={champ} champsInfo={champsInfo} />
+        <Bans lane={lane} tier={tier} champsInfo={champsInfo} />
       )}
       <ChampionCard champion={champ} />
       <Build lane={lane} tier={tier} mode={mode} spicy={spicy} champ={champ} />
