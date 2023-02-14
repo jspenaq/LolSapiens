@@ -108,7 +108,7 @@ def import_build(build_path: Path, json_file: dict) -> bool:
     return True
 
 
-def percentange_division(value: int, total: int) -> float | int:
+def percentage_division(value: int, total: int) -> float | int:
     try:
         return value * 100 / total
     except ZeroDivisionError:

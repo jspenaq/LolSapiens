@@ -8,7 +8,7 @@ from backend.api.lol_scraper import (
     get_runes_data,
     get_items_data,
 )
-from backend.api.utils import percentange_division, request_get, setup_folders
+from backend.api.utils import percentage_division, request_get, setup_folders
 from sklearn.preprocessing import MinMaxScaler
 
 
@@ -80,12 +80,12 @@ class Sapiens:
                         value[0],
                         value[3],
                         value[4],
-                        round(percentange_division(value[3], value[4]), round_ndigits),
+                        round(percentage_division(value[3], value[4]), round_ndigits),
                         value[5],
-                        round(percentange_division(value[4], value[5]), round_ndigits),
+                        round(percentage_division(value[4], value[5]), round_ndigits),
                         value[6],
                         round(
-                            percentange_division(value[4], total_games_by_tier),
+                            percentage_division(value[4], total_games_by_tier),
                             round_ndigits,
                         ),
                         value[7],
@@ -94,8 +94,8 @@ class Sapiens:
                         value[11],
                         value[12],
                         round(
-                            percentange_division(value[3], value[4])
-                            - percentange_division(value[11], value[12]),
+                            percentage_division(value[3], value[4])
+                            - percentage_division(value[11], value[12]),
                             round_ndigits,
                         ),
                     ]
