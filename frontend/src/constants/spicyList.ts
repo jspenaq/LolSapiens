@@ -1,6 +1,6 @@
 import { parseSelectValues } from "../utils";
 
-const rawSpicy = ["0", "1", "2"];
+const rawSpicy = ["0", "1", "2", "3", "4"];
 
 export default rawSpicy.map((spicy) => {
   return {
