@@ -37,9 +37,18 @@ jobs:
         run: |
           black --check backend/
 
-      - name: Test backend
+      - name: Run backend tests with coverage
         run: |
-          pytest -vv
+          coverage run --source=backend -m pytest -vv
+          coverage report
+          coverage html
+
+      - name: Publish coverage report as artifact
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: htmlcov/
 
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
