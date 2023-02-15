@@ -16,4 +16,4 @@ def health_check():
 
 @basic_router.get("/initial-data")
 def get_initial_data():
-    return {"Data": "Higuaran"}
+    return s.get_initial_data()

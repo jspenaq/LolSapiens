@@ -25,6 +25,14 @@ class Sapiens:
         self.patch = ".".join(self.current_patch.split(".")[:2])
         self.tierlist = self._get_tierlist()
 
+    def get_initial_data(self):
+        return {
+            "champions_data": self.champions_data,
+            "runes_data": self.runes_data,
+            "items_data": self.items_data,
+            "patch": self.current_patch,
+        }
+
     def _get_keystones(self):
         runes = self.runes_data
         keystones = []
