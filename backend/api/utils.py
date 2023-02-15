@@ -76,6 +76,14 @@ def create_parser() -> argparse.ArgumentParser:
 
 
 def setup_folders(path: Path = Path("")) -> bool:
+    """Create necessary folders and files in the given path.
+
+    Args:
+        path (Path, optional): The directory path where the folders should be created. Defaults to Path("").
+
+    Returns:
+         bool: True if all folders were successfully created, False otherwise.
+    """
     folders = ["data", "Champions"]
     for folder_name in folders:
         folder = path / Path(folder_name)

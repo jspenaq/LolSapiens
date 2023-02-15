@@ -374,7 +374,8 @@ class Sapiens:
 
     def __get_runes_names(self, keystone_id: int) -> tuple:
         keystone_preffix = keystone_id // 100 * 100
-
+        if keystone_preffix == 9900: # Hail of Blades
+            keystone_preffix = 8100
         for rune in self.runes_data:
             if rune["id"] == keystone_preffix:
                 for slot in rune["slots"]:
@@ -403,6 +404,7 @@ class Sapiens:
         }
 
         champion_name = self.champions_data[champion_id]["name"]
+        print(f"{keystone_id=}")
         (keystone_name, keystone_name_es) = self.__get_runes_names(keystone_id)
         build_txt_path = Path("Champions/recommend_build.txt")
         with open(build_txt_path, "w+", encoding="UTF-8") as build_file:
@@ -410,7 +412,7 @@ class Sapiens:
                 f"{champion_name} {lane} - {keystone_name} ({keystone_name_es})\n\n"
             )
             build_json = {
-                "title": f"LolSapiens - {lane} {champion_name} - {keystone_name} ({keystone_name_es})",
+                "title": f"LolSapiens - {champion_name} {lane} - {keystone_name} ({keystone_name_es})",
                 "type": "custom",
                 "associatedMaps": [11, 12],
                 "associatedChampions": [int(champion_id)],
