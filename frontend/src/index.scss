@@ -34,6 +34,9 @@
 
 body {
   margin: 0;
+}
+
+#root {
   display: flex;
   min-width: 320px;
   min-height: 100vh;
@@ -44,11 +47,6 @@ body {
     flex: 1;
     padding: 2rem;
   }
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
 }
 
 button {
@@ -72,14 +70,6 @@ button {
   &:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
   }
-}
-
-.card {
-  margin: 1rem 0;
-  padding: 2rem;
-  border-radius: 15px;
-  backdrop-filter: blur(20px);
-  background-color: rgba(#10121b, 0.25);
 }
 
 // @media (prefers-color-scheme: light) {

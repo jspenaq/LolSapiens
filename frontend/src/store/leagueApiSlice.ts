@@ -9,10 +9,10 @@ interface LeagueApiState extends InitialData {
 }
 
 const initialState: LeagueApiState = {
-  patch: null,
-  champions: null,
-  items: null,
-  runes: null,
+  patch: "",
+  champions: [],
+  items: [],
+  runes: [],
   test: null,
 };
 
