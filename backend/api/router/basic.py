@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from backend.api.constants import s
 
 basic_router = APIRouter()
 

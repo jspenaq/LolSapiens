@@ -37,5 +37,5 @@ spicy_param = Query(
     0,
     title="spicy_factor",
     description="Spicy factor, an int value between 0 and 4. Default: 0",
-    example=1
+    example=1,
 )

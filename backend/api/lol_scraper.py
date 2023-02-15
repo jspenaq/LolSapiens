@@ -33,29 +33,36 @@ def get_current_patch() -> str:
         return ""
 
 
-def get_champions_data(version: str, write_output: bool = False) -> dict:
+def get_champions_data(version: str, folder: Path = Path("data")) -> list:
     """Gets champions data from a League of Legends API.
         If the JSON file is not present or write_output flag is set,
         retrieves champion data from API and saves to local file. Else, it loads champion data from the local file.
 
     Args:
         version (str): The API version (League of Legends patch) on which the data should be retrieved.
-        write_output (bool, optional): True if output should be written to a file. Defaults to False.
+        folder (Path, optional): The directory path where the JSON file will be saved/loaded.
 
     Returns:
-        dict: Dictionary of champions data.
+        list: A list of dictionaries of champions data.
     """
-    file_name = "data/champions_data.json"
-    if not exists(file_name) or write_output:
+    file_name = folder / "champions_data.json"
+    if not exists(file_name):
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/champion.json"
         response = request_get(url)["data"]
-        data = {}
+        data = []
         for champion in response:
-            champion_data = response[champion]
-            data[champion_data["key"]] = {
-                "id": champion_data["id"],
-                "name": champion_data["name"],
-            }
+            data.append(
+                {
+                    "id": response[champion]["id"],
+                    "key": response[champion]["key"],
+                    "name": response[champion]["name"],
+                    "image": {
+                        "full": response[champion]["image"]["full"],
+                        "sprite": response[champion]["image"]["sprite"],
+                    },
+                    "tags": response[champion]["tags"],
+                }
+            )
         with open(file_name, "w+", encoding="UTF-8") as file:
             file.write(json.dumps(data, indent=4, ensure_ascii=False))
 
@@ -103,30 +110,38 @@ def get_runes_data(version: str, folder: Path = Path("data")) -> list:
         return json.loads(file.read())
 
 
-def get_items_data(version: str, write_output: bool = False) -> dict:
+def get_items_data(version: str, folder: Path = Path("data")) -> list:
     """Gets items data from a League of Legends API.
         If the JSON file is not present or write_output flag is set,
         retrieves champion data from API and saves to local file. Else, it loads items data from the local file.
 
     Args:
         version (str): The API version (League of Legends patch) on which the data should be retrieved.
-        write_output (bool, optional): True if output should be written to a file. Defaults to False.
+        folder (Path, optional): The directory path where the JSON file will be saved/loaded.
 
     Returns:
-        dict: Dictionary of items data.
+        list: A list of dictionaries with items data.
     """
-    file_name = "data/items_data.json"
-    if not exists(file_name) or write_output:
+    file_name = folder / "items_data.json"
+    if not file_name.exists():
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/item.json"
         response = request_get(url)["data"]
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/es_MX/item.json"
         response_es = request_get(url)["data"]
-        data = {}
+        data = []
         for key in response.keys():
-            data[key] = {
-                "name_en": response[key]["name"],
-                "name_es": response_es[key]["name"],
-            }
+            data.append(
+                {
+                    "id": key,
+                    "name": response[key]["name"],
+                    "name_es": response_es[key]["name"],
+                    "image": {
+                        "full": response[key]["image"]["full"],
+                        "sprite": response[key]["image"]["sprite"],
+                    },
+                    "tags": response[key]["tags"],
+                }
+            )
         with open(file_name, "w+", encoding="UTF-8") as file:
             file.write(json.dumps(data, indent=4, ensure_ascii=False))
         # return data
