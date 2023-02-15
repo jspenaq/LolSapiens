@@ -374,7 +374,7 @@ class Sapiens:
 
     def __get_runes_names(self, keystone_id: int) -> tuple:
         keystone_preffix = keystone_id // 100 * 100
-        if keystone_preffix == 9900: # Hail of Blades
+        if keystone_preffix == 9900:  # Hail of Blades
             keystone_preffix = 8100
         for rune in self.runes_data:
             if rune["id"] == keystone_preffix:
@@ -489,9 +489,7 @@ class Sapiens:
                     )
                     build_json["blocks"].append(
                         {
-                            "items": convert_item_to_lol_jsons(
-                                list(recommended["id"])
-                            ),
+                            "items": convert_item_to_lol_jsons(list(recommended["id"])),
                             "type": blocks[b],
                         }
                     )

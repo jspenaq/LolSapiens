@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 # env:
 #   APP_NAME: <Your app name>
@@ -32,7 +35,7 @@ jobs:
 
       - name: Lint backend code
         run: |
-          black backend/
+          black --check backend/
 
       - name: Test backend
         run: |
