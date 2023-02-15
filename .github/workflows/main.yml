@@ -41,6 +41,7 @@ jobs:
         run: |
           coverage run --source=backend -m pytest -vv
           coverage report
+          coverage html
 
       - name: Publish coverage report as artifact
         if: ${{ github.event_name == 'pull_request' }}
