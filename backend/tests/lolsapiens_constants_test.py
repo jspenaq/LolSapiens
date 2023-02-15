@@ -8,4 +8,3 @@ class TestConstants:
         assert value.title == "champion_id"
         assert value.description != ""
         assert value.example is not None
- 
