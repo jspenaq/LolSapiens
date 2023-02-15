@@ -49,8 +49,8 @@ class TestConvertItemToLolJsons:
 
 
 class TestGetRunesData:
-    def test_get_runes_data_returns_list(self):
-        data = get_runes_data("13.1.1")
+    def test_get_runes_data_returns_list(self, tmp_path):
+        data = get_runes_data("13.1.1", tmp_path)
         assert isinstance(data, list)
         assert isinstance(data[0], dict)
 

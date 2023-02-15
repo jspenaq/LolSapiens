@@ -63,20 +63,20 @@ def get_champions_data(version: str, write_output: bool = False) -> dict:
         return json.loads(file.read())
 
 
-def get_runes_data(version: str, write_output: bool = False) -> list:
+def get_runes_data(version: str, folder: Path = Path("data")) -> list:
     """Gets runes data from a League of Legends API.
         If the JSON file is not present or write_output flag is set,
         retrieves champion data from API and saves to local file. Else, it loads runes data from the local file.
 
     Args:
         version (str): The API version (League of Legends patch) on which the data should be retrieved.
-        write_output (bool, optional): True if output should be written to a file. Defaults to False.
+        folder (Path, optional): The directory path where the JSON file will be saved/loaded.
 
     Returns:
         list: A list of dictionaries with runes data.
     """
-    file_name = "data/runes_data.json"
-    if not exists(file_name) or write_output:
+    file_name = folder / "runes_data.json"
+    if not file_name.exists():
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/runesReforged.json"
         response = request_get(url)
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/es_MX/runesReforged.json"
