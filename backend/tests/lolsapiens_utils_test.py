@@ -1,11 +1,18 @@
-from pathlib import Path
 import pytest
+import shutil
 from backend.api.utils import (
     request_get,
     setup_folders,
     percentage_division,
     create_parser,
 )
+from pathlib import Path
+
+
+# @pytest.fixture(scope="class")
+# def setup_folders_fixture(tmp_path):
+#     yield tmp_path
+#     shutil.rmtree(tmp_path)
 
 
 class TestRequestGet:
@@ -36,7 +43,7 @@ class TestSetupFolders:
         result = setup_folders(tmp_path)
         assert result == True
         for folder_name in ["data", "Champions"]:
-            folder = Path(folder_name)
+            folder = tmp_path / Path(folder_name)
             assert folder.exists() == True
 
     def test_folder_already_exists(self, tmp_path):
@@ -48,7 +55,7 @@ class TestSetupFolders:
         result = setup_folders(tmp_path)
         assert result == True
         for folder_name in ["data", "Champions"]:
-            folder = Path(folder_name)
+            folder = tmp_path / Path(folder_name)
             assert folder.exists() == True
 
     # def test_folder_creation_exception(self, tmp_path):

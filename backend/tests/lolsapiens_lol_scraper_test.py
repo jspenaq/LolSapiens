@@ -1,6 +1,12 @@
 import pytest
+import json
 import re
-from backend.api.lol_scraper import get_languages, get_current_patch, convert_item_to_lol_jsons
+from backend.api.lol_scraper import (
+    get_languages,
+    get_current_patch,
+    convert_item_to_lol_jsons,
+    get_runes_data,
+)
 
 
 class TestGetLanguages:
@@ -40,3 +46,18 @@ class TestConvertItemToLolJsons:
             {"id": "1006", "count": 1},
         ]
         assert convert_item_to_lol_jsons(items) == expected_output
+
+
+class TestGetRunesData:
+    def test_get_runes_data_returns_list(self):
+        data = get_runes_data("13.1.1")
+        assert isinstance(data, list)
+        assert isinstance(data[0], dict)
+
+    # def test_get_runes_data_loads_data_from_file(self, tmp_path):
+    #     file_name = tmp_path / "runes_data.json"
+    #     expected_data = {"test": 123}
+    #     with open(file_name, "w") as file:
+    #         json.dump(expected_data, file)
+    #     data = get_runes_data("13.1.1")
+    #     assert data == expected_data
