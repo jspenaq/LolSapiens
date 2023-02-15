@@ -7,6 +7,7 @@ champion_id_param = Query(
     None,
     title="champion_id",
     description="Unique identifier assigned to champion in the game",
+    example=1,
 )
 lane_param = Query(
     "default",
