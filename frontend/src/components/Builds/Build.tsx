@@ -16,8 +16,8 @@ const Build = ({ champ, lane, tier, mode, spicy }: BuildProps): JSX.Element => {
   const getBuild = async (): Promise<void> => {
     try {
       const res = await fetch(
-        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         // Construct the URL using query parameters
+        // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
         "http://localhost:3200/champion/build?" +
         new URLSearchParams({
           champion_id: champ?.key,
