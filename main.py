@@ -9,7 +9,16 @@ from backend.api.utils import create_parser
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+description = """
+This is LolSapiens API.
+Endpoints include retrieving bans by tier and builds for specific champions for a given patch.
+"""
+
+app = FastAPI(
+    title="LolSapiensApi",
+    description=description,
+    version="0.1.0",
+)
 
 origins = ["*"]
 
@@ -27,7 +36,6 @@ app.include_router(picks_router, prefix="/tierlist")
 app.include_router(build_router, prefix="/champion")
 
 if __name__ == "__main__":
-
     parser = create_parser()
     args = parser.parse_args()
     if args.start:
