@@ -25,6 +25,14 @@ class Sapiens:
         self.patch = ".".join(self.current_patch.split(".")[:2])
         self.tierlist = self._get_tierlist()
 
+    def get_initial_data(self):
+        return {
+            "champions_data": self.champions_data,
+            "runes_data": self.runes_data,
+            "items_data": self.items_data,
+            "patch": self.current_patch,
+        }
+
     def _get_keystones(self):
         runes = self.runes_data
         keystones = []
@@ -233,8 +241,6 @@ class Sapiens:
             data.append(
                 {
                     "id": champion_id,
-                    "value": self.champions_data[str(champion_id)]["id"],
-                    "name": self.champions_data[str(champion_id)]["name"],
                     "win_rate": row["win_rate"],
                     "pick_rate": row["pick_rate"],
                 }
@@ -279,8 +285,6 @@ class Sapiens:
             data.append(
                 {
                     "id": champion_id,
-                    "value": self.champions_data[str(champion_id)]["id"],
-                    "name": self.champions_data[str(champion_id)]["name"],
                     "win_rate": row["win_rate"],
                     "pick_rate": row["pick_rate"],
                 }
@@ -296,14 +300,14 @@ class Sapiens:
         keystone_id: int,
         spicy: int = 0,
     ) -> dict:
-        champion_name = self.champions_data[champion_id]["name"]
+        # champion_name = self.champions_data[champion_id]["name"]
         queue_mode = 420
         if mode == "aram":
             queue_mode = 450
             lane = "middle"
         region = "all"
 
-        print(f"Searching {champion_name} {lane}")
+        print(f"Searching {champion_id} {lane}")
         if keystone_id == 0:
             # key_name = f"win_{tier}"
             recommend_runes = self._get_champion_runes(
@@ -403,16 +407,16 @@ class Sapiens:
             "item5": "5th Item",
         }
 
-        champion_name = self.champions_data[champion_id]["name"]
+        # champion_name = self.champions_data[champion_id]["name"]
         print(f"{keystone_id=}")
         (keystone_name, keystone_name_es) = self.__get_runes_names(keystone_id)
         build_txt_path = Path("Champions/recommend_build.txt")
         with open(build_txt_path, "w+", encoding="UTF-8") as build_file:
             build_file.write(
-                f"{champion_name} {lane} - {keystone_name} ({keystone_name_es})\n\n"
+                f"{champion_id} {lane} - {keystone_name} ({keystone_name_es})\n\n"
             )
             build_json = {
-                "title": f"LolSapiens - {champion_name} {lane} - {keystone_name} ({keystone_name_es})",
+                "title": f"LolSapiens - {champion_id} {lane} - {keystone_name} ({keystone_name_es})",
                 "type": "custom",
                 "associatedMaps": [11, 12],
                 "associatedChampions": [int(champion_id)],
@@ -452,16 +456,16 @@ class Sapiens:
 
                 if b == "startSet":
                     # split cases such as: "3850_2003_2003" into [3850, 2003, 2003]
-                    recommended["item_name"] = recommended["id"].apply(
-                        lambda id: ", ".join(
-                            [self.items_data[x]["name_en"] for x in id.split("_")]
-                        )
-                    )
-                    recommended["item_name_es"] = recommended["id"].apply(
-                        lambda id: ", ".join(
-                            [self.items_data[x]["name_es"] for x in id.split("_")]
-                        )
-                    )
+                    # recommended["item_name"] = recommended["id"].apply(
+                    #     lambda id: ", ".join(
+                    #         [self.items_data[x]["name_en"] for x in id.split("_")]
+                    #     )
+                    # )
+                    # recommended["item_name_es"] = recommended["id"].apply(
+                    #     lambda id: ", ".join(
+                    #         [self.items_data[x]["name_es"] for x in id.split("_")]
+                    #     )
+                    # )
                     starting_set = recommended["id"][0].split("_")
                     # starting_set.append([]) # todo: add wards, lens
                     build_json["blocks"].append(
@@ -481,12 +485,12 @@ class Sapiens:
                         continue
                     recommended = recommended.head(5)  # Maximum 5 items by block
 
-                    recommended["item_name"] = recommended["id"].apply(
-                        lambda id: self.items_data[id]["name_en"]
-                    )
-                    recommended["item_name_es"] = recommended["id"].apply(
-                        lambda id: self.items_data[id]["name_es"]
-                    )
+                    # recommended["item_name"] = recommended["id"].apply(
+                    #     lambda id: self.items_data[id]["name_en"]
+                    # )
+                    # recommended["item_name_es"] = recommended["id"].apply(
+                    #     lambda id: self.items_data[id]["name_es"]
+                    # )
                     build_json["blocks"].append(
                         {
                             "items": convert_item_to_lol_jsons(list(recommended["id"])),
