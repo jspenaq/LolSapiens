@@ -1,15 +1,17 @@
 import datetime
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
 from backend.api.lol_scraper import (
     convert_item_to_lol_jsons,
-    get_current_patch,
     get_champions_data,
-    get_runes_data,
+    get_current_patch,
     get_items_data,
+    get_runes_data,
 )
 from backend.api.utils import percentage_division, request_get, setup_folders
-from sklearn.preprocessing import MinMaxScaler
 
 
 class Sapiens:
@@ -25,7 +27,12 @@ class Sapiens:
         self.patch = ".".join(self.current_patch.split(".")[:2])
         self.tierlist = self._get_tierlist()
 
-    def get_initial_data(self):
+    def get_initial_data(self) -> dict:
+        """Return the initial data related to champions, runes, items, and patch.
+
+        Returns:
+            dict: A dictionary containing champions data, runes data, items data, and current patch.
+        """
         return {
             "champions_data": self.champions_data,
             "runes_data": self.runes_data,
@@ -300,14 +307,14 @@ class Sapiens:
         keystone_id: int,
         spicy: int = 0,
     ) -> dict:
-        # champion_name = self.champions_data[champion_id]["name"]
+        champion_name = self.champions_data[champion_id]["name"]
         queue_mode = 420
         if mode == "aram":
             queue_mode = 450
             lane = "middle"
         region = "all"
 
-        print(f"Searching {champion_id} {lane}")
+        print(f"Searching {champion_name} {lane}")
         if keystone_id == 0:
             # key_name = f"win_{tier}"
             recommend_runes = self._get_champion_runes(
@@ -407,16 +414,16 @@ class Sapiens:
             "item5": "5th Item",
         }
 
-        # champion_name = self.champions_data[champion_id]["name"]
+        champion_name = self.champions_data[champion_id]["name"]
         print(f"{keystone_id=}")
         (keystone_name, keystone_name_es) = self.__get_runes_names(keystone_id)
         build_txt_path = Path("Champions/recommend_build.txt")
         with open(build_txt_path, "w+", encoding="UTF-8") as build_file:
             build_file.write(
-                f"{champion_id} {lane} - {keystone_name} ({keystone_name_es})\n\n"
+                f"{champion_name} {lane} - {keystone_name} ({keystone_name_es})\n\n"
             )
             build_json = {
-                "title": f"LolSapiens - {champion_id} {lane} - {keystone_name} ({keystone_name_es})",
+                "title": f"LolSapiens - {champion_name} {lane} - {keystone_name} ({keystone_name_es})",
                 "type": "custom",
                 "associatedMaps": [11, 12],
                 "associatedChampions": [int(champion_id)],

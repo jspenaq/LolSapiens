@@ -1,12 +1,10 @@
 import json
-import pandas as pd
 from os.path import exists
 from pathlib import Path
-from backend.api.utils import (
-    create_parser,
-    setup_folders,
-    request_get,
-)
+
+import pandas as pd
+
+from backend.api.utils import create_parser, request_get, setup_folders
 
 
 def get_languages() -> list:
@@ -49,20 +47,20 @@ def get_champions_data(version: str, folder: Path = Path("data")) -> list:
     if not exists(file_name):
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/champion.json"
         response = request_get(url)["data"]
-        data = []
+        data = {}
         for champion in response:
-            data.append(
-                {
-                    "id": response[champion]["id"],
-                    "key": response[champion]["key"],
-                    "name": response[champion]["name"],
-                    "image": {
-                        "full": response[champion]["image"]["full"],
-                        "sprite": response[champion]["image"]["sprite"],
-                    },
-                    "tags": response[champion]["tags"],
-                }
-            )
+            data[response[champion]["key"]] = {
+                "id": response[champion]["key"],
+                "key_name": response[champion]["id"],
+                "name": response[champion]["name"],
+                "title": response[champion]["title"],
+                "image": {
+                    "full": response[champion]["image"]["full"],
+                    "sprite": response[champion]["image"]["sprite"],
+                },
+                "tags": response[champion]["tags"],
+            }
+
         with open(file_name, "w+", encoding="UTF-8") as file:
             file.write(json.dumps(data, indent=4, ensure_ascii=False))
 
@@ -93,11 +91,6 @@ def get_runes_data(version: str, folder: Path = Path("data")) -> list:
             for j in range(len(response[i]["slots"])):
                 runes = response[i]["slots"][j]["runes"]
                 for k in range(len(runes)):
-                    # data[runes[k]["id"]] = {
-                    #     "key": response[i]["slots"][j]["runes"][k]["key"],
-                    #     "name_en": response[i]["slots"][j]["runes"][k]["name"],
-                    #     "name_es": response_es[i]["slots"][j]["runes"][k]["name"],
-                    # }
                     del response[i]["slots"][j]["runes"][k]["shortDesc"]
                     del response[i]["slots"][j]["runes"][k]["longDesc"]
                     response[i]["slots"][j]["runes"][k]["name_es"] = response_es[i][
@@ -128,20 +121,19 @@ def get_items_data(version: str, folder: Path = Path("data")) -> list:
         response = request_get(url)["data"]
         url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/es_MX/item.json"
         response_es = request_get(url)["data"]
-        data = []
+        data = {}
         for key in response.keys():
-            data.append(
-                {
-                    "id": key,
-                    "name": response[key]["name"],
-                    "name_es": response_es[key]["name"],
-                    "image": {
-                        "full": response[key]["image"]["full"],
-                        "sprite": response[key]["image"]["sprite"],
-                    },
-                    "tags": response[key]["tags"],
-                }
-            )
+            data[key] = {
+                "id": key,
+                "name": response[key]["name"],
+                "name_es": response_es[key]["name"],
+                "image": {
+                    "full": response[key]["image"]["full"],
+                    "sprite": response[key]["image"]["sprite"],
+                },
+                "tags": response[key]["tags"],
+            }
+
         with open(file_name, "w+", encoding="UTF-8") as file:
             file.write(json.dumps(data, indent=4, ensure_ascii=False))
         # return data
