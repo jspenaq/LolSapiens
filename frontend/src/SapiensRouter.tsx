@@ -1,63 +1,89 @@
 import {
   createHashRouter,
   createRoutesFromElements,
-  Route,
-  RouterProvider,
   Outlet,
-  Navigate,
+  Route,
   useRouteError,
 } from "react-router-dom";
-import { InfoAndBans } from "./pages";
-import { ReactComponent as LolSapiensLogo } from "../public/logo_1.svg";
-import { useAppDispatch, useAppSelector } from "./hooks/reduxHooks";
+import Navigation from "./components/Navigation/Navigation";
 import { useEffect } from "react";
-import { updateSummoner } from "./store/leagueClientSlice";
+import { useAppDispatch, useAppSelector } from "./hooks/reduxHooks";
+import {
+  updateClientStatus,
+  updateCurrentChampion,
+  updateGameflow,
+  updateSummoner,
+} from "./store/leagueClientSlice";
+import { Picks, Gameflow } from "./pages";
+import { getInitialData } from "./store/leagueApiSlice";
 
 function ErrorBoundary(): JSX.Element {
-  const error = useRouteError();
+  const error: any = useRouteError();
   console.error(error);
-  // Uncaught ReferenceError: path is not defined
-  return <div>Dang!</div>;
+  return <div>{error.message}</div>;
 }
 
-const router = createHashRouter(
-  createRoutesFromElements(
-    <Route
-      path="/"
-      element={
-        <div className="App">
-          <hgroup className="App__title">
-            <LolSapiensLogo width={72} height={72} />
-            <h1>LoL Sapiens</h1>
-          </hgroup>
-          <Outlet />
-        </div>
-      }
-      errorElement={<ErrorBoundary />}
-    >
-      <Route path="/info-bans" element={<InfoAndBans />} />
-      <Route index element={<Navigate to="/info-bans" />} />
-      <Route path="*" element={<Navigate to="/info-bans" />} />
-    </Route>
-  )
-);
-
-function SapiensRouter(): JSX.Element {
+const Layout = (): JSX.Element => {
   const isConnected = useAppSelector((state) => state.leagueClient.isConnected);
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isConnected) {
-      console.log("Client connected");
       window.electronApi?.getCurrentSummoner();
-    } else {
-      console.log("Client disconnected");
-      // TODO: Clear all leagueClient data
-      dispatch(updateSummoner(null));
     }
   }, [isConnected]);
 
-  return <RouterProvider router={router} />;
-}
+  // Set electron handlers
+  useEffect(() => {
+    // dispatch initaialstate
+    dispatch(getInitialData());
 
-export default SapiensRouter;
+    window.electronApi?.clientStatusChange((_, isConnected) => {
+      dispatch(updateClientStatus(isConnected));
+    });
+
+    window.electronApi?.summonerDetected((_, summoner) => {
+      dispatch(updateSummoner(summoner));
+    });
+
+    window.electronApi?.getCurrentChampion((_, champId) => {
+      dispatch(updateCurrentChampion(champId));
+    });
+
+    window.electronApi?.getGameflow((_, gameflow) => {
+      dispatch(updateGameflow(gameflow));
+    });
+
+    // Get current client status
+    window.electronApi?.clientStatus();
+    return () => {
+      window.electronApi?.clientStatusChange(() => {});
+      window.electronApi?.summonerDetected(() => {});
+      window.electronApi?.getCurrentChampion(() => {});
+      window.electronApi?.getGameflow(() => {});
+    };
+  }, []);
+
+  return (
+    <>
+      <Navigation />
+      <main>
+        <Outlet />
+      </main>
+    </>
+  );
+};
+
+const router = createHashRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<Layout />} errorElement={<ErrorBoundary />}>
+      <Route index element={<Gameflow />} />
+      <Route path="picks" element={<Picks />} />
+      <Route path="spicy" element={<Picks />} />
+      <Route path="search" element={<Picks />} />
+    </Route>
+  )
+);
+
+export default router;

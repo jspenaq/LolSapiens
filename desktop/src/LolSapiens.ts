@@ -8,7 +8,7 @@ export default class LolSapiens extends BrowserWindow {
 
   constructor() {
     super({
-      width: 1024,
+      width: 1280,
       height: 720,
       icon: path.join(
         __dirname,
@@ -73,6 +73,20 @@ export default class LolSapiens extends BrowserWindow {
       LeagueClientEvents.CURRENT_SUMMONER,
       (summoner: any) => {
         this.webContents.send("summoner:detected", summoner);
+      }
+    );
+
+    this._leagueClient.events.on(
+      LeagueClientEvents.GAMEFLOW_CHANGE,
+      (gameflow: any) => {
+        this.webContents.send("gameflow:change", gameflow);
+      }
+    );
+
+    this._leagueClient.events.on(
+      LeagueClientEvents.CHAMP_SELECTED,
+      (champId: string) => {
+        this.webContents.send("champ:selected", champId);
       }
     );
   }

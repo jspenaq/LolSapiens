@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
+import leagueApiReducer from "./leagueApiSlice";
 import leagueClientReducer from "./leagueClientSlice";
 
 const store = configureStore({
   reducer: {
     leagueClient: leagueClientReducer,
+    leagueApi: leagueApiReducer,
   },
 });
 

@@ -1,25 +1,23 @@
 import { useAppSelector } from "../../hooks/reduxHooks";
-import "./summoner.scss";
+import LolSapiensLogo from "../../assets/images/logo.png";
+import classes from "./summoner.module.scss";
+import { DDRAGON_BASE, DDRAGON_PROFILE_ICON } from "../../constants/endpoints";
 
 const Summoner = (): JSX.Element => {
   const summoner = useAppSelector((state) => state.leagueClient.summoner);
+  const patch = useAppSelector((state) => state.leagueApi.patch);
 
-  if (!summoner) return <></>;
+  const iconSrc =
+    summoner && patch
+      ? `${DDRAGON_BASE}/cdn/${patch}${DDRAGON_PROFILE_ICON}/${summoner.profileIconId}.png`
+      : LolSapiensLogo;
 
   return (
-    <div className="summoner">
-      <img
-        src={`http://ddragon.leagueoflegends.com/cdn/13.3.1/img/profileicon/${
-          summoner.profileIconId as string
-        }.png`}
-        alt={summoner.profileIconId}
-      />
-      <h2>{summoner.displayName}</h2>
-      <progress max="100" value={summoner.percentCompleteForNextLevel}>
-        {summoner.percentCompleteForNextLevel}
-      </progress>
-      <span>{summoner.summonerLevel}</span>
+    <div className={classes.summoner}>
+      <img src={iconSrc} alt="Summoner profile icon" />
+      <h1>{summoner?.displayName ?? "LolSapiens"}</h1>
     </div>
   );
 };
+
 export default Summoner;

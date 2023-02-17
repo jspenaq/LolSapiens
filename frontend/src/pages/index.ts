@@ -1,3 +1,4 @@
-import InfoAndBans from "./InfoAndBans/InfoAndBans";
+import Picks from "./Picks/Picks";
+import Gameflow from "./Gameflow/Gameflow";
 
-export { InfoAndBans }
+export { Picks, Gameflow };

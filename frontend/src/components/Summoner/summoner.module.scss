@@ -1,0 +1,11 @@
+.summoner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem;
+
+  img {
+    width: 55%;
+    border-radius: 9999px;
+  }
+}

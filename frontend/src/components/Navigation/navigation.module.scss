@@ -1,0 +1,39 @@
+@import "../../scss/variables";
+
+.navigation {
+  background-color: darken($background, 35%);
+  height: 100%;
+
+  ul {
+    margin: 0;
+    list-style: none;
+    padding: 0;
+    width: 100%;
+    font-size: 1.4rem;
+    line-height: 2rem;
+
+    li:hover {
+      background-color: $secondary;
+    }
+
+    a {
+      display: inline-block;
+      width: 100%;
+      padding: 0.5rem 2rem;
+
+      &:link {
+        text-decoration: none;
+      }
+
+      &:active,
+      &:visited {
+        // reset colors
+        color: currentColor;
+      }
+    }
+  }
+
+  .link--active {
+    border-left: 8px solid $primary;
+  }
+}
