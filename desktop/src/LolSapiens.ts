@@ -75,6 +75,20 @@ export default class LolSapiens extends BrowserWindow {
         this.webContents.send("summoner:detected", summoner);
       }
     );
+
+    this._leagueClient.events.on(
+      LeagueClientEvents.GAMEFLOW_CHANGE,
+      (gameflow: any) => {
+        this.webContents.send("gameflow:change", gameflow);
+      }
+    );
+
+    this._leagueClient.events.on(
+      LeagueClientEvents.CHAMP_SELECTED,
+      (champId: string) => {
+        this.webContents.send("champ:selected", champId);
+      }
+    );
   }
 
   setClientStatusEvent(): void {

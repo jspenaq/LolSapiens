@@ -11,9 +11,12 @@ export interface Credentials {
   port: number;
   protocol: string;
 }
+const TRACK_PHASES = ["None", "Lobby", "Matchmaking", "ChampSelect"];
 
 enum RiotClientEvents {
   CURRENT_SUMMONER = "OnJsonApiEvent_lol-summoner_v1_current-summoner",
+  GAMEFLOW_SESSION = "OnJsonApiEvent_lol-gameflow_v1_session",
+  CHAMP_SELECTED = "OnJsonApiEvent_lol-champ-select_v1_current-champion",
 }
 
 enum RiotClientEndpoints {
@@ -23,6 +26,8 @@ enum RiotClientEndpoints {
 export enum LeagueClientEvents {
   IS_CONNECTED = "is-connected",
   CURRENT_SUMMONER = "current-summoner",
+  GAMEFLOW_CHANGE = "gameflow-change",
+  CHAMP_SELECTED = "champ-selected",
 }
 
 const WS_RECONNECT_INTERVAL = 3000;
@@ -111,6 +116,26 @@ export default class LeagueClient {
           summonerLevel: event.data.summonerLevel,
         };
         this.events.emit(LeagueClientEvents.CURRENT_SUMMONER, summoner);
+      }
+    });
+
+    this._ws?.subscribe(RiotClientEvents.GAMEFLOW_SESSION, (event: any) => {
+      const gameflow = {
+        gameMode: event.data?.map?.gameMode,
+        // None, Lobby, Matchmaking, TerminatedInError, WaitingForStats, InProgress, GameStart, ChampSelect, ReadyCheck, PreEndOfGame, EndOfGame
+        gamePhase: event.data?.phase,
+      };
+
+      if (TRACK_PHASES.includes(gameflow.gamePhase)) {
+        this.events.emit(LeagueClientEvents.GAMEFLOW_CHANGE, gameflow);
+      }
+    });
+
+    this._ws?.subscribe(RiotClientEvents.CHAMP_SELECTED, (event: any) => {
+      if (["Create", "Update"].includes(event.eventType)) {
+        this.events.emit(LeagueClientEvents.CHAMP_SELECTED, {
+          champId: event.data,
+        });
       }
     });
   }

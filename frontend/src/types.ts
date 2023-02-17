@@ -40,3 +40,8 @@ export interface Summoner {
   profileIconId: number;
   summonerLevel: number;
 }
+
+export interface Gameflow {
+  gameMode: string;
+  gamePhase: string;
+}

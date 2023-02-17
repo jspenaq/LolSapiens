@@ -5,11 +5,16 @@ import {
   Route,
   useRouteError,
 } from "react-router-dom";
-import Picks from "./pages/Picks/Picks";
 import Navigation from "./components/Navigation/Navigation";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "./hooks/reduxHooks";
-import { updateClientStatus, updateSummoner } from "./store/leagueClientSlice";
+import {
+  updateClientStatus,
+  updateCurrentChampion,
+  updateGameflow,
+  updateSummoner,
+} from "./store/leagueClientSlice";
+import { Picks, Gameflow } from "./pages";
 // import { getInitialData } from "./store/leagueApiSlice";
 
 function ErrorBoundary(): JSX.Element {
@@ -40,15 +45,20 @@ const Layout = (): JSX.Element => {
     // dispatch initaialstate
     // dispatch(getInitialData());
 
-    window.electronApi?.clientStatusChange(
-      (event: any, isConnected: boolean) => {
-        dispatch(updateClientStatus(isConnected));
-      }
-    );
+    window.electronApi?.clientStatusChange((_, isConnected) => {
+      dispatch(updateClientStatus(isConnected));
+    });
 
-    window.electronApi?.summonerDetected((event: any, summoner: any) => {
-      console.log("setting summoner", summoner);
+    window.electronApi?.summonerDetected((_, summoner) => {
       dispatch(updateSummoner(summoner));
+    });
+
+    window.electronApi?.getCurrentChampion((_, champId) => {
+      dispatch(updateCurrentChampion(champId));
+    });
+
+    window.electronApi?.getGameflow((_, gameflow) => {
+      dispatch(updateGameflow(gameflow));
     });
 
     // Get current client status
@@ -72,7 +82,7 @@ const Layout = (): JSX.Element => {
 const router = createHashRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<ErrorBoundary />}>
-      {/* <Route index element={Gameflow element} /> */}
+      <Route index element={<Gameflow />} />
       <Route path="picks" element={<Picks />} />
       <Route path="spicy" element={<Picks />} />
       <Route path="search" element={<Picks />} />

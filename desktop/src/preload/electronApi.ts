@@ -18,4 +18,13 @@ contextBridge.exposeInMainWorld("electronApi", {
   getCurrentSummoner: () => {
     ipcRenderer.send("summoner:get");
   },
+  getGameflow: (
+    callback: (
+      event: IpcRendererEvent,
+      gameflow: { gameMode: string; gamePhase: string }
+    ) => void
+  ) => ipcRenderer.on("gameflow:change", callback),
+  getCurrentChampion: (
+    callback: (event: IpcRendererEvent, champId: string) => void
+  ) => ipcRenderer.on("champ:selected", callback),
 });
