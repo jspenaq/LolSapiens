@@ -1,15 +1,17 @@
 import datetime
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
 from backend.api.lol_scraper import (
     convert_item_to_lol_jsons,
-    get_current_patch,
     get_champions_data,
-    get_runes_data,
+    get_current_patch,
     get_items_data,
+    get_runes_data,
 )
-from backend.api.utils import percentange_division, request_get, setup_folders
-from sklearn.preprocessing import MinMaxScaler
+from backend.api.utils import percentage_division, request_get, setup_folders
 
 
 class Sapiens:
@@ -24,6 +26,19 @@ class Sapiens:
         self.base_url = "https://axe.lolalytics.com"  # LoLalytics
         self.patch = ".".join(self.current_patch.split(".")[:2])
         self.tierlist = self._get_tierlist()
+
+    def get_initial_data(self) -> dict:
+        """Return the initial data related to champions, runes, items, and patch.
+
+        Returns:
+            dict: A dictionary containing champions data, runes data, items data, and current patch.
+        """
+        return {
+            "champions_data": self.champions_data,
+            "runes_data": self.runes_data,
+            "items_data": self.items_data,
+            "patch": self.current_patch,
+        }
 
     def _get_keystones(self):
         runes = self.runes_data
@@ -80,12 +95,12 @@ class Sapiens:
                         value[0],
                         value[3],
                         value[4],
-                        round(percentange_division(value[3], value[4]), round_ndigits),
+                        round(percentage_division(value[3], value[4]), round_ndigits),
                         value[5],
-                        round(percentange_division(value[4], value[5]), round_ndigits),
+                        round(percentage_division(value[4], value[5]), round_ndigits),
                         value[6],
                         round(
-                            percentange_division(value[4], total_games_by_tier),
+                            percentage_division(value[4], total_games_by_tier),
                             round_ndigits,
                         ),
                         value[7],
@@ -94,8 +109,8 @@ class Sapiens:
                         value[11],
                         value[12],
                         round(
-                            percentange_division(value[3], value[4])
-                            - percentange_division(value[11], value[12]),
+                            percentage_division(value[3], value[4])
+                            - percentage_division(value[11], value[12]),
                             round_ndigits,
                         ),
                     ]
@@ -233,8 +248,6 @@ class Sapiens:
             data.append(
                 {
                     "id": champion_id,
-                    "value": self.champions_data[str(champion_id)]["id"],
-                    "name": self.champions_data[str(champion_id)]["name"],
                     "win_rate": row["win_rate"],
                     "pick_rate": row["pick_rate"],
                 }
@@ -279,8 +292,6 @@ class Sapiens:
             data.append(
                 {
                     "id": champion_id,
-                    "value": self.champions_data[str(champion_id)]["id"],
-                    "name": self.champions_data[str(champion_id)]["name"],
                     "win_rate": row["win_rate"],
                     "pick_rate": row["pick_rate"],
                 }
@@ -374,7 +385,8 @@ class Sapiens:
 
     def __get_runes_names(self, keystone_id: int) -> tuple:
         keystone_preffix = keystone_id // 100 * 100
-
+        if keystone_preffix == 9900:  # Hail of Blades
+            keystone_preffix = 8100
         for rune in self.runes_data:
             if rune["id"] == keystone_preffix:
                 for slot in rune["slots"]:
@@ -403,6 +415,7 @@ class Sapiens:
         }
 
         champion_name = self.champions_data[champion_id]["name"]
+        print(f"{keystone_id=}")
         (keystone_name, keystone_name_es) = self.__get_runes_names(keystone_id)
         build_txt_path = Path("Champions/recommend_build.txt")
         with open(build_txt_path, "w+", encoding="UTF-8") as build_file:
@@ -410,7 +423,7 @@ class Sapiens:
                 f"{champion_name} {lane} - {keystone_name} ({keystone_name_es})\n\n"
             )
             build_json = {
-                "title": f"LolSapiens - {lane} {champion_name} - {keystone_name} ({keystone_name_es})",
+                "title": f"LolSapiens - {champion_name} {lane} - {keystone_name} ({keystone_name_es})",
                 "type": "custom",
                 "associatedMaps": [11, 12],
                 "associatedChampions": [int(champion_id)],
@@ -450,16 +463,16 @@ class Sapiens:
 
                 if b == "startSet":
                     # split cases such as: "3850_2003_2003" into [3850, 2003, 2003]
-                    recommended["item_name"] = recommended["id"].apply(
-                        lambda id: ", ".join(
-                            [self.items_data[x]["name_en"] for x in id.split("_")]
-                        )
-                    )
-                    recommended["item_name_es"] = recommended["id"].apply(
-                        lambda id: ", ".join(
-                            [self.items_data[x]["name_es"] for x in id.split("_")]
-                        )
-                    )
+                    # recommended["item_name"] = recommended["id"].apply(
+                    #     lambda id: ", ".join(
+                    #         [self.items_data[x]["name_en"] for x in id.split("_")]
+                    #     )
+                    # )
+                    # recommended["item_name_es"] = recommended["id"].apply(
+                    #     lambda id: ", ".join(
+                    #         [self.items_data[x]["name_es"] for x in id.split("_")]
+                    #     )
+                    # )
                     starting_set = recommended["id"][0].split("_")
                     # starting_set.append([]) # todo: add wards, lens
                     build_json["blocks"].append(
@@ -479,17 +492,15 @@ class Sapiens:
                         continue
                     recommended = recommended.head(5)  # Maximum 5 items by block
 
-                    recommended["item_name"] = recommended["id"].apply(
-                        lambda id: self.items_data[id]["name_en"]
-                    )
-                    recommended["item_name_es"] = recommended["id"].apply(
-                        lambda id: self.items_data[id]["name_es"]
-                    )
+                    # recommended["item_name"] = recommended["id"].apply(
+                    #     lambda id: self.items_data[id]["name_en"]
+                    # )
+                    # recommended["item_name_es"] = recommended["id"].apply(
+                    #     lambda id: self.items_data[id]["name_es"]
+                    # )
                     build_json["blocks"].append(
                         {
-                            "items": convert_item_to_lol_jsons(
-                                list(recommended["id"])
-                            ),
+                            "items": convert_item_to_lol_jsons(list(recommended["id"])),
                             "type": blocks[b],
                         }
                     )

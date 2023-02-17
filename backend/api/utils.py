@@ -75,10 +75,18 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def setup_folders() -> bool:
+def setup_folders(path: Path = Path("")) -> bool:
+    """Create necessary folders and files in the given path.
+
+    Args:
+        path (Path, optional): The directory path where the folders should be created. Defaults to Path("").
+
+    Returns:
+         bool: True if all folders were successfully created, False otherwise.
+    """
     folders = ["data", "Champions"]
     for folder_name in folders:
-        folder = Path(folder_name)
+        folder = path / Path(folder_name)
         if not folder.exists():
             try:
                 folder.mkdir(parents=True, exist_ok=True)
@@ -89,26 +97,26 @@ def setup_folders() -> bool:
     return True
 
 
-def import_build(build_path: Path, json_file: dict) -> bool:
-    system = platform.system()
-    base_path = ""
-    match system:
-        case "Windows":
-            base_path = "C:\\Riot Games\\League of Legends"
-        case "Darwin":
-            base_path = "/Applications/League of Legends.app/Contents/LoL"
-        case _:
-            return False
+# def import_build(build_path: Path, json_file: dict) -> bool:
+#     system = platform.system()
+#     base_path = ""
+#     match system:
+#         case "Windows":
+#             base_path = "C:\\Riot Games\\League of Legends"
+#         case "Darwin":
+#             base_path = "/Applications/League of Legends.app/Contents/LoL"
+#         case _:
+#             return False
 
-    system_path = f"{base_path}/Config/" / build_path
-    if not system_path.parent.exists():
-        system_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(system_path, "w+", encoding="UTF-8") as file:
-        file.write(json.dumps(json_file, indent=4))
-    return True
+#     system_path = f"{base_path}/Config/" / build_path
+#     if not system_path.parent.exists():
+#         system_path.parent.mkdir(parents=True, exist_ok=True)
+#     with open(system_path, "w+", encoding="UTF-8") as file:
+#         file.write(json.dumps(json_file, indent=4))
+#     return True
 
 
-def percentange_division(value: int, total: int) -> float | int:
+def percentage_division(value: int, total: int) -> float | int:
     try:
         return value * 100 / total
     except ZeroDivisionError:
