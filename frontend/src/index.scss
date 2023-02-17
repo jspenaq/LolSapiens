@@ -29,7 +29,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
-  width: 100vw;
 }
 
 body {
@@ -37,15 +36,19 @@ body {
 }
 
 #root {
-  display: flex;
-  min-width: 320px;
-  min-height: 100vh;
-  align-items: stretch;
+  display: grid;
+  width: 100vw;
+  height: 100vh;
   background-color: $background;
+  grid-template-columns: 300px auto;
+  overflow: hidden;
+
+  & > * {
+    max-height: 100vh;
+  }
 
   main {
-    flex: 1;
-    padding: 2rem;
+    overflow: auto;
   }
 }
 

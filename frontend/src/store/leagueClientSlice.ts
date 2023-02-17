@@ -1,9 +1,10 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
+import type { Summoner } from "../types";
 
 interface LeagueClientState {
   isConnected: boolean;
-  summoner: any;
+  summoner: Summoner | null;
 }
 
 const initialState: LeagueClientState = {

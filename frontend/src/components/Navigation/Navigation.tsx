@@ -1,11 +1,12 @@
 import { NavLink } from "react-router-dom";
 import classes from "./navigation.module.scss";
 import classNames from "classnames";
+import Summoner from "../Summoner/Summoner";
 
 const Navigation = (): JSX.Element => {
   return (
     <header className={classes.navigation}>
-      <h1>Summoner data</h1>
+      <Summoner />
       <ul>
         <li>
           <NavLink
@@ -25,6 +26,16 @@ const Navigation = (): JSX.Element => {
             }
           >
             Top 10 Bans & Picks
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to={"/spicy"}
+            className={({ isActive }) =>
+              classNames({ [classes["link--active"]]: isActive })
+            }
+          >
+            Spicy Picks
           </NavLink>
         </li>
         <li>

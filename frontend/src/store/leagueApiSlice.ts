@@ -9,7 +9,7 @@ interface LeagueApiState extends InitialData {
 }
 
 const initialState: LeagueApiState = {
-  patch: "",
+  patch: "13.3.1",
   champions: [],
   items: [],
   runes: [],
@@ -17,16 +17,16 @@ const initialState: LeagueApiState = {
 };
 
 // can be improve whitout blocking code
-export const getInitialData = createAsyncThunk(
-  "leagueClient/getInitialData",
-  async (): Promise<InitialData> => {
-    const { data } = await axios.get<InitialData>("", {
-      baseURL: DDRAGON_BASE,
-    });
+// export const getInitialData = createAsyncThunk(
+//   "leagueClient/getInitialData",
+//   async (): Promise<InitialData> => {
+//     const { data } = await axios.get<InitialData>("", {
+//       baseURL: DDRAGON_BASE,
+//     });
 
-    return data;
-  }
-);
+//     return data;
+//   }
+// );
 
 export const leagueApi = createSlice({
   name: "leagueClient",
@@ -37,12 +37,11 @@ export const leagueApi = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getInitialData.fulfilled, (state, action) => {
-      const { champions, patch } = action.payload;
-
-      state.champions = champions;
-      state.patch = patch;
-    });
+    // builder.addCase(getInitialData.fulfilled, (state, action) => {
+    //   const { champions, patch } = action.payload;
+    //   state.champions = champions;
+    //   state.patch = patch;
+    // });
   },
 });
 

@@ -33,3 +33,10 @@ export interface InitialData {
   items: Item[];
   patch: string;
 }
+
+export interface Summoner {
+  displayName: string;
+  percentCompleteForNextLevel: number;
+  profileIconId: number;
+  summonerLevel: number;
+}

@@ -10,7 +10,7 @@ import Navigation from "./components/Navigation/Navigation";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "./hooks/reduxHooks";
 import { updateClientStatus, updateSummoner } from "./store/leagueClientSlice";
-import { getInitialData } from "./store/leagueApiSlice";
+// import { getInitialData } from "./store/leagueApiSlice";
 
 function ErrorBoundary(): JSX.Element {
   const error: any = useRouteError();
@@ -19,6 +19,8 @@ function ErrorBoundary(): JSX.Element {
 }
 
 const Layout = (): JSX.Element => {
+  const isConnected = useAppSelector((state) => state.leagueClient.isConnected);
+
   const champions = useAppSelector((state) => state.leagueApi.champions);
 
   const dispatch = useAppDispatch();
@@ -27,12 +29,17 @@ const Layout = (): JSX.Element => {
     console.log(champions);
   }, [champions]);
 
+  useEffect(() => {
+    if (isConnected) {
+      window.electronApi?.getCurrentSummoner();
+    }
+  }, [isConnected]);
+
   // Set electron handlers
   useEffect(() => {
     // dispatch initaialstate
-    dispatch(getInitialData());
+    // dispatch(getInitialData());
 
-    console.log("//Setting electronApi handlers");
     window.electronApi?.clientStatusChange(
       (event: any, isConnected: boolean) => {
         dispatch(updateClientStatus(isConnected));
@@ -67,6 +74,7 @@ const router = createHashRouter(
     <Route path="/" element={<Layout />} errorElement={<ErrorBoundary />}>
       {/* <Route index element={Gameflow element} /> */}
       <Route path="picks" element={<Picks />} />
+      <Route path="spicy" element={<Picks />} />
       <Route path="search" element={<Picks />} />
     </Route>
   )
