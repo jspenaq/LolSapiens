@@ -1,7 +1,7 @@
 export interface Champion {
   id: string;
-  key: string; // number
-  name: string;
+  key_name: string; // riot name
+  name: string; // pretty name
   title: string;
   image: {
     full: string;
@@ -15,11 +15,23 @@ export interface Rune {
   key: string;
   icon: string;
   name: string;
+  name_es: string;
+}
+
+export interface RunesTree {
+  id: number;
+  key: string; // riot name
+  icon: string;
+  name: string; // pretty name
+  slots: {
+    runes: Rune[];
+  };
 }
 
 export interface Item {
   id: number;
   name: string;
+  name_es: string;
   image: {
     full: string;
     sprite: string;
@@ -28,9 +40,9 @@ export interface Item {
 }
 
 export interface InitialData {
-  champions: Champion[];
-  runes: Rune[];
-  items: Item[];
+  champions_data: Record<string, Champion> | null;
+  runes_data: RunesTree | null;
+  items_data: Record<string, Item> | null;
   patch: string;
 }
 

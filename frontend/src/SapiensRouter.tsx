@@ -15,7 +15,7 @@ import {
   updateSummoner,
 } from "./store/leagueClientSlice";
 import { Picks, Gameflow } from "./pages";
-// import { getInitialData } from "./store/leagueApiSlice";
+import { getInitialData } from "./store/leagueApiSlice";
 
 function ErrorBoundary(): JSX.Element {
   const error: any = useRouteError();
@@ -26,13 +26,7 @@ function ErrorBoundary(): JSX.Element {
 const Layout = (): JSX.Element => {
   const isConnected = useAppSelector((state) => state.leagueClient.isConnected);
 
-  const champions = useAppSelector((state) => state.leagueApi.champions);
-
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    console.log(champions);
-  }, [champions]);
 
   useEffect(() => {
     if (isConnected) {
@@ -43,7 +37,7 @@ const Layout = (): JSX.Element => {
   // Set electron handlers
   useEffect(() => {
     // dispatch initaialstate
-    // dispatch(getInitialData());
+    dispatch(getInitialData());
 
     window.electronApi?.clientStatusChange((_, isConnected) => {
       dispatch(updateClientStatus(isConnected));
@@ -66,6 +60,8 @@ const Layout = (): JSX.Element => {
     return () => {
       window.electronApi?.clientStatusChange(() => {});
       window.electronApi?.summonerDetected(() => {});
+      window.electronApi?.getCurrentChampion(() => {});
+      window.electronApi?.getGameflow(() => {});
     };
   }, []);
 

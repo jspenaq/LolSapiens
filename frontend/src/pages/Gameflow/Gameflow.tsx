@@ -7,8 +7,6 @@ const Gameflow = (): JSX.Element => {
     (state) => state.leagueClient.currentChampion
   );
 
-  console.log(champion);
-
   return (
     <section className={classes.gameflow}>
       <h2>{gameflow?.gamePhase}</h2>
