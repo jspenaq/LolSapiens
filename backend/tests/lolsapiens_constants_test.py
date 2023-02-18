@@ -5,6 +5,8 @@ from backend.api.constants import (
     queue_mode_param,
     keystone_id_param,
     spicy_param,
+    limit_param,
+    random_param,
 )
 from fastapi import Query
 
@@ -48,5 +50,19 @@ class TestConstants:
         value = spicy_param
         assert value.default == 0
         assert value.title == "spicy_factor"
+        assert isinstance(value.description, str)
+        assert isinstance(value.example, int)
+
+    def test_limit_param(self):
+        value = limit_param
+        assert value.default == 10
+        assert value.title == "limit"
+        assert isinstance(value.description, str)
+        assert isinstance(value.example, int)
+
+    def test_random_param(self):
+        value = random_param
+        assert value.default == 0
+        assert value.title == "random"
         assert isinstance(value.description, str)
         assert isinstance(value.example, int)

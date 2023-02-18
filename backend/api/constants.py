@@ -39,3 +39,16 @@ spicy_param = Query(
     description="Spicy factor, an int value between 0 and 4. Default: 0",
     example=1,
 )
+limit_param = Query(
+    10,
+    title="limit",
+    description="The maximum number of items to return in a single request.",
+    example=12,
+)
+random_param = Query(
+    0,
+    title="random",
+    description="Return a random sample of a specified size from the available results. \
+        If the size is set to zero, all available results will be returned.",
+    example=5,
+)

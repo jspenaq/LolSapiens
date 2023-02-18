@@ -1,6 +1,5 @@
 import os
 import uvicorn
-from backend.api.lol_scraper import main
 from backend.api.router.basic import basic_router
 from backend.api.router.bans import bans_router
 from backend.api.router.build import build_router

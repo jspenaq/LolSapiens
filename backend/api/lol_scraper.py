@@ -1,9 +1,8 @@
 import json
 from os.path import exists
 from pathlib import Path
-
 import pandas as pd
-
+from requests.exceptions import RequestException
 from backend.api.utils import create_parser, request_get, setup_folders
 
 
@@ -81,26 +80,34 @@ def get_runes_data(version: str, folder: Path = Path("data")) -> list:
         list: A list of dictionaries with runes data.
     """
     file_name = folder / "runes_data.json"
-    if not file_name.exists():
-        url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/runesReforged.json"
-        response = request_get(url)
-        url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/es_MX/runesReforged.json"
-        response_es = request_get(url)
-        # data = {}
-        for i in range(len(response)):
-            for j in range(len(response[i]["slots"])):
-                runes = response[i]["slots"][j]["runes"]
-                for k in range(len(runes)):
-                    del response[i]["slots"][j]["runes"][k]["shortDesc"]
-                    del response[i]["slots"][j]["runes"][k]["longDesc"]
-                    response[i]["slots"][j]["runes"][k]["name_es"] = response_es[i][
-                        "slots"
-                    ][j]["runes"][k]["name"]
-        with open(file_name, "w+", encoding="UTF-8") as file:
-            file.write(json.dumps(response, indent=4, ensure_ascii=False))
+    try:
+        if not file_name.exists():
+            url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/en_US/runesReforged.json"
+            response = requests.get(url)
+            response.raise_for_status()
 
-    with open(file_name, "r+", encoding="UTF-8") as file:
-        return json.loads(file.read())
+            url = f"https://ddragon.leagueoflegends.com/cdn/{version}/data/es_MX/runesReforged.json"
+            response_es = requests.get(url)
+            response_es.raise_for_status()
+
+            for i in range(len(response.json())):
+                for j in range(len(response.json()[i]["slots"])):
+                    runes = response.json()[i]["slots"][j]["runes"]
+                    for k in range(len(runes)):
+                        del response.json()[i]["slots"][j]["runes"][k]["shortDesc"]
+                        del response.json()[i]["slots"][j]["runes"][k]["longDesc"]
+                        response.json()[i]["slots"][j]["runes"][k][
+                            "name_es"
+                        ] = response_es.json()[i]["slots"][j]["runes"][k]["name"]
+            with open(file_name, "w+", encoding="UTF-8") as file:
+                file.write(json.dumps(response.json(), indent=4, ensure_ascii=False))
+
+        with open(file_name, "r+", encoding="UTF-8") as file:
+            return json.loads(file.read())
+
+    except (RequestException, IOError, json.JSONDecodeError) as e:
+        print(f"Error retrieving runes data: {e}")
+        return []
 
 
 def get_items_data(version: str, folder: Path = Path("data")) -> list:
@@ -155,40 +162,41 @@ def convert_item_to_lol_jsons(items: list) -> list:
 
 
 def main():
-    setup_folders()
+    pass
+    # setup_folders()
 
-    parser = create_parser()
-    args = parser.parse_args()
-    champion_id = args.champion_name
-    # TODO: Fix this:
-    current_patch = get_current_patch()
-    champions_data = get_champions_data(current_patch)
-    champion_name = champions_data[champion_id]["name"]
-    lane = args.lane  # top, jungle, middle, bottom, support
-    tier = args.tier  # gold_plus, platinum_plus, diamond_plus, all, 1trick
-    mode = args.mode  # ranked, aram
+    # parser = create_parser()
+    # args = parser.parse_args()
+    # champion_id = args.champion_name
+    # # TODO: Fix this:
+    # current_patch = get_current_patch()
+    # champions_data = get_champions_data(current_patch)
+    # champion_name = champions_data[champion_id]["name"]
+    # lane = args.lane  # top, jungle, middle, bottom, support
+    # tier = args.tier  # gold_plus, platinum_plus, diamond_plus, all, 1trick
+    # mode = args.mode  # ranked, aram
     # match mode:
     #     case "ranked":
     #         mode = 420
     #     case "aram":
     #         mode = 450
     #         lane = "middle"
-    keystone_name = args.keystone_name
-    json_file = create_build(
-        champion_id=champion_id,
-        lane=lane,
-        tier=tier,
-        mode=mode,
-        keystone_id=keystone_name,
-    )
+    # keystone_name = args.keystone_name
+    # json_file = create_build(
+    #     champion_id=champion_id,
+    #     lane=lane,
+    #     tier=tier,
+    #     mode=mode,
+    #     keystone_id=keystone_name,
+    # )
 
-    champion_folder_path = Path(f"Champions/{champion_name}/Recommended")
-    if not champion_folder_path.exists():
-        champion_folder_path.mkdir(parents=True, exist_ok=True)
+    # champion_folder_path = Path(f"Champions/{champion_name}/Recommended")
+    # if not champion_folder_path.exists():
+    #     champion_folder_path.mkdir(parents=True, exist_ok=True)
 
-    build_path = champion_folder_path / f"{champion_name}_{lane}_{keystone_name}.json"
-    with open(build_path, "w+", encoding="UTF-8") as file:
-        file.write(json.dumps(json_file, indent=4))
+    # build_path = champion_folder_path / f"{champion_name}_{lane}_{keystone_name}.json"
+    # with open(build_path, "w+", encoding="UTF-8") as file:
+    #     file.write(json.dumps(json_file, indent=4))
 
-    if args.Import:
-        import_build(build_path, json_file)
+    # if args.Import:
+    #     import_build(build_path, json_file)
