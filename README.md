@@ -1,6 +1,6 @@
 # LolSapiens
 
-<img src="https://raw.githubusercontent.com/jspenaq/LolSapiens/main/frontend/public/logo_1.png" height="120" /> 
+<img src="https://github.com/jspenaq/LolSapiens/blob/main/frontend/src/assets/images/logo.png?raw=true" height="120" /> 
 
 LolSapiens is a desktop application that helps players of the popular video game League of Legends to get better recommendations and build suggestions for their ranked games. The app leverages the power of Python 3.10 for the backend, React 18 and TypeScript for the frontend, and Electron for the desktop environment. With this combination, the app provides a seamless and optimized user experience.
 
