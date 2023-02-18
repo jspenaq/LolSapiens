@@ -4,8 +4,9 @@ import {
   Outlet,
   Route,
   useRouteError,
+  Navigate,
 } from "react-router-dom";
-import Navigation from "./components/Navigation/Navigation";
+import { Navigation } from "./components";
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "./hooks/reduxHooks";
 import {
@@ -14,7 +15,7 @@ import {
   updateGameflow,
   updateSummoner,
 } from "./store/leagueClientSlice";
-import { Picks, Gameflow } from "./pages";
+import { SpicyPicks, Gameflow, Top10, Search } from "./pages";
 import { getInitialData } from "./store/leagueApiSlice";
 
 function ErrorBoundary(): JSX.Element {
@@ -79,9 +80,10 @@ const router = createHashRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<ErrorBoundary />}>
       <Route index element={<Gameflow />} />
-      <Route path="picks" element={<Picks />} />
-      <Route path="spicy" element={<Picks />} />
-      <Route path="search" element={<Picks />} />
+      <Route path="top10" element={<Top10 />} />
+      <Route path="spicy" element={<SpicyPicks />} />
+      <Route path="search" element={<Search />} />
+      <Route path="*" element={<Navigate to="/" />} />
     </Route>
   )
 );

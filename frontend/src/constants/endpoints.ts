@@ -5,3 +5,5 @@ export const DDRAGON_PROFILE_ICON = "/img/profileicon";
 export const BACKEND_BASE = "http://localhost:3200";
 
 export const INITIAL_DATA = "/initial-data";
+
+export const TOP_10 = "tierlist/bans/top10";

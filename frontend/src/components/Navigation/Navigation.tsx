@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import classes from "./navigation.module.scss";
 import classNames from "classnames";
-import Summoner from "../Summoner/Summoner";
+import { Summoner } from "../../components";
 
 const Navigation = (): JSX.Element => {
   return (
@@ -20,7 +20,7 @@ const Navigation = (): JSX.Element => {
         </li>
         <li>
           <NavLink
-            to={"/picks"}
+            to={"/top10"}
             className={({ isActive }) =>
               classNames({ [classes["link--active"]]: isActive })
             }

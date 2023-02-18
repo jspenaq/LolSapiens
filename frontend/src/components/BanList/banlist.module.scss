@@ -1,0 +1,19 @@
+/// Mejor de momento
+.champions {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  overflow: hidden;
+
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li {
+    overflow: hidden;
+    aspect-ratio: 11/20;
+    max-height: 100%;
+    position: relative;
+  }
+}
