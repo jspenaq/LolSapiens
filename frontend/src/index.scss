@@ -52,6 +52,47 @@ body {
   }
 }
 
+// React Select overrides
+
+// <div class="react-select-container">
+//   <div class="react-select__control">
+//     <div class="react-select__value-container">...</div>
+//     <div class="react-select__indicators">...</div>
+//   </div>
+//   <div class="react-select__menu">
+//     <div class="react-select__menu-list">
+//       <div class="react-select__option">...</div>
+//     </div>
+//   </div>
+// </div>
+
+.react-select-container {
+  .react-select__control {
+    background-color: $background-dark;
+
+    .react-select__value-container {
+      .react-select__single-value {
+        color: $text-primary;
+      }
+    }
+  }
+  .react-select__menu {
+    background-color: $background-dark;
+    z-index: 9999;
+    .react-select__menu-list {
+      .react-select__option {
+        &:hover {
+          background-color: $secondary;
+        }
+
+        &.react-select__option--is-selected {
+          background-color: $primary;
+        }
+      }
+    }
+  }
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;

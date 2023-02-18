@@ -1,9 +1,9 @@
 import { useAppSelector } from "../../hooks/reduxHooks";
-import type { BanChampionInfo } from "../../types";
+import type { PickChampionInfo } from "../../types";
 import classes from "./bancard.module.scss";
 
 interface BanCardProps {
-  ban: BanChampionInfo;
+  ban: PickChampionInfo;
 }
 
 const BanCard = ({ ban }: BanCardProps): JSX.Element => {
@@ -18,8 +18,8 @@ const BanCard = ({ ban }: BanCardProps): JSX.Element => {
         alt="algo"
       />
       <div className={classes.info}>
-        <span>Win Rate: {ban.win_rate}</span>
-        <span>Pick Rate: {ban.pick_rate}</span>
+        <span>Win Rate: {ban.win_rate.toFixed(2)}%</span>
+        <span>Pick Rate: {ban.pick_rate.toFixed(2)}%</span>
       </div>
     </div>
   );

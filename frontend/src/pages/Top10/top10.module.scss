@@ -3,4 +3,11 @@
   flex-direction: column;
   padding: 2rem;
   height: 100%;
+  gap: 1rem;
+}
+
+.controls {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 11rem 8rem;
 }

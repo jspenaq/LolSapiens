@@ -58,8 +58,13 @@ export interface Gameflow {
   gamePhase: string;
 }
 
-export interface BanChampionInfo {
+export interface PickChampionInfo {
   id: number;
   win_rate: number;
   pick_rate: number;
+}
+
+export interface Option {
+  label: string;
+  value: string;
 }

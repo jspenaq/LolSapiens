@@ -1,9 +1,9 @@
 import BanCard from "../../components/BanCard/BanCard";
-import type { BanChampionInfo } from "../../types";
+import type { PickChampionInfo } from "../../types";
 import classes from "./banlist.module.scss";
 
 interface BanListProps {
-  bans: BanChampionInfo[];
+  bans: PickChampionInfo[];
 }
 
 const BanList = ({ bans = [] }: BanListProps): JSX.Element => {

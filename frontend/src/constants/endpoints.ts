@@ -7,3 +7,5 @@ export const BACKEND_BASE = "http://localhost:3200";
 export const INITIAL_DATA = "/initial-data";
 
 export const TOP_10 = "tierlist/bans/top10";
+
+export const SPICY_PICKS = "tierlist/spicy-picks";

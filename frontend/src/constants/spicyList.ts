@@ -4,7 +4,7 @@ const rawSpicy = ["0", "1", "2", "3", "4"];
 
 export default rawSpicy.map((spicy) => {
   return {
-    name: parseSelectValues(spicy),
-    id: spicy,
+    label: parseSelectValues(spicy),
+    value: spicy,
   };
 });

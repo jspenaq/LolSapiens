@@ -1,15 +1,15 @@
 import axios from "axios";
 import { useQuery } from "react-query";
 import type { UseQueryResult } from "react-query/types/react";
-import { BACKEND_BASE, TOP_10 } from "../constants/endpoints";
+import { BACKEND_BASE, SPICY_PICKS } from "../constants/endpoints";
 import type { PickChampionInfo } from "../types";
 
-const getTop10Bans = async (
+const getSpicyPicks = async (
   lane: string,
   tier: string
 ): Promise<PickChampionInfo[]> => {
   const { data } = await axios.get<PickChampionInfo[]>(
-    `${TOP_10}?${new URLSearchParams({
+    `${SPICY_PICKS}?${new URLSearchParams({
       lane,
       tier,
     }).toString()}`,
@@ -21,13 +21,13 @@ const getTop10Bans = async (
   return data;
 };
 
-const useTop10 = (
+const useSpicyPicks = (
   { lane, tier }: { lane: string; tier: string },
   enabled = true
 ): UseQueryResult<PickChampionInfo[]> => {
   return useQuery(
     ["top-10-bans", lane, tier],
-    getTop10Bans.bind(null, lane, tier),
+    getSpicyPicks.bind(null, lane, tier),
     {
       enabled,
       initialData: [],
@@ -35,4 +35,4 @@ const useTop10 = (
   );
 };
 
-export default useTop10;
+export default useSpicyPicks;

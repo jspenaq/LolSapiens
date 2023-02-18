@@ -12,7 +12,7 @@ const rawTiers = [
 
 export default rawTiers.map((tier) => {
   return {
-    name: parseSelectValues(tier),
-    id: tier,
+    label: parseSelectValues(tier),
+    value: tier,
   };
 });
