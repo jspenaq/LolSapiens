@@ -153,6 +153,7 @@ class Sapiens:
 
         method = max(method, 0)  # method < 0
         method = min(method, 8)  # method > 8
+        print(f"{method=}")
         match method:
             case 0:
                 df = df[df["games"] >= (maximum - 1 * standard)]
@@ -199,24 +200,31 @@ class Sapiens:
         Returns:
             pd.DataFrame: Data frame with the top 10 champions to ban.
         """
-        mean = df["pick_rate"].mean()
-        median = df["pick_rate"].median()
-        p20 = df["ban_rate"].quantile(0.20)
-        df = df[(df["pick_rate"] > max(mean, median)) & (df["ban_rate"] > p20)]
-        df = df.sort_values(by="win_rate", ascending=False)
+        value_pick_rate = max(df["pick_rate"].mean(), df["pick_rate"].median())
+        value_win_rate = max(df["win_rate"].mean(), df["win_rate"].median())
+
+        df = df[
+            (df["pick_rate"] > value_pick_rate)
+            & (df["win_rate"] > value_win_rate)
+            # & (df["ban_rate"] > p30_ban_rate)
+        ]
+        df = df.rename(columns={"games_by_lane": "games"})
+        df = self._analyze(df, 0)
+        # df = df[(df["pick_rate"] > max(mean, median)) & (df["ban_rate"] > p20)]
+        # df = df.sort_values(by="win_rate", ascending=False)
         return df.head(10)[["id", "win_rate", "pick_rate"]]
 
     def _analyze_picks(self, df: pd.DataFrame) -> pd.DataFrame:
-        mean_pickrate = df["pick_rate"].mean()
-        median_pickrate = df["pick_rate"].median()
-        mean_winrate = df["win_rate"].mean()
-        median_winrate = df["win_rate"].median()
+        value_pick_rate = max(df["pick_rate"].mean(), df["pick_rate"].median())
+        value_win_rate = max(df["win_rate"].mean(), df["win_rate"].median())
         df = df[
-            (df["pick_rate"] < max(mean_pickrate, median_pickrate))
-            & (df["win_rate"] > max(mean_winrate, median_winrate))
-            & (df["games_by_lane"] >= 5)
+            (df["pick_rate"] < value_pick_rate)
+            & (df["win_rate"] > value_win_rate)
+            # & (df["games_by_lane"] >= 5)
         ]
-        df = df.sort_values(by="win_rate", ascending=False).reset_index()
+        df = df.rename(columns={"games_by_lane": "games"})
+        df = self._analyze(df, 8)
+        # df = df.sort_values(by="win_rate", ascending=False).reset_index()
         return df[["id", "win_rate", "pick_rate"]]
 
     def get_top10_bans(
@@ -244,10 +252,11 @@ class Sapiens:
         ids = self._analyze_bans(df)
         data = []
         for _, row in ids.iterrows():
-            champion_id = int(row["id"])
+            champion_id = row["id"]
             data.append(
                 {
-                    "id": champion_id,
+                    "id": int(champion_id),
+                    "name": self.champions_data[champion_id]["name"],
                     "win_rate": row["win_rate"],
                     "pick_rate": row["pick_rate"],
                 }
@@ -292,6 +301,7 @@ class Sapiens:
             data.append(
                 {
                     "id": champion_id,
+                    "name": self.champions_data[str(champion_id)]["name"],
                     "win_rate": row["win_rate"],
                     "pick_rate": row["pick_rate"],
                 }
