@@ -13,10 +13,27 @@ This is LolSapiens API.
 Endpoints include retrieving bans by tier and builds for specific champions for a given patch.
 """
 
+tags_metadata = [
+    {
+        "name": "/",
+        "description": "Endpoints for general information about the API, such as health check and initial data retrieval.",
+    },
+    {
+        "name": "tierlist",
+        "description": "Endpoints for managing tierlists, include endpoints to retrie top bans and spicy picks for a given lane and tier.",
+    },
+    {
+        "name": "champion",
+        "description": "Endpoints for managing champion data, including creating builds and retrieving counter picks for a given champion, lane, and tier.",
+        
+    },
+]
+
 app = FastAPI(
     title="LolSapiensApi",
     description=description,
     version="0.1.0",
+    openapi_tags=tags_metadata,
 )
 
 origins = ["*"]

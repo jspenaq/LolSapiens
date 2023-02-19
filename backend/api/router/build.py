@@ -13,7 +13,7 @@ from backend.api.constants import (
 build_router = APIRouter()
 
 
-@build_router.get("/build")
+@build_router.get("/build", tags=["champion"])
 def create_build(
     champion_id: str = champion_id_param,
     lane: str = lane_param,
@@ -25,7 +25,7 @@ def create_build(
     return s.generate_build(champion_id, lane, tier, mode, keystone_id, spicy)
 
 
-@build_router.get("/keystones")
+@build_router.get("/keystones", tags=["champion"])
 def get_keystones(
     champion_id: str = champion_id_param,
     lane: str = lane_param,

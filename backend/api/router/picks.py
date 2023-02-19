@@ -5,7 +5,7 @@ from backend.api.constants import s, lane_param, tier_param, limit_param, random
 picks_router = APIRouter()
 
 
-@picks_router.get("/spicy-picks")
+@picks_router.get("/spicy-picks", tags=["tierlist"])
 def get_spicy_picks(
     lane: str = lane_param,
     tier: str = tier_param,

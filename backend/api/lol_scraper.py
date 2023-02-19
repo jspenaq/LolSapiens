@@ -2,6 +2,7 @@ import json
 from os.path import exists
 from pathlib import Path
 import pandas as pd
+import requests
 from requests.exceptions import RequestException
 from backend.api.utils import create_parser, request_get, setup_folders
 
