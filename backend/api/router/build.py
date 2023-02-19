@@ -33,7 +33,7 @@ def get_keystones(
     queue_mode: str = queue_mode_param,
     spicy: int = spicy_param,
 ):
-    return s._get_champion_runes(champion_id, lane, tier, queue_mode, spicy)
+    return s._get_champion_keystones(champion_id, lane, tier, queue_mode, spicy)
 
 
 # @build_router.get("/runes")

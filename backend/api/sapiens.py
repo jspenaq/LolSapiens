@@ -40,13 +40,13 @@ class Sapiens:
             "patch": self.current_patch,
         }
 
-    def _get_keystones(self):
+    def _get_keystones(self) -> dict:
         runes = self.runes_data
-        keystones = []
+        keystones = {}
         for i in range(len(runes)):
             slots = runes[i]["slots"][0]["runes"]
             for j in range(len(slots)):
-                keystones.append(slots[j]["id"])
+                keystones[str(slots[j]["id"])] = slots[j]["name"]
         return keystones
 
     def _get_tierlist(
@@ -343,7 +343,7 @@ class Sapiens:
             response, champion_id, lane, tier, keystone_id, spicy
         )
 
-    def _get_champion_runes(
+    def _get_champion_keystones(
         self,
         champion_id: str,
         lane: str = "default",
@@ -372,7 +372,7 @@ class Sapiens:
 
         matrix = []
         for key in self.keystones:
-            values = response["runes"]["stats"][str(key)][0]
+            values = response["runes"]["stats"][key][0]
             # values
             # [0]: pick_rate, [1]: win_rate, [2]: games
             matrix.append([key, values[1], values[2]])
@@ -380,6 +380,11 @@ class Sapiens:
         columns = ["id", "win_rate", "games"]
         df = pd.DataFrame(matrix, columns=columns)
         recommend = self._analyze(df, spicy * 2)
+        recommend = recommend.head(5).drop(columns=["index"]).reset_index(drop=True)
+        recommend = recommend[["id", "win_rate", "games"]]
+        name_column = recommend["id"].apply(lambda x: self.keystones[x])
+        recommend.insert(1, "name", name_column)
+
         # runes = {}
         # for i in ["win", "pick"]:
         #     primary_path = response["summary"]["runes"][i]["set"]["pri"]
@@ -391,7 +396,7 @@ class Sapiens:
         #         "shards": shards,
         #     }
 
-        return recommend.head(5)["id"].tolist()
+        return recommend.to_dict(orient="records")
 
     def __get_runes_names(self, keystone_id: int) -> tuple:
         keystone_preffix = keystone_id // 100 * 100
