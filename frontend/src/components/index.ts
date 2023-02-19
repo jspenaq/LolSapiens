@@ -1,9 +1,21 @@
 import Tooltip from "./Tooltip";
 import Portal from "./Portal";
-import BanCard from "./BanCard/BanCard";
-import BanList from "./BanList/BanList";
+import ChampionLoadingCard from "./ChampionLoadingCard/ChampionLoadingCard";
 import Navigation from "./Navigation/Navigation";
 import Summoner from "./Summoner/Summoner";
 import Select from "./Select/Select";
+import ChampionList from "./BanList/ChampionList";
+import Loading from "./Loading/Loading";
+import BanPhase from "./BanPhase/BanPhase";
 
-export { Tooltip, Portal, BanCard, BanList, Navigation, Summoner, Select };
+export {
+  Tooltip,
+  Portal,
+  ChampionLoadingCard,
+  Navigation,
+  Summoner,
+  Select,
+  Loading,
+  ChampionList,
+  BanPhase,
+};

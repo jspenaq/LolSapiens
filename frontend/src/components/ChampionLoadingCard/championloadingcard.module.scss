@@ -1,4 +1,4 @@
-.bancard {
+.champion-card {
   overflow: hidden;
   aspect-ratio: 11/20;
   max-height: 100%;
@@ -7,7 +7,6 @@
   img {
     width: 100%;
     display: block;
-    filter: grayscale(1);
     position: relative;
   }
   &::after {
@@ -24,8 +23,14 @@
     );
   }
 
-  &:hover img {
-    filter: none;
+  &.is-ban {
+    img {
+      filter: grayscale(1);
+    }
+
+    &:hover img {
+      filter: none;
+    }
   }
 }
 

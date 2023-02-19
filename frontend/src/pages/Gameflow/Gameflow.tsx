@@ -1,3 +1,4 @@
+import { BanPhase, Loading } from "../../components";
 import { useAppSelector } from "../../hooks/reduxHooks";
 import classes from "./gameflow.module.scss";
 
@@ -12,10 +13,15 @@ const Gameflow = (): JSX.Element => {
       <h2>{gameflow?.gamePhase}</h2>
       <h3>{gameflow?.gameMode}</h3>
 
-      {gameflow?.gameMode !== "ChampSelect" && !champion && <p>Waiting...</p>}
+      {gameflow?.gamePhase !== "ChampSelect" && !champion && (
+        <Loading text="Currently, you aren't in Champion Selection phase. Waiting... " />
+      )}
 
       {gameflow?.gamePhase === "ChampSelect" && !champion && (
-        <p>Here will be the Bans/ Picks</p>
+        <div className={classes.bans}>
+          <p>Pick/Bans recommendations</p>
+          <BanPhase />
+        </div>
       )}
 
       {champion && <p>Here will be the champion build/runes recommendation</p>}
