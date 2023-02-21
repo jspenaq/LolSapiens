@@ -7,6 +7,7 @@ import Select from "./Select/Select";
 import ChampionList from "./BanList/ChampionList";
 import Loading from "./Loading/Loading";
 import BanPhase from "./BanPhase/BanPhase";
+import ChampionBuild from "./ChampionBuild/ChampionBuild";
 
 export {
   Tooltip,
@@ -18,4 +19,5 @@ export {
   Loading,
   ChampionList,
   BanPhase,
+  ChampionBuild,
 };

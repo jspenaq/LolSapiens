@@ -1,3 +1,4 @@
+import type { Option } from "../types";
 import { parseSelectValues } from "../utils";
 
 const rawTiers = [
@@ -10,7 +11,7 @@ const rawTiers = [
   "silver",
 ];
 
-export default rawTiers.map((tier) => {
+export const tiers = rawTiers.map<Option>((tier) => {
   return {
     label: parseSelectValues(tier),
     value: tier,

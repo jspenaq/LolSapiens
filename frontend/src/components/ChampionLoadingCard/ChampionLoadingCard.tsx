@@ -2,6 +2,10 @@ import { useAppSelector } from "../../hooks/reduxHooks";
 import type { PickChampionInfo } from "../../types";
 import classes from "./championloadingcard.module.scss";
 import classNames from "classnames";
+import {
+  DDRAGON_BASE,
+  DDRAGON_CHAMPION_LOADING,
+} from "../../constants/endpoints";
 
 interface ChampionLoadingCardProps {
   champion: PickChampionInfo;
@@ -23,7 +27,7 @@ const ChampionLoadingCard = ({
       })}
     >
       <img
-        src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championKeyName}_0.jpg`}
+        src={`${DDRAGON_BASE}${DDRAGON_CHAMPION_LOADING}/${championKeyName}_0.jpg`}
         alt="algo"
       />
       <div className={classes.info}>

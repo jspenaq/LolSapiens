@@ -13,7 +13,7 @@ const initialState: LeagueApiState = {
   patch: "13.3.1",
   champions_data: null,
   items_data: null,
-  runes_data: null,
+  runes_data: [],
   champsByKeyName: null,
 };
 

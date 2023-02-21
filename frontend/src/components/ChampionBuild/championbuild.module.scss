@@ -1,0 +1,34 @@
+@import "../../scss/variables";
+
+.champion-build {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: 150px;
+  gap: 1rem;
+
+  & > * {
+    background-color: darken($background, 15%);
+    padding: 1rem;
+  }
+}
+
+.champion {
+  grid-column: 1/-1;
+}
+
+.build {
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.block__items {
+  display: flex;
+  gap: 0.5rem;
+
+  img {
+    width: 40px;
+  }
+}

@@ -26,7 +26,7 @@ const useSpicyPicks = (
   enabled = true
 ): UseQueryResult<PickChampionInfo[]> => {
   return useQuery(
-    ["top-10-bans", lane, tier],
+    ["spicy-picks", lane, tier],
     getSpicyPicks.bind(null, lane, tier),
     {
       enabled,

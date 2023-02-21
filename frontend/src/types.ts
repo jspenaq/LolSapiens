@@ -23,9 +23,9 @@ export interface RunesTree {
   key: string; // riot name
   icon: string;
   name: string; // pretty name
-  slots: {
+  slots: Array<{
     runes: Rune[];
-  };
+  }>;
 }
 
 export interface Item {
@@ -41,7 +41,7 @@ export interface Item {
 
 export interface InitialData {
   champions_data: Record<string, Champion> | null;
-  runes_data: RunesTree | null;
+  runes_data: RunesTree[];
   items_data: Record<string, Item> | null;
   patch: string;
 }
@@ -67,4 +67,22 @@ export interface PickChampionInfo {
 export interface Option {
   label: string;
   value: string;
+}
+
+export interface BuildBlock {
+  items: Array<{ id: string; count: number }>;
+  type: string;
+}
+
+export interface Build {
+  title: string;
+  type: string;
+  associatedMaps: number[];
+  associatedChampions: number[];
+  map: string;
+  mode: string;
+  prederredItemsSlots: unknown[];
+  sortrank: number;
+  startedFrom: string;
+  blocks: BuildBlock[];
 }
