@@ -19,13 +19,16 @@ class Sapiens:
         print("Initializing Sapiens...")
         setup_folders()
         self.current_patch = get_current_patch()
+        self.patch = ".".join(self.current_patch.split(".")[:2])
+        self.base_url = "https://axe.lolalytics.com"  # LoLalytics
+        self.tierlist = self._get_tierlist()
+        if self.tierlist.empty:
+            self.current_patch = get_current_patch(1)
+            self.patch = ".".join(self.current_patch.split(".")[:2])
         self.champions_data = get_champions_data(self.current_patch)
         self.runes_data = get_runes_data(self.current_patch)
         self.keystones, self.all_runes = self._get_keystones()
         self.items_data = get_items_data(self.current_patch)
-        self.base_url = "https://axe.lolalytics.com"  # LoLalytics
-        self.patch = ".".join(self.current_patch.split(".")[:2])
-        self.tierlist = self._get_tierlist()
         print("Sapiens is ready.")
 
     def get_initial_data(self) -> dict:

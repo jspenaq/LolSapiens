@@ -17,7 +17,7 @@ def get_languages() -> list:
     return request_get(url)
 
 
-def get_current_patch() -> str:
+def get_current_patch(position: int = 0) -> str:
     """Fetches the current patch version of League of Legends from the specified URL.
 
     Returns:
@@ -25,7 +25,7 @@ def get_current_patch() -> str:
     """
     url = "https://ddragon.leagueoflegends.com/api/versions.json"
     try:
-        return request_get(url)[0]
+        return request_get(url)[position]
     except Exception as e:
         print(e)
         return ""
