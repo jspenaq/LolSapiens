@@ -21,11 +21,12 @@ class Sapiens:
         self.current_patch = get_current_patch()
         self.champions_data = get_champions_data(self.current_patch)
         self.runes_data = get_runes_data(self.current_patch)
-        self.keystones = self._get_keystones()
+        self.keystones, self.all_runes = self._get_keystones()
         self.items_data = get_items_data(self.current_patch)
         self.base_url = "https://axe.lolalytics.com"  # LoLalytics
         self.patch = ".".join(self.current_patch.split(".")[:2])
         self.tierlist = self._get_tierlist()
+        print("Sapiens is ready.")
 
     def get_initial_data(self) -> dict:
         """Return the initial data related to champions, runes, items, and patch.
@@ -43,11 +44,29 @@ class Sapiens:
     def _get_keystones(self) -> dict:
         runes = self.runes_data
         keystones = {}
+        all_runes = {}
         for i in range(len(runes)):
-            slots = runes[i]["slots"][0]["runes"]
-            for j in range(len(slots)):
-                keystones[str(slots[j]["id"])] = slots[j]["name"]
-        return keystones
+            rune_path = runes[i]["id"]
+            all_runes[rune_path] = {"name": runes[i]["key"], "slots": {}}
+            slots = runes[i]["slots"]
+            for level in range(len(slots)):
+                all_runes[rune_path]["slots"][level] = {}
+                runes_by_level = slots[level]["runes"]
+                for k in range(len(runes_by_level)):
+                    id_rune = str(runes_by_level[k]["id"])
+                    name_english = runes_by_level[k]["name"]
+                    name_spanish = runes_by_level[k]["name_es"]
+                    if level == 0:  # Keystones
+                        keystones[id_rune] = {
+                            "name": name_english,
+                            "name_es": name_spanish,
+                        }
+                    all_runes[rune_path]["slots"][level][id_rune] = {
+                        "name": name_english,
+                        "name_es": name_spanish,
+                    }
+
+        return keystones, all_runes
 
     def _get_tierlist(
         self, lane: str = "default", tier: str = "platinum_plus"
@@ -351,7 +370,7 @@ class Sapiens:
         queue_mode: str = "ranked",
         spicy: int = 0,
     ) -> list:
-        """Get the runes for a specific champion.
+        """Get the keystones for a specific champion.
 
         Args:
             champion_id (str): The ID of the champion for which to retrieve runes.
@@ -382,8 +401,62 @@ class Sapiens:
         recommend = self._analyze(df, spicy * 2)
         recommend = recommend.head(5).drop(columns=["index"]).reset_index(drop=True)
         recommend = recommend[["id", "win_rate", "games"]]
-        name_column = recommend["id"].apply(lambda x: self.keystones[x])
+        name_column = recommend["id"].apply(lambda x: self.keystones[x]["name"])
         recommend.insert(1, "name", name_column)
+
+        return recommend.to_dict(orient="records")
+
+    def _get_champion_runes(
+        self,
+        champion_id: str,
+        lane: str = "default",
+        tier: str = "platinum_plus",
+        queue_mode: str = "ranked",
+        keystone_id: int = 0,
+        spicy: int = 0,
+    ) -> list:
+        """Get the runes for a specific champion.
+
+        Args:
+            champion_id (str): The ID of the champion for which to retrieve runes.
+            lane (str, optional): The lane for which to retrieve runes. Defaults to "default".
+            tier (str, optional): The tier for which to retrieve runes. Defaults to "platinum_plus".
+            keystone_id (int, optional):
+            queue_mode (str, optional): The queue mode for which to retrieve runes. Defaults to "ranked".
+
+        Returns:
+            dict: A dictionary containing the runes information, with keys in the format "{win/pick}_{tier}" and
+            values as dictionaries containing "primary_path", "secondary_path", and "shards".
+            If no runes information is available, an empty dictionary is returned.
+        """
+        region = "all"
+        url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
+        response = request_get(url)
+        if "runes" not in response:
+            return {}
+
+        rune_path = (
+            keystone_id // 100 * 100 if keystone_id != 9923 else 8100
+        )  # Hail of Blades
+
+        columns = ["id", "win_rate", "games"]
+        slots = self.all_runes[rune_path]["slots"]
+        primary_path = pd.DataFrame(columns=columns)
+
+        for i in range(len(slots)):
+            matrix = []
+            for key in slots[i].keys():
+                values = response["runes"]["stats"][key][0]
+                # values
+                # [0]: pick_rate, [1]: win_rate, [2]: games
+                matrix.append([key, values[1], values[2]])
+            df = pd.DataFrame(matrix, columns=columns)
+            recommend = self._analyze(df, spicy * 2)
+            recommend = recommend.head(1).drop(columns=["index"]).reset_index(drop=True)
+            recommend = recommend[["id", "win_rate", "games"]]
+            primary_path = pd.concat([primary_path, recommend])
+            # name_column = recommend["id"].apply(lambda x: self.all_runes[x]["name"])
+            # recommend.insert(1, "name", name_column)
 
         # runes = {}
         # for i in ["win", "pick"]:
@@ -396,18 +469,11 @@ class Sapiens:
         #         "shards": shards,
         #     }
 
-        return recommend.to_dict(orient="records")
-
-    def __get_runes_names(self, keystone_id: int) -> tuple:
-        keystone_preffix = keystone_id // 100 * 100
-        if keystone_preffix == 9900:  # Hail of Blades
-            keystone_preffix = 8100
-        for rune in self.runes_data:
-            if rune["id"] == keystone_preffix:
-                for slot in rune["slots"]:
-                    for reforged in slot["runes"]:
-                        if reforged["id"] == keystone_id:
-                            return reforged["name"], reforged["name_es"]
+        return {
+            "primary_path": primary_path.to_dict(orient="records"),
+            "secondary_path": {},
+            "shards": {},
+        }
 
     def _get_build_json(
         self,
@@ -431,7 +497,8 @@ class Sapiens:
 
         champion_name = self.champions_data[champion_id]["name"]
         print(f"{keystone_id=}")
-        (keystone_name, keystone_name_es) = self.__get_runes_names(keystone_id)
+        keystone_name = self.keystones[str(keystone_id)]["name"]
+        keystone_name_es = self.keystones[str(keystone_id)]["name_es"]
         build_txt_path = Path("Champions/recommend_build.txt")
         with open(build_txt_path, "w+", encoding="UTF-8") as build_file:
             build_file.write(

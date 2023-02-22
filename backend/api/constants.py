@@ -18,14 +18,14 @@ lane_param = Query(
 tier_param = Query(
     "platinum_plus",
     title="tier",
-    description="The tier of data that you would like to use. Default: platinum_plus",
-    example="gold",
+    description="The tier of data that you would like to use. Some options: 'gold', 'gold_plus', 'platinum_plus', '1trick', etc. Default: platinum_plus",
+    example="gold_plus",
 )
 queue_mode_param = Query(
     "ranked",
     title="queue_mode",
     description="Queue mode to play. Options include: 'ranked', 'aram'. Default: ranked",
-    example="aram",
+    example="ranked",
 )
 keystone_id_param = Query(
     0,

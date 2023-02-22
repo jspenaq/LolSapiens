@@ -91,17 +91,20 @@ def get_runes_data(version: str, folder: Path = Path("data")) -> list:
             response_es = requests.get(url)
             response_es.raise_for_status()
 
-            for i in range(len(response.json())):
-                for j in range(len(response.json()[i]["slots"])):
-                    runes = response.json()[i]["slots"][j]["runes"]
+            data = response.json()
+            for i in range(len(data)):
+                for j in range(len(data[i]["slots"])):
+                    runes = data[i]["slots"][j]["runes"]
                     for k in range(len(runes)):
-                        del response.json()[i]["slots"][j]["runes"][k]["shortDesc"]
-                        del response.json()[i]["slots"][j]["runes"][k]["longDesc"]
-                        response.json()[i]["slots"][j]["runes"][k][
-                            "name_es"
-                        ] = response_es.json()[i]["slots"][j]["runes"][k]["name"]
+                        current_data = data[i]["slots"][j]["runes"][k]
+                        del current_data["shortDesc"]
+                        del current_data["longDesc"]
+                        current_data["name_es"] = response_es.json()[i]["slots"][j][
+                            "runes"
+                        ][k]["name"]
+                        data[i]["slots"][j]["runes"][k] = current_data
             with open(file_name, "w+", encoding="UTF-8") as file:
-                file.write(json.dumps(response.json(), indent=4, ensure_ascii=False))
+                file.write(json.dumps(data, indent=4, ensure_ascii=False))
 
         with open(file_name, "r+", encoding="UTF-8") as file:
             return json.loads(file.read())

@@ -36,12 +36,13 @@ def get_keystones(
     return s._get_champion_keystones(champion_id, lane, tier, queue_mode, spicy)
 
 
-# @build_router.get("/runes")
-# def get_runes(
-#     champion_id: str = champion_id_param,
-#     lane: str = lane_param,
-#     tier: str = tier_param,
-#     queue_mode: str = queue_mode_param,
-#     spicy: int = spicy_param,
-# ):
-#     return s._get_champion_runes(champion_id, lane, tier, queue_mode, spicy)
+@build_router.get("/runes", tags=["champion"])
+def get_runes(
+    champion_id: str = champion_id_param,
+    lane: str = lane_param,
+    tier: str = tier_param,
+    queue_mode: str = queue_mode_param,
+    keystone_id: int = keystone_id_param,
+    spicy: int = spicy_param,
+):
+    return s._get_champion_runes(champion_id, lane, tier, queue_mode, keystone_id, spicy)
