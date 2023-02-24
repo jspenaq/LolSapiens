@@ -8,6 +8,7 @@ interface CustomSelectProps {
   defaultValue?: Option | null;
   name?: string;
   placeholder?: string;
+  value: Option | null | undefined;
 }
 
 const CustomSelect = ({
@@ -16,6 +17,7 @@ const CustomSelect = ({
   defaultValue = null,
   name,
   placeholder,
+  value,
 }: CustomSelectProps): JSX.Element => {
   return (
     <Select
@@ -26,6 +28,7 @@ const CustomSelect = ({
       classNamePrefix="react-select"
       name={name}
       placeholder={placeholder}
+      value={value}
     />
   );
 };

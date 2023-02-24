@@ -86,3 +86,17 @@ export interface Build {
   startedFrom: string;
   blocks: BuildBlock[];
 }
+
+export interface BuildRune {
+  id: string;
+  win_rate: number;
+  games: number;
+}
+
+export interface BuildRunes {
+  primary_path: string;
+  secondary_path: string;
+  primary_path_runes: BuildRune[];
+  secondary_path_runes: BuildRune[];
+  shards_runes: BuildRune[];
+}

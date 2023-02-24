@@ -25,8 +25,8 @@ const SpicyPicks = (): JSX.Element => {
     <section className={classes["spicy-picks"]}>
       <h1>Top 10</h1>
       <div className={classes.controls}>
-        <Select options={tiers} onChange={handleTier} defaultValue={tier} />
-        <Select options={lanes} onChange={handleLane} defaultValue={lane} />
+        <Select options={tiers} onChange={handleTier} value={tier} />
+        <Select options={lanes} onChange={handleLane} value={lane} />
       </div>
 
       {picks && Boolean(picks.length) && <ChampionList champions={picks} />}

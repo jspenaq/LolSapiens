@@ -21,3 +21,5 @@ export const TOP_10 = "/tierlist/bans/top10";
 export const SPICY_PICKS = "/tierlist/spicy-picks";
 
 export const CHAMPION_BUILD = "/champion/build";
+
+export const CHAMPION_RUNES = "/champion/runes";

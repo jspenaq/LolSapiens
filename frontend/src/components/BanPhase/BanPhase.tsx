@@ -18,8 +18,8 @@ const BanPhase = (): JSX.Element => {
   return (
     <>
       <div className={classes.controls}>
-        <Select options={tiers} onChange={setTier} defaultValue={tier} />
-        <Select options={lanes} onChange={setLane} defaultValue={lane} />
+        <Select options={tiers} onChange={setTier} value={tier} />
+        <Select options={lanes} onChange={setLane} value={lane} />
       </div>
 
       {bans && Boolean(bans.length) && <ChampionList champions={bans} areBan />}

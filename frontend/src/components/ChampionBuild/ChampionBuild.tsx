@@ -2,8 +2,8 @@ import { useAppSelector } from "../../hooks/reduxHooks";
 import type { ChampionBuildParams } from "../../hooks/useChampionBuild";
 import useChampionBuild from "../../hooks/useChampionBuild";
 import classes from "./championbuild.module.scss";
-import { useState, useEffect, useMemo } from "react";
-import type { Champion, Option } from "../../types";
+import { useState, useMemo, useEffect } from "react";
+import type { Option } from "../../types";
 import { RecommendedBuild, Runes, Select } from "../../components";
 import { lanes, modes, spicyList, tiers } from "../../constants";
 import type { ActionMeta } from "react-select";
@@ -11,6 +11,15 @@ import type { ActionMeta } from "react-select";
 export interface ChampionBuildProps {
   initialQuery?: ChampionBuildParams | null;
   hideGameflowSelects?: boolean;
+}
+
+export interface BuildQuery {
+  champion: Option | null;
+  lane: Option | null;
+  tier: Option | null;
+  mode: Option | null;
+  keystone: Option | null;
+  spicy: Option | null;
 }
 
 const ChampionBuild = ({
@@ -22,22 +31,6 @@ const ChampionBuild = ({
   );
 
   const runesData = useAppSelector((state) => state.leagueApi.runes_data);
-
-  const [champion, setChampion] = useState<Champion>();
-  const [query, setQuery] = useState<ChampionBuildParams | null>(initialQuery);
-
-  const handleQueryChange = (
-    value: Option | null,
-    action: ActionMeta<Option>
-  ): void => {
-    setQuery((prevState) => {
-      const newState: ChampionBuildParams = {
-        ...prevState,
-        [action.name as string]: value?.value,
-      };
-      return newState;
-    });
-  };
 
   // Better move to redux, same for runes options
   const champions = useMemo<Option[]>(
@@ -52,6 +45,52 @@ const ChampionBuild = ({
         : [],
     [championsData]
   );
+
+  const getOptions = (): BuildQuery => {
+    return {
+      lane:
+        lanes.find(
+          (lane) =>
+            lane.value === initialQuery?.lane || lane.value === "default"
+        ) ?? null,
+      tier:
+        tiers.find(
+          (tier) =>
+            tier.value === initialQuery?.tier || tier.value === "platinum_plus"
+        ) ?? null,
+      keystone: { label: "Default", value: "0" },
+      spicy:
+        spicyList.find(
+          (spicy) => spicy.value === initialQuery?.spicy || spicy.value === "0"
+        ) ?? null,
+      mode:
+        modes.find(
+          (mode) => mode.value === initialQuery?.mode || mode.value === "ranked"
+        ) ?? null,
+      champion:
+        champions.find(
+          (champion) =>
+            champion.value === initialQuery?.champion_id?.toString() ||
+            champion.value === "1"
+        ) ?? null,
+    };
+  };
+  // console.log( getOptions());
+  const [query, setQuery] = useState<BuildQuery>(getOptions);
+  const champion = championsData?.[query?.champion?.value as string];
+
+  const handleQueryChange = (
+    value: Option | null,
+    action: ActionMeta<Option>
+  ): void => {
+    setQuery((prevState) => {
+      const newState: BuildQuery = {
+        ...prevState,
+        [action.name as string]: value,
+      };
+      return newState;
+    });
+  };
 
   const runes = useMemo<Option[]>(
     () =>
@@ -69,35 +108,25 @@ const ChampionBuild = ({
     [runesData]
   );
 
-  const defaultValues = useMemo(() => {
-    return {
-      lane: lanes.find(
-        (lane) => lane.value === initialQuery?.lane || lane.value === "default"
-      ),
-      tier: tiers.find(
-        (tier) =>
-          tier.value === initialQuery?.tier || tier.value === "platinum_plus"
-      ),
-      keystone: { label: "Default", value: "0" },
-      spicy: spicyList.find(
-        (spicy) => spicy.value === initialQuery?.spicy || spicy.value === "0"
-      ),
-      mode: modes.find(
-        (mode) => mode.value === initialQuery?.mode || mode.value === "ranked"
-      ),
-    };
-  }, [initialQuery]);
+  const championBuildQuery: ChampionBuildParams = {
+    champion_id: query?.champion?.value,
+    keystone_id: query?.keystone?.value,
+    lane: query?.lane?.value,
+    mode: query?.mode?.value,
+    spicy: query?.spicy?.value,
+    tier: query?.tier?.value,
+  };
+
+  const { data } = useChampionBuild(
+    championBuildQuery,
+    Boolean(query?.champion)
+  );
 
   useEffect(() => {
-    if (query?.champion_id) {
-      setChampion(championsData?.[query.champion_id]);
+    if (champions.length) {
+      setQuery(getOptions);
     }
-  }, [championsData, query?.champion_id]);
-
-  const { data: championBuild } = useChampionBuild(
-    query,
-    Boolean(query?.champion_id)
-  );
+  }, [champions]);
 
   if (!championsData) {
     return <></>;
@@ -112,6 +141,7 @@ const ChampionBuild = ({
             onChange={handleQueryChange}
             name="champion_id"
             placeholder="Champion"
+            value={query?.champion}
           />
         )}
         <Select
@@ -119,14 +149,14 @@ const ChampionBuild = ({
           onChange={handleQueryChange}
           name="lane"
           placeholder="Lane"
-          defaultValue={defaultValues?.lane}
+          value={query?.lane}
         />
         <Select
           options={tiers}
           onChange={handleQueryChange}
           name="tier"
           placeholder="Tier"
-          defaultValue={defaultValues?.tier}
+          value={query?.tier}
         />
         {!hideGameflowSelects && (
           <Select
@@ -134,7 +164,7 @@ const ChampionBuild = ({
             onChange={handleQueryChange}
             name="mode"
             placeholder="Game Mode"
-            defaultValue={defaultValues?.mode}
+            value={query?.mode}
           />
         )}
         <Select
@@ -142,14 +172,14 @@ const ChampionBuild = ({
           onChange={handleQueryChange}
           name="keystone_id"
           placeholder="Keystone"
-          defaultValue={defaultValues?.keystone}
+          value={query?.keystone}
         />
         <Select
           options={spicyList}
           onChange={handleQueryChange}
           name="spicy"
           placeholder="Spicy"
-          defaultValue={defaultValues?.spicy}
+          value={query?.spicy}
         />
       </div>
       {champion && (
@@ -158,11 +188,8 @@ const ChampionBuild = ({
           {champion.title}
         </div>
       )}
-      <div className={classes.runes}>
-        <Runes />
-        <Runes />
-      </div>
-      {championBuild && <RecommendedBuild build={championBuild} />}
+      {data?.runes && <Runes runes={data.runes} />}
+      {data?.build && <RecommendedBuild build={data.build} />}
     </div>
   );
 };

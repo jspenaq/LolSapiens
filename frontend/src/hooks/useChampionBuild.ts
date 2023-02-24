@@ -1,8 +1,12 @@
 import axios from "axios";
 import { useQuery } from "react-query";
 import type { UseQueryResult } from "react-query/types/react";
-import { BACKEND_BASE, CHAMPION_BUILD } from "../constants/endpoints";
-import type { Build } from "../types";
+import {
+  BACKEND_BASE,
+  CHAMPION_BUILD,
+  CHAMPION_RUNES,
+} from "../constants/endpoints";
+import type { Build, BuildRunes } from "../types";
 
 export interface ChampionBuildParams {
   champion_id?: string;
@@ -13,23 +17,35 @@ export interface ChampionBuildParams {
   spicy?: string;
 }
 
+export interface ChampionBuild {
+  build: Build;
+  runes: BuildRunes;
+}
+
 const getChampionBuild = async (
   params: ChampionBuildParams | null
-): Promise<Build> => {
-  const { data } = await axios.get<Build>(
+): Promise<ChampionBuild> => {
+  const { data: build } = await axios.get<Build>(
     `${CHAMPION_BUILD}?${new URLSearchParams({ ...params }).toString()}`,
     {
       baseURL: BACKEND_BASE,
     }
   );
 
-  return data;
+  const { data: runes } = await axios.get<BuildRunes>(
+    `${CHAMPION_RUNES}?${new URLSearchParams({ ...params }).toString()}`,
+    {
+      baseURL: BACKEND_BASE,
+    }
+  );
+
+  return { build, runes };
 };
 
 const useChampionBuild = (
   params: ChampionBuildParams | null,
   enabled = true
-): UseQueryResult<Build> => {
+): UseQueryResult<ChampionBuild> => {
   return useQuery(
     ["champion-build", params],
     getChampionBuild.bind(null, params),
