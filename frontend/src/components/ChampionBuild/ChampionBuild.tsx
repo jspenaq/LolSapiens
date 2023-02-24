@@ -49,25 +49,22 @@ const ChampionBuild = ({
   const getOptions = (): BuildQuery => {
     return {
       lane:
-        lanes.find(
-          (lane) =>
-            lane.value === initialQuery?.lane || lane.value === "default"
-        ) ?? null,
+        lanes.find((lane) => lane.value === initialQuery?.lane) ??
+        lanes.find((lane) => lane.value === "default") ??
+        null,
       tier:
-        tiers.find(
-          (tier) =>
-            tier.value === initialQuery?.tier || tier.value === "platinum_plus"
-        ) ?? null,
+        tiers.find((tier) => tier.value === initialQuery?.tier) ??
+        tiers.find((tier) => tier.value === "platinum_plus") ??
+        null,
       keystone: { label: "Default", value: "0" },
       spicy:
-        spicyList.find(
-          (spicy) => spicy.value === initialQuery?.spicy || spicy.value === "0"
-        ) ?? null,
+        spicyList.find((spicy) => spicy.value === initialQuery?.spicy) ??
+        spicyList.find((spicy) => spicy.value === "0") ??
+        null,
       mode:
-        modes.find(
-          (mode) => mode.value === initialQuery?.mode || mode.value === "ranked"
-        ) ?? null,
-      // Something happen and the find method doesn't respect the condition order. TODO: check js docs
+        modes.find((mode) => mode.value === initialQuery?.mode) ??
+        modes.find((mode) => mode.value === "ranked") ??
+        null,
       champion:
         champions.find(
           (champion) => champion.value === initialQuery?.champion_id?.toString()
