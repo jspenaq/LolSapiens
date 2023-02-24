@@ -1,8 +1,10 @@
 .runes {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  flex: 0 0 calc(32px * 4);
+  display: flex;
+  justify-content: space-evenly;
+
+  & > ul {
+    width: calc(32px * 4);
+  }
 
   ul {
     list-style: none;
@@ -19,6 +21,10 @@
       & > img {
         filter: grayscale(1);
         width: 100%;
+
+        &.active {
+          filter: none;
+        }
       }
     }
   }

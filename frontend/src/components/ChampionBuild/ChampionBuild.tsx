@@ -2,7 +2,7 @@ import { useAppSelector } from "../../hooks/reduxHooks";
 import type { ChampionBuildParams } from "../../hooks/useChampionBuild";
 import useChampionBuild from "../../hooks/useChampionBuild";
 import classes from "./championbuild.module.scss";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import type { Option } from "../../types";
 import { RecommendedBuild, Runes, Select } from "../../components";
 import { lanes, modes, spicyList, tiers } from "../../constants";
@@ -67,15 +67,16 @@ const ChampionBuild = ({
         modes.find(
           (mode) => mode.value === initialQuery?.mode || mode.value === "ranked"
         ) ?? null,
+      // Something happen and the find method doesn't respect the condition order. TODO: check js docs
       champion:
         champions.find(
-          (champion) =>
-            champion.value === initialQuery?.champion_id?.toString() ||
-            champion.value === "1"
-        ) ?? null,
+          (champion) => champion.value === initialQuery?.champion_id?.toString()
+        ) ??
+        champions.find((champion) => champion.value === "1") ??
+        null,
     };
   };
-  // console.log( getOptions());
+
   const [query, setQuery] = useState<BuildQuery>(getOptions);
   const champion = championsData?.[query?.champion?.value as string];
 
@@ -90,6 +91,10 @@ const ChampionBuild = ({
       };
       return newState;
     });
+  };
+
+  const handleImport = (): void => {
+    window.electronApi?.importBuild(data?.build);
   };
 
   const runes = useMemo<Option[]>(
@@ -119,14 +124,8 @@ const ChampionBuild = ({
 
   const { data } = useChampionBuild(
     championBuildQuery,
-    Boolean(query?.champion)
+    Boolean(championBuildQuery?.champion_id)
   );
-
-  useEffect(() => {
-    if (champions.length) {
-      setQuery(getOptions);
-    }
-  }, [champions]);
 
   if (!championsData) {
     return <></>;
@@ -139,7 +138,7 @@ const ChampionBuild = ({
           <Select
             options={champions}
             onChange={handleQueryChange}
-            name="champion_id"
+            name="champion"
             placeholder="Champion"
             value={query?.champion}
           />
@@ -170,7 +169,7 @@ const ChampionBuild = ({
         <Select
           options={runes}
           onChange={handleQueryChange}
-          name="keystone_id"
+          name="keystone"
           placeholder="Keystone"
           value={query?.keystone}
         />
@@ -186,6 +185,7 @@ const ChampionBuild = ({
         <div className={classes.champion}>
           <h2>{champion.name}</h2>
           {champion.title}
+          <button onClick={handleImport}>Import Build and Runes</button>
         </div>
       )}
       {data?.runes && <Runes runes={data.runes} />}
