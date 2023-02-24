@@ -1,16 +1,21 @@
+import type { ActionMeta } from "react-select";
 import Select from "react-select";
 import type { Option } from "../../types";
 
 interface CustomSelectProps {
   options: Option[];
-  onChange: (newValue: Option | null) => void;
+  onChange: (newValue: Option | null, action: ActionMeta<Option>) => void;
   defaultValue?: Option | null;
+  name?: string;
+  placeholder?: string;
 }
 
 const CustomSelect = ({
   onChange,
   options,
   defaultValue = null,
+  name,
+  placeholder,
 }: CustomSelectProps): JSX.Element => {
   return (
     <Select
@@ -19,6 +24,8 @@ const CustomSelect = ({
       defaultValue={defaultValue}
       className="react-select-container"
       classNamePrefix="react-select"
+      name={name}
+      placeholder={placeholder}
     />
   );
 };

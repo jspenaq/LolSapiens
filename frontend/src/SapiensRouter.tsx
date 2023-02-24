@@ -49,7 +49,7 @@ const Layout = (): JSX.Element => {
     });
 
     window.electronApi?.getCurrentChampion((_, champId) => {
-      dispatch(updateCurrentChampion(champId));
+      dispatch(updateCurrentChampion(champId.champId));
     });
 
     window.electronApi?.getGameflow((_, gameflow) => {

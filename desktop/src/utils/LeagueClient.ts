@@ -121,7 +121,7 @@ export default class LeagueClient {
 
     this._ws?.subscribe(RiotClientEvents.GAMEFLOW_SESSION, (event: any) => {
       const gameflow = {
-        gameMode: event.data?.map?.gameMode,
+        gameMode: event.data?.map?.gameMode === "ARAM" ? "aram" : "ranked",
         // None, Lobby, Matchmaking, TerminatedInError, WaitingForStats, InProgress, GameStart, ChampSelect, ReadyCheck, PreEndOfGame, EndOfGame
         gamePhase: event.data?.phase,
       };

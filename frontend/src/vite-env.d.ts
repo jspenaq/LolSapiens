@@ -21,7 +21,7 @@ declare global {
         ) => void
       ) => void;
       getCurrentChampion: (
-        callback: (event: any, champId: string) => void
+        callback: (event: any, champId: { champId }) => void
       ) => void;
     };
   }

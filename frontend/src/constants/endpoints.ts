@@ -8,6 +8,9 @@ export const DDRAGON_CHAMPION_LOADING = "/cdn/img/champion/loading";
 
 export const DDRAGON_ITEM = "/img/item";
 
+// DDragon Canisback
+export const DDRAGON_CANISBACK_BASE = "https://ddragon.canisback.com/img";
+
 // Backend
 export const BACKEND_BASE = "http://localhost:3200";
 

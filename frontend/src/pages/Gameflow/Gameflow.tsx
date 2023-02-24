@@ -1,4 +1,4 @@
-import { BanPhase, Loading } from "../../components";
+import { BanPhase, ChampionBuild, Loading } from "../../components";
 import { useAppSelector } from "../../hooks/reduxHooks";
 import classes from "./gameflow.module.scss";
 
@@ -24,7 +24,17 @@ const Gameflow = (): JSX.Element => {
         </div>
       )}
 
-      {champion && <p>Here will be the champion build/runes recommendation</p>}
+      {champion && (
+        <ChampionBuild
+          initialQuery={{
+            champion_id: champion,
+            keystone_id: "0",
+            mode: gameflow?.gameMode,
+            lane: "default",
+          }}
+          hideGameflowSelects
+        />
+      )}
     </section>
   );
 };

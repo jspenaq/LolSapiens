@@ -2,8 +2,7 @@
 
 .champion-build {
   display: grid;
-  grid-template-columns: 1fr 2fr;
-  grid-template-rows: 150px;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 
   & > * {
@@ -12,23 +11,20 @@
   }
 }
 
-.champion {
+.champion,
+.controls {
   grid-column: 1/-1;
 }
 
-.build {
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
+.runes {
+  display: flex;
+  gap: 4rem;
+  justify-content: space-evenly;
 }
 
-.block__items {
-  display: flex;
-  gap: 0.5rem;
-
-  img {
-    width: 40px;
-  }
+.controls {
+  display: grid;
+  gap: 0.5rem 1rem;
+  grid-template-columns: repeat(auto-fill, 11rem);
+  justify-content: center;
 }

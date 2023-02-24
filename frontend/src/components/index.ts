@@ -8,6 +8,8 @@ import ChampionList from "./BanList/ChampionList";
 import Loading from "./Loading/Loading";
 import BanPhase from "./BanPhase/BanPhase";
 import ChampionBuild from "./ChampionBuild/ChampionBuild";
+import Runes from "./Runes/Runes";
+import RecommendedBuild from "./RecommendedBuild/RecommendedBuild";
 
 export {
   Tooltip,
@@ -20,4 +22,6 @@ export {
   ChampionList,
   BanPhase,
   ChampionBuild,
+  Runes,
+  RecommendedBuild,
 };

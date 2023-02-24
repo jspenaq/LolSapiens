@@ -15,18 +15,11 @@ const BanPhase = (): JSX.Element => {
     tier: tier?.value ?? "gold_plus",
   });
 
-  const handleTier = (newValue: Option | null): void => {
-    setTier(newValue);
-  };
-  const handleLane = (newValue: Option | null): void => {
-    setLane(newValue);
-  };
-
   return (
     <>
       <div className={classes.controls}>
-        <Select options={tiers} onChange={handleTier} defaultValue={tier} />
-        <Select options={lanes} onChange={handleLane} defaultValue={lane} />
+        <Select options={tiers} onChange={setTier} defaultValue={tier} />
+        <Select options={lanes} onChange={setLane} defaultValue={lane} />
       </div>
 
       {bans && Boolean(bans.length) && <ChampionList champions={bans} areBan />}
