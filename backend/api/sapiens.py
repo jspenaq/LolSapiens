@@ -2,6 +2,7 @@ import datetime
 from pathlib import Path
 
 import pandas as pd
+from numpy import average
 from sklearn.preprocessing import MinMaxScaler
 
 from backend.api.lol_scraper import (
@@ -23,6 +24,7 @@ class Sapiens:
         self.base_url = "https://axe.lolalytics.com"  # LoLalytics
         self.tierlist = self._get_tierlist()
         if self.tierlist.empty:
+            print("Using previous patch...")
             self.current_patch = get_current_patch(1)
             self.patch = ".".join(self.current_patch.split(".")[:2])
         self.champions_data = get_champions_data(self.current_patch)
@@ -196,6 +198,25 @@ class Sapiens:
             case 8:
                 pass
 
+        recommended = self._get_weighted_score(df)
+        return recommended.reset_index()
+
+    def _get_weighted_score(self, df: pd.DataFrame) -> pd.DataFrame:
+        """This method calculates a weighted score for each row in the input pandas DataFrame
+        based on win rate and number of games played. If the length of the input DataFrame is 1, the function returns a copy of the input DataFrame.
+        If the length of the input DataFrame is greater than 1, the function first normalizes the "games" column using the MinMaxScaler,
+        then calculates the weighted score using the specified weights of 0.6 for win rate and 0.4 for number of games played.
+        The resulting DataFrame is then sorted in descending order by the weighted score.
+        Finally, the "id" column is converted to string type, and the resulting DataFrame is returned.
+
+        Args:
+            df (pd.DataFrame): DataFrame containing columns "id", "win_rate", and "games".
+
+        Returns:
+            pd.DataFrame: A DataFrame with columns "id", "win_rate", "games", "games_normalized",
+            and "weighted_result" containing the original data along with the normalized games column and the calculated weighted result.
+            The DataFrame is sorted in descending order by the weighted result.
+        """
         if len(df) == 1:
             recommended = df.copy()
         else:
@@ -210,7 +231,7 @@ class Sapiens:
             recommended = df.sort_values(by="weighted_result", ascending=False)
 
         recommended["id"] = recommended["id"].astype(str)
-        return recommended.reset_index()
+        return recommended
 
     def _analyze_bans(self, df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -349,15 +370,11 @@ class Sapiens:
         print(f"Searching {champion_name} {lane}")
         if keystone_id == 0:
             # key_name = f"win_{tier}"
-            recommend_runes = self._get_champion_runes(
+            recommend_runes = self._get_champion_keystones(
                 champion_id, lane, tier, queue_mode, spicy
             )
-            # if not recommend_runes:
-            #     print(f"Recommend runes not found for {tier}")
-            #     recommend_runes = self._get_champion_runes(champion_id, lane, spicy)
-            #     key_name = "win_platinum_plus"
 
-            keystone_id = int(recommend_runes[0])
+            keystone_id = int(recommend_runes[0]["id"])
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
         # url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
         response = request_get(url)
@@ -444,8 +461,10 @@ class Sapiens:
 
         columns = ["id", "win_rate", "games"]
         slots = self.all_runes[rune_path]["slots"]
-        primary_path = pd.DataFrame(columns=columns)
 
+        # Primary path
+        primary_path_id = rune_path
+        primary_path = pd.DataFrame(columns=columns)
         for i in range(len(slots)):
             matrix = []
             for key in slots[i].keys():
@@ -461,21 +480,76 @@ class Sapiens:
             # name_column = recommend["id"].apply(lambda x: self.all_runes[x]["name"])
             # recommend.insert(1, "name", name_column)
 
-        # runes = {}
-        # for i in ["win", "pick"]:
-        #     primary_path = response["summary"]["runes"][i]["set"]["pri"]
-        #     secondary_path = response["summary"]["runes"][i]["set"]["sec"]
-        #     shards = response["summary"]["runes"][i]["set"]["mod"]
-        #     runes[f"{i}_{tier}"] = {
-        #         "primary_path": primary_path,
-        #         "secondary_path": secondary_path,
-        #         "shards": shards,
-        #     }
+        # Secondary path
+        secondary_path_id = self.all_runes[rune_path]["name"]
+        secondary_path = pd.DataFrame(columns=columns)
+        averages = []
+
+        matrix_all_paths = {}  # For later use
+        for id in self.all_runes:
+            if id != rune_path:
+                print(self.all_runes[id]["name"])
+                runes_by_path = {"data": [], "weights": []}  # All 9 runes by path.
+                matrix_all_paths[id] = {}
+                slots = self.all_runes[id]["slots"]
+                for i in range(1, len(slots)):
+                    matrix_all_paths[id][i] = []
+                    for key in slots[i].keys():
+                        values = response["runes"]["stats"][key][1]
+                        # values
+                        # [0]: pick_rate, [1]: win_rate, [2]: games
+                        runes_by_path["data"].append(values[1])
+                        runes_by_path["weights"].append(values[2])
+                        matrix_all_paths[id][i].append([key, values[1], values[2]])
+                avg_mean = round(
+                    average(runes_by_path["data"], weights=runes_by_path["weights"]), 4
+                )
+                averages.append([id, avg_mean, sum(runes_by_path["weights"])])
+                print("=======")
+
+        best_path = self._analyze(pd.DataFrame(averages, columns=columns), spicy)
+        print(best_path)
+        best_path = best_path.head(1)["id"]
+        secondary_path_id = int(best_path.values[0])
+        print(f"{matrix_all_paths[secondary_path_id]}")
+        secondary_path = matrix_all_paths[int(best_path.values[0])]
+
+        top_runes_secondary = pd.DataFrame(columns=columns)
+        for k in secondary_path:
+            df_secondary = self._analyze(
+                pd.DataFrame(secondary_path[k], columns=columns), spicy
+            )[["id", "win_rate", "games"]].head(1)
+            print(df_secondary)
+            top_runes_secondary = pd.concat([top_runes_secondary, df_secondary])
+        secondary_path = self._get_weighted_score(top_runes_secondary).head(2)
+        print(f"{secondary_path}")
+
+        # Shards
+        ids_shards = {
+            "0": ["5008", "5005", "5007"],
+            "1": ["5008f", "5002f", "5003f"],
+            "2": ["5001", "5002", "5003"],
+        }
+        shards = pd.DataFrame(columns=columns)
+        for i in range(len(ids_shards)):
+            matrix = []
+            for key in ids_shards[str(i)]:
+                values = response["runes"]["stats"][key][0]
+                # values
+                # [0]: pick_rate, [1]: win_rate, [2]: games
+                matrix.append([key, values[1], values[2]])
+            df = pd.DataFrame(matrix, columns=columns)
+            recommend = self._analyze(df, spicy * 2)
+            recommend = recommend.head(1).drop(columns=["index"]).reset_index(drop=True)
+            recommend = recommend[["id", "win_rate", "games"]]
+            shards = pd.concat([shards, recommend])
 
         return {
-            "primary_path": primary_path.to_dict(orient="records"),
-            "secondary_path": {},
-            "shards": {},
+            "primary_path": self.all_runes[primary_path_id]["name"],
+            "secondary_path": self.all_runes[secondary_path_id]["name"],
+            "primary_path_runes": primary_path.to_dict(orient="records"),
+            "secondary_path_runes": secondary_path.to_dict(orient="records"),
+            "shards_runes": shards.to_dict(orient="records"),
         }
 
     def _get_build_json(
