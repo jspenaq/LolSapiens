@@ -30,7 +30,8 @@ queue_mode_param = Query(
 keystone_id_param = Query(
     0,
     title="keystone_id",
-    description="Unique identifier associated with keystone to play",
+    description="Unique identifier associated with keystone to play. \
+        If the keystone_id is zero uses recommended keystone. Default: 0",
     example=8214,
 )
 spicy_param = Query(
@@ -42,13 +43,13 @@ spicy_param = Query(
 limit_param = Query(
     10,
     title="limit",
-    description="The maximum number of items to return in a single request.",
+    description="The maximum number of items to return in a single request. Default: 10",
     example=12,
 )
 random_param = Query(
     0,
     title="random",
     description="Return a random sample of a specified size from the available results. \
-        If the size is set to zero, all available results will be returned.",
+        If the size is set to zero, all available results will be returned. Default: 0",
     example=5,
 )
