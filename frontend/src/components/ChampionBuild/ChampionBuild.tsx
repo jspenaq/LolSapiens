@@ -70,15 +70,22 @@ const ChampionBuild = ({
   );
 
   const defaultValues = useMemo(() => {
-    if (initialQuery) {
-      return {
-        lane: lanes.find((lane) => lane.value === initialQuery.lane),
-        tier: tiers.find((tier) => tier.value === initialQuery.tier),
-        // keystone_id: .find(y => y.value === initialQuery.y),
-        spicy: spicyList.find((spicy) => spicy.value === initialQuery.spicy),
-      };
-    }
-    return null;
+    return {
+      lane: lanes.find(
+        (lane) => lane.value === initialQuery?.lane || lane.value === "default"
+      ),
+      tier: tiers.find(
+        (tier) =>
+          tier.value === initialQuery?.tier || tier.value === "platinum_plus"
+      ),
+      keystone: { label: "Default", value: "0" },
+      spicy: spicyList.find(
+        (spicy) => spicy.value === initialQuery?.spicy || spicy.value === "0"
+      ),
+      mode: modes.find(
+        (mode) => mode.value === initialQuery?.mode || mode.value === "ranked"
+      ),
+    };
   }, [initialQuery]);
 
   useEffect(() => {
@@ -89,7 +96,7 @@ const ChampionBuild = ({
 
   const { data: championBuild } = useChampionBuild(
     query,
-    Boolean(query?.champion_id) && Boolean(query?.keystone_id)
+    Boolean(query?.champion_id)
   );
 
   if (!championsData) {
@@ -127,6 +134,7 @@ const ChampionBuild = ({
             onChange={handleQueryChange}
             name="mode"
             placeholder="Game Mode"
+            defaultValue={defaultValues?.mode}
           />
         )}
         <Select
@@ -134,6 +142,7 @@ const ChampionBuild = ({
           onChange={handleQueryChange}
           name="keystone_id"
           placeholder="Keystone"
+          defaultValue={defaultValues?.keystone}
         />
         <Select
           options={spicyList}
