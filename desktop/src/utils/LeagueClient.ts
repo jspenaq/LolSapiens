@@ -21,6 +21,8 @@ enum RiotClientEvents {
 
 enum RiotClientEndpoints {
   CURRENT_SUMMONER = "/lol-summoner/v1/current-summoner",
+  CURRENT_RUNES = "/lol-perks/v1/currentpage",
+  PERKS_PAGES_BY_ID = "/lol-perks/v1/pages",
 }
 
 export enum LeagueClientEvents {
@@ -158,6 +160,47 @@ export default class LeagueClient {
     } catch (error: any) {
       // Possible common error error.code === "ECONNREFUSED"
       console.error("Error getting current summoner data");
+      if (error.code === "ECONNREFUSED") {
+        console.log("ERROR: ", error.code);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  async changeRunes(): Promise<any> {
+    // Get current page
+    try {
+      const headers = { Authorization: this._authorization };
+      const currentPerks = await axios(
+        `${this._baseUrl}${RiotClientEndpoints.CURRENT_RUNES}`,
+        { headers }
+      );
+
+      const currentPage = currentPerks?.data?.id;
+
+      // await axios.delete(
+      //   `${this._baseUrl}${RiotClientEndpoints.PERKS_PAGES_BY_ID}/${
+      //     currentPage as string
+      //   }`,
+      //   { headers }
+      // );
+
+      // await axios.post(
+      //   `${this._baseUrl}${RiotClientEndpoints.PERKS_PAGES_BY_ID}`,
+      //   {
+      //     name: "LOLSapiens Perks TEST",
+      //     primaryStyleId: 8300,
+      //     subStyleId: 8400,
+      //     selectedPerkIds: [
+      //       8351, 8313, 8345, 8347, 8451, 8444, 5007, 5002, 5001,
+      //     ],
+      //     current: true,
+      //   },
+      //   { headers }
+      // );
+    } catch (error: any) {
+      console.error("Error updating Runes");
       if (error.code === "ECONNREFUSED") {
         console.log("ERROR: ", error.code);
       } else {
