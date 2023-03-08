@@ -73,7 +73,10 @@ To compile Electron app:
 npm run make
 ```
 
-<img src="https://user-images.githubusercontent.com/36420972/218279770-1ccaa9ae-7372-46a8-99bb-6ba25281ce83.png" height="500" /> 
+![image](https://user-images.githubusercontent.com/23727314/223767154-f83c4105-9818-41c9-9a92-74ed76287bb1.png)
+
+![image](https://user-images.githubusercontent.com/23727314/223767345-1e129823-f96e-4b5f-ae9e-c19222cdf527.png)
+
 
 ## Contributing
 If you want to contribute to the project, please fork the repository and make the necessary changes. Once you're ready, you can submit a pull request for review.
