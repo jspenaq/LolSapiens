@@ -5,7 +5,7 @@ import classes from "./championbuild.module.scss";
 import { useState, useMemo } from "react";
 import type { Option } from "../../types";
 import { RecommendedBuild, Runes, Select } from "../../components";
-import { lanes, modes, spicyList, tiers } from "../../constants";
+import { lanes, modes, RunesPath, spicyList, tiers } from "../../constants";
 import type { ActionMeta } from "react-select";
 
 export interface ChampionBuildProps {
@@ -90,8 +90,30 @@ const ChampionBuild = ({
     });
   };
 
+  const getClientRunesData = (): any => {
+    const runes = data?.runes;
+
+    if (!runes) return null;
+
+    const selectedRunes = runes.primary_path_runes
+      .concat(runes.secondary_path_runes)
+      .map((rune) => parseInt(rune.id));
+
+    return {
+      name: `LolSapiens ${query.champion?.label as string} runes`,
+      primaryStyleId: RunesPath.get(runes.primary_path), // Inspiration...
+      subStyleId: RunesPath.get(runes.secondary_path), // Inspiration
+      selectedPerkIds: selectedRunes.concat([5007, 5002, 5001]), // runes // Stats hardcoded
+      current: true,
+    };
+  };
+
   const handleImport = (): void => {
-    window.electronApi?.importBuild(data?.build);
+    window.electronApi?.importBuild({
+      build: data?.build,
+      championName: query.champion?.label,
+    });
+    window.electronApi?.importRunes(getClientRunesData());
   };
 
   const runes = useMemo<Option[]>(
@@ -181,7 +203,7 @@ const ChampionBuild = ({
       {champion && (
         <div className={classes.champion}>
           <h2>{champion.name}</h2>
-          {champion.title}
+          <h3>{champion.title}</h3>
           <button onClick={handleImport}>Import Build and Runes</button>
         </div>
       )}

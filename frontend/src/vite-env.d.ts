@@ -23,6 +23,7 @@ declare global {
       getCurrentChampion: (
         callback: (event: any, champId: { champId }) => void
       ) => void;
+      importRunes: (runes: any) => void;
     };
   }
 }

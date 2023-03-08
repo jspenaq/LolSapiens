@@ -24,13 +24,13 @@ export default class LolSapiens extends BrowserWindow {
 
   start(): void {
     // call subscriptions
-    this.setImportBuildEvent();
+    this.setImportBuildRunesEvent();
     this.setLeagueClientEvents();
     this.setClientStatusEvent();
     this.setCurrentSummonerEvent();
   }
 
-  setImportBuildEvent(): void {
+  setImportBuildRunesEvent(): void {
     ipcMain.on("import:build", (event: IpcMainEvent, data: any): void => {
       let basePath = "";
       const { championName, build } = data;
@@ -57,6 +57,10 @@ export default class LolSapiens extends BrowserWindow {
       );
 
       this.webContents.send("import:build");
+    });
+
+    ipcMain.on("import:runes", (event: IpcMainEvent, runes: any): void => {
+      this._leagueClient.changeRunes(runes);
     });
   }
 

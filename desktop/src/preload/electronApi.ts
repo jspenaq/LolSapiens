@@ -27,4 +27,7 @@ contextBridge.exposeInMainWorld("electronApi", {
   getCurrentChampion: (
     callback: (event: IpcRendererEvent, champId: string) => void
   ) => ipcRenderer.on("champ:selected", callback),
+  importRunes: (runes: any) => {
+    ipcRenderer.send("import:runes", runes);
+  },
 });
