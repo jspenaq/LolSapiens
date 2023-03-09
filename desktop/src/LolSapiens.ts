@@ -35,6 +35,7 @@ export default class LolSapiens extends BrowserWindow {
       let basePath = "";
       const { championName, build } = data;
 
+      // TODO: Allow change basePath
       if (process.platform === "darwin") {
         basePath = "/Applications/League of Legends.app/Contents/LoL";
       } else if (process.platform === "win32") {

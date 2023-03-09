@@ -50,7 +50,7 @@ p {
   grid-template-columns: 300px auto;
   overflow: hidden;
 
-  & > * {
+  &>* {
     max-height: 100vh;
   }
 
@@ -84,14 +84,17 @@ p {
           color: $text-primary !important;
         }
       }
+
       .react-select__single-value {
         color: $text-primary;
       }
     }
   }
+
   .react-select__menu {
     background-color: $background-dark;
     z-index: 9999;
+
     .react-select__menu-list {
       .react-select__option {
         &:hover {
@@ -130,6 +133,11 @@ button {
   &:focus,
   &:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
+  }
+
+  &:disabled {
+    background-color: $disabled;
+    cursor: not-allowed;
   }
 }
 

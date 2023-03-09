@@ -142,7 +142,7 @@ const ChampionBuild = ({
     tier: query?.tier?.value,
   };
 
-  const { data } = useChampionBuild(
+  const { data, isLoading } = useChampionBuild(
     championBuildQuery,
     Boolean(championBuildQuery?.champion_id)
   );
@@ -205,7 +205,7 @@ const ChampionBuild = ({
         <div className={classes.champion}>
           <h2>{champion.name}</h2>
           <h3>{champion.title}</h3>
-          <button onClick={handleImport}>Import Build and Runes</button>
+          <button onClick={handleImport} disabled={isLoading}>Import Build and Runes</button>
         </div>
       )}
       {data?.runes && <Runes runes={data.runes} />}
