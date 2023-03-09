@@ -1,14 +1,14 @@
 from fastapi import APIRouter
 from backend.api.constants import (
-    s,
     champion_id_param,
-    lane_param,
-    tier_param,
-    queue_mode_param,
     keystone_id_param,
+    lane_param,
+    queue_mode_param,
+    s,
     spicy_param,
+    tier_param,
 )
-
+from backend.api.utils import convert_queue_mode
 
 build_router = APIRouter()
 
@@ -22,11 +22,14 @@ def create_build(
     keystone_id: int = keystone_id_param,
     spicy: int = spicy_param,
 ):
-    return s.generate_build(champion_id, lane, tier, mode, keystone_id, spicy)
+    queue_mode = convert_queue_mode(mode)
+    if queue_mode == 450:
+        lane = "middle"
+    return s.generate_build(champion_id, lane, tier, queue_mode, keystone_id, spicy)
 
 
 @build_router.get("/items", tags=["champion"])
-def create_build(
+def get_items(
     champion_id: str = champion_id_param,
     lane: str = lane_param,
     tier: str = tier_param,
@@ -34,7 +37,10 @@ def create_build(
     keystone_id: int = keystone_id_param,
     spicy: int = spicy_param,
 ):
-    return s.generate_build(champion_id, lane, tier, mode, keystone_id, spicy)
+    queue_mode = convert_queue_mode(mode)
+    if queue_mode == 450:
+        lane = "middle"
+    return s._get_items(champion_id, lane, tier, queue_mode, keystone_id, spicy)
 
 
 @build_router.get("/keystones", tags=["champion"])
@@ -45,6 +51,9 @@ def get_keystones(
     queue_mode: str = queue_mode_param,
     spicy: int = spicy_param,
 ):
+    queue_mode = convert_queue_mode(queue_mode)
+    if queue_mode == 450:
+        lane = "middle"
     return s._get_champion_keystones(champion_id, lane, tier, queue_mode, spicy)
 
 
@@ -57,6 +66,9 @@ def get_runes(
     keystone_id: int = keystone_id_param,
     spicy: int = spicy_param,
 ):
+    queue_mode = convert_queue_mode(queue_mode)
+    if queue_mode == 450:
+        lane = "middle"
     return s._get_champion_runes(
         champion_id, lane, tier, queue_mode, keystone_id, spicy
     )

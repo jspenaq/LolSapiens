@@ -12,13 +12,18 @@ from backend.api.lol_scraper import (
     get_items_data,
     get_runes_data,
 )
-from backend.api.utils import percentage_division, request_get, setup_folders
+from backend.api.utils import (
+    percentage_division,
+    request_get,
+    setup_folders,
+)
 
 
 class Sapiens:
     def __init__(self):
         print("Initializing Sapiens...")
         setup_folders()
+
         self.current_patch = get_current_patch()
         self.patch = ".".join(self.current_patch.split(".")[:2])
         self.base_url = "https://axe.lolalytics.com"  # LoLalytics
@@ -27,10 +32,13 @@ class Sapiens:
             print("Using previous patch...")
             self.current_patch = get_current_patch(1)
             self.patch = ".".join(self.current_patch.split(".")[:2])
+
         self.champions_data = get_champions_data(self.current_patch)
         self.runes_data = get_runes_data(self.current_patch)
         self.keystones, self.all_runes = self._get_keystones()
         self.items_data = get_items_data(self.current_patch)
+
+        self.current_champion_data = {}
         print("Sapiens is ready.")
 
     def get_initial_data(self) -> dict:
@@ -46,7 +54,14 @@ class Sapiens:
             "patch": self.current_patch,
         }
 
-    def _get_keystones(self) -> dict:
+    def _get_keystones(self) -> tuple:
+        """Gets the keystone runes from the runes data and returns a dictionary with their names and IDs, and another dictionary containing all the rune paths
+        and slots with their respective rune IDs, names and translations.
+
+        Returns:
+            tuple(dict, dict): A tuple of two dictionaries. The first dictionary contains the keystone runes, with their IDs as keys and their names and translations as values.
+            The second dictionary contains all the rune paths and slots with their respective rune IDs, names and translations.
+        """
         runes = self.runes_data
         keystones = {}
         all_runes = {}
@@ -354,30 +369,80 @@ class Sapiens:
     def generate_build(
         self,
         champion_id: str,
-        lane: str,
-        tier: str,
-        mode: str,
-        keystone_id: int,
+        lane: str = "default",
+        tier: str = "platinum_plus",
+        queue_mode: int = 420,
+        keystone_id: int = 0,
+        spicy: int = 0,
+    ) -> dict:
+        build_response = {
+            "keystones": "",
+            "runes": "",
+            "summoner_spells": "",
+            "items": "",
+            "skills": "",
+        }
+
+        # Get keystones
+        if keystone_id == 0:
+            keystones = self._get_champion_keystones(
+                champion_id, lane, tier, queue_mode, spicy
+            )
+
+            build_response["keystones"] = keystones
+            keystone_id = int(keystones[0]["id"])
+
+        # Update current_champion_data
+        region = "all"
+        url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
+        self.current_champion_data = request_get(url)
+        if "runes" not in self.current_champion_data:
+            # No data
+            self.current_champion_data = {}
+            return build_response
+
+        # Get runes
+        runes = self._get_champion_runes(
+            champion_id, lane, tier, queue_mode, keystone_id, spicy
+        )
+        build_response["runes"] = runes
+
+        # Get summoner spells
+
+        # Get items
+        items = self._get_items(champion_id, lane, tier, queue_mode, keystone_id, spicy)
+        build_response["items"] = items
+
+        # Get skills
+
+        self.current_champion_data = {}  # Reset data
+        return build_response
+
+    def _get_items(
+        self,
+        champion_id: str,
+        lane: str = "default",
+        tier: str = "platinum_plus",
+        queue_mode: int = 420,
+        keystone_id: int = 0,
         spicy: int = 0,
     ) -> dict:
         champion_name = self.champions_data[champion_id]["name"]
-        queue_mode = 420
-        if mode == "aram":
-            queue_mode = 450
-            lane = "middle"
-        region = "all"
 
         print(f"Searching {champion_name} {lane}")
         if keystone_id == 0:
-            # key_name = f"win_{tier}"
             recommend_runes = self._get_champion_keystones(
                 champion_id, lane, tier, queue_mode, spicy
             )
 
             keystone_id = int(recommend_runes[0]["id"])
+        region = "all"
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
-        # url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
         response = request_get(url)
+        # TODO: Fix Desktop app bug (double request)
+        # if not self.current_champion_data:
+        #     return {}
+
         return self._get_build_json(
             response, champion_id, lane, tier, keystone_id, spicy
         )
@@ -387,22 +452,29 @@ class Sapiens:
         champion_id: str,
         lane: str = "default",
         tier: str = "platinum_plus",
-        queue_mode: str = "ranked",
+        queue_mode: int = 420,
         spicy: int = 0,
-    ) -> list:
+    ) -> dict:
         """Get the keystones for a specific champion.
 
         Args:
             champion_id (str): The ID of the champion for which to retrieve runes.
             lane (str, optional): The lane for which to retrieve runes. Defaults to "default".
             tier (str, optional): The tier for which to retrieve runes. Defaults to "platinum_plus".
-            queue_mode (str, optional): The queue mode for which to retrieve runes. Defaults to "ranked".
+            queue_mode (int, optional): The queue mode for which to retrieve runes. Defaults to 420.
 
         Returns:
             dict: A dictionary containing the runes information, with keys in the format "{win/pick}_{tier}" and
             values as dictionaries containing "primary_path", "secondary_path", and "shards".
             If no runes information is available, an empty dictionary is returned.
         """
+        # TODO: Fix Desktop app bug (double request)
+        # if not self.current_champion_data:
+        #     # region = "all"
+        #     url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
+        #     response = request_get(url)
+        #     if "runes" not in response:
+        #         return {}
         region = "all"
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}"
         response = request_get(url)
@@ -431,10 +503,10 @@ class Sapiens:
         champion_id: str,
         lane: str = "default",
         tier: str = "platinum_plus",
-        queue_mode: str = "ranked",
+        queue_mode: int = 420,
         keystone_id: int = 0,
         spicy: int = 0,
-    ) -> list:
+    ) -> dict:
         """Get the runes for a specific champion.
 
         Args:
@@ -561,6 +633,7 @@ class Sapiens:
         keystone_id: int,
         spicy: int,
     ):
+        # response = self.current_champion_data
         blocks = {
             "startSet": "Starting Set",
             "item1": "1st Item",
@@ -622,18 +695,8 @@ class Sapiens:
 
                 if b == "startSet":
                     # split cases such as: "3850_2003_2003" into [3850, 2003, 2003]
-                    # recommended["item_name"] = recommended["id"].apply(
-                    #     lambda id: ", ".join(
-                    #         [self.items_data[x]["name_en"] for x in id.split("_")]
-                    #     )
-                    # )
-                    # recommended["item_name_es"] = recommended["id"].apply(
-                    #     lambda id: ", ".join(
-                    #         [self.items_data[x]["name_es"] for x in id.split("_")]
-                    #     )
-                    # )
                     starting_set = recommended["id"][0].split("_")
-                    # starting_set.append([]) # todo: add wards, lens
+                    # starting_set.append([]) # TODO: add wards, lens
                     build_json["blocks"].append(
                         {
                             "items": convert_item_to_lol_jsons(starting_set),
@@ -651,12 +714,6 @@ class Sapiens:
                         continue
                     recommended = recommended.head(5)  # Maximum 5 items by block
 
-                    # recommended["item_name"] = recommended["id"].apply(
-                    #     lambda id: self.items_data[id]["name_en"]
-                    # )
-                    # recommended["item_name_es"] = recommended["id"].apply(
-                    #     lambda id: self.items_data[id]["name_es"]
-                    # )
                     build_json["blocks"].append(
                         {
                             "items": convert_item_to_lol_jsons(list(recommended["id"])),
@@ -664,6 +721,7 @@ class Sapiens:
                         }
                     )
                     recommended.drop(columns=["time"], inplace=True)
+
                 recommended.drop(columns=["index"], inplace=True)
                 build_file.write(recommended.to_string())
                 print(recommended)
