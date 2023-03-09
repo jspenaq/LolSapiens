@@ -6,7 +6,7 @@ import {
   CHAMPION_BUILD,
   CHAMPION_RUNES,
 } from "../constants/endpoints";
-import type { Build, BuildRunes } from "../types";
+import type { Build, BuildJson, BuildRunes } from "../types";
 
 export interface ChampionBuildParams {
   champion_id?: string;
@@ -18,7 +18,7 @@ export interface ChampionBuildParams {
 }
 
 export interface ChampionBuild {
-  build: Build;
+  items: BuildJson;
   runes: BuildRunes;
 }
 
@@ -39,7 +39,9 @@ const getChampionBuild = async (
     }
   );
 
-  return { build, runes };
+  const items = build.items
+  console.log("🚀 ~ file: useChampionBuild.ts:44 ~ build:", build.items)
+  return { items, runes };
 };
 
 const useChampionBuild = (

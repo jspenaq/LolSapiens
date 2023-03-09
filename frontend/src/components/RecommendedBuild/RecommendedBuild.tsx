@@ -1,10 +1,10 @@
-import type { Build } from "../../types";
+import type { Build, BuildJson } from "../../types";
 import classes from "./recommendedbuild.module.scss";
 import { DDRAGON_BASE, DDRAGON_ITEM } from "../../constants/endpoints";
 import { useAppSelector } from "../../hooks/reduxHooks";
 
 export interface RecommendedBuildProps {
-  build: Build;
+  build: BuildJson;
 }
 
 const RecommendedBuild = ({ build }: RecommendedBuildProps): JSX.Element => {

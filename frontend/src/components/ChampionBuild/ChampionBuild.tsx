@@ -110,7 +110,7 @@ const ChampionBuild = ({
 
   const handleImport = (): void => {
     window.electronApi?.importBuild({
-      build: data?.build,
+      build: data?.items,
       championName: query.champion?.label,
     });
     window.electronApi?.importRunes(getClientRunesData());
@@ -208,7 +208,7 @@ const ChampionBuild = ({
         </div>
       )}
       {data?.runes && <Runes runes={data.runes} />}
-      {data?.build && <RecommendedBuild build={data.build} />}
+      {data?.items && <RecommendedBuild build={data.items} />}
     </div>
   );
 };

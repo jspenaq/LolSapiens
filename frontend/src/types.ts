@@ -74,7 +74,7 @@ export interface BuildBlock {
   type: string;
 }
 
-export interface Build {
+export interface BuildJson {
   title: string;
   type: string;
   associatedMaps: number[];
@@ -85,6 +85,14 @@ export interface Build {
   sortrank: number;
   startedFrom: string;
   blocks: BuildBlock[];
+}
+
+export interface Build {
+  "keystones": string;
+  "runes": BuildRunes;
+  "summoner_spells": string;
+  "items": BuildJson;
+  "skills": string;
 }
 
 export interface BuildRune {
