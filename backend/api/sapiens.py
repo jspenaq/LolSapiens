@@ -16,6 +16,7 @@ from backend.api.utils import (
     percentage_division,
     request_get,
     setup_folders,
+    weighted_average,
 )
 
 
@@ -405,6 +406,8 @@ class Sapiens:
         runes = self._get_champion_runes(
             champion_id, lane, tier, queue_mode, keystone_id, spicy
         )
+        if not build_response["keystones"]:
+            build_response["keystones"] = [runes["primary_path_runes"][0]]
         build_response["runes"] = runes
 
         # Get summoner spells
@@ -574,7 +577,7 @@ class Sapiens:
                         runes_by_path["weights"].append(values[2])
                         matrix_all_paths[id][i].append([key, values[1], values[2]])
                 avg_mean = round(
-                    average(runes_by_path["data"], weights=runes_by_path["weights"]), 4
+                    weighted_average(runes_by_path["data"], runes_by_path["weights"]), 4
                 )
                 averages.append([id, avg_mean, sum(runes_by_path["weights"])])
                 print("=======")
