@@ -4,7 +4,6 @@ import type { UseQueryResult } from "react-query/types/react";
 import {
   BACKEND_BASE,
   CHAMPION_BUILD,
-  CHAMPION_RUNES,
 } from "../constants/endpoints";
 import type { Build, BuildJson, BuildRunes } from "../types";
 

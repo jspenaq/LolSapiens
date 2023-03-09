@@ -1,4 +1,4 @@
-import type { Build, BuildJson } from "../../types";
+import type { BuildJson } from "../../types";
 import classes from "./recommendedbuild.module.scss";
 import { DDRAGON_BASE, DDRAGON_ITEM } from "../../constants/endpoints";
 import { useAppSelector } from "../../hooks/reduxHooks";
