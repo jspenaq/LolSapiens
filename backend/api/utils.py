@@ -117,7 +117,29 @@ def setup_folders(path: Path = Path("")) -> bool:
 
 
 def percentage_division(value: int, total: int) -> float | int:
+    """Calculates the percentage of a value out of a total, and returns the result as a float or a zero.
+
+    Args:
+        value (int): The value to be converted to a percentage.
+        total (int): The total value to be used as the denominator in the percentage calculation.
+
+    Returns:
+        float | int: The function returns the percentage of value out of total as a float.
+        If division raise ZeroDivisionError, the function returns 0.
+    """
     try:
         return value * 100 / total
     except ZeroDivisionError:
         return 0
+
+
+def convert_queue_mode(queue_mode: str) -> int:
+    """If queue_mode is equal to "aram", the function returns 450, otherwise, it returns 420.
+
+    Args:
+        queue_mode (str): The queue mode to be converted. It should be either "aram" or some other string (example: "ranked").
+
+    Returns:
+        int: An integer representing the converted queue mode.
+    """
+    return 450 if queue_mode == "aram" else 420
