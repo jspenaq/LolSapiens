@@ -37,11 +37,11 @@ const ChampionBuild = ({
     () =>
       championsData
         ? Object.values(championsData)
-            .map<Option>((champion) => ({
-              label: champion.name,
-              value: champion.id,
-            }))
-            .sort((a, b) => a.label.localeCompare(b.label))
+          .map<Option>((champion) => ({
+            label: champion.name,
+            value: champion.id,
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label))
         : [],
     [championsData]
   );
@@ -97,13 +97,14 @@ const ChampionBuild = ({
 
     const selectedRunes = runes.primary_path_runes
       .concat(runes.secondary_path_runes)
+      .concat(runes.shards_runes)
       .map((rune) => parseInt(rune.id));
 
     return {
       name: `LolSapiens ${query.champion?.label as string} runes`,
       primaryStyleId: RunesPath.get(runes.primary_path), // Inspiration...
-      subStyleId: RunesPath.get(runes.secondary_path), // Inspiration
-      selectedPerkIds: selectedRunes.concat([5007, 5002, 5001]), // runes // Stats hardcoded
+      subStyleId: RunesPath.get(runes.secondary_path), // Inspiration...
+      selectedPerkIds: selectedRunes,
       current: true,
     };
   };
@@ -120,14 +121,14 @@ const ChampionBuild = ({
     () =>
       runesData
         ? Object.values(runesData)
-            .map((path) =>
-              path.slots[0].runes.map<Option>((rune) => ({
-                label: rune.name,
-                value: rune.id.toString(),
-              }))
-            )
-            .flat()
-            .concat({ label: "Default", value: "0" })
+          .map((path) =>
+            path.slots[0].runes.map<Option>((rune) => ({
+              label: rune.name,
+              value: rune.id.toString(),
+            }))
+          )
+          .flat()
+          .concat({ label: "Default", value: "0" })
         : [],
     [runesData]
   );
