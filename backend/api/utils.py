@@ -1,8 +1,9 @@
 import argparse
 import json
 import platform
-import requests
 from pathlib import Path
+import requests
+from numpy import average
 
 
 def request_get(url: str):
@@ -125,10 +126,26 @@ def percentage_division(value: int, total: int) -> float | int:
 
     Returns:
         float | int: The function returns the percentage of value out of total as a float.
-        If division raise ZeroDivisionError, the function returns 0.
+        If division raises ZeroDivisionError, the function returns 0.
     """
     try:
         return value * 100 / total
+    except ZeroDivisionError:
+        return 0
+
+
+def weighted_average(data: list, weights: list) -> float | int:
+    """Calculates the weighted average of a list of data values.
+
+    Args:
+        data (list): A list of numeric values to be averaged.
+        weights (list): A list of weights to be used in the weighted average calculation.
+
+    Returns:
+        float | int: The weighted average of the data values, or 0 if raises ZeroDivisionError.
+    """
+    try:
+        return average(data, weights=weights)
     except ZeroDivisionError:
         return 0
 
