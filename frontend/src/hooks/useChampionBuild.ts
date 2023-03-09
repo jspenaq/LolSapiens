@@ -32,15 +32,15 @@ const getChampionBuild = async (
     }
   );
 
-  const { data: runes } = await axios.get<BuildRunes>(
-    `${CHAMPION_RUNES}?${new URLSearchParams({ ...params }).toString()}`,
-    {
-      baseURL: BACKEND_BASE,
-    }
-  );
+  // const { data: runes } = await axios.get<BuildRunes>(
+  //   `${CHAMPION_RUNES}?${new URLSearchParams({ ...params }).toString()}`,
+  //   {
+  //     baseURL: BACKEND_BASE,
+  //   }
+  // );
+  const runes = build.runes
 
   const items = build.items
-  console.log("🚀 ~ file: useChampionBuild.ts:44 ~ build:", build.items)
   return { items, runes };
 };
 

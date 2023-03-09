@@ -22,4 +22,6 @@ export const SPICY_PICKS = "/tierlist/spicy-picks";
 
 export const CHAMPION_BUILD = "/champion/build";
 
+export const CHAMPION_KEYSTONES = "/champion/keystones";
+
 export const CHAMPION_RUNES = "/champion/runes";
