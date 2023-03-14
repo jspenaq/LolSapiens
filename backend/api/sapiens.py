@@ -40,6 +40,7 @@ class Sapiens:
         self.items_data = get_items_data(self.current_patch)
 
         self.current_champion_data = {}
+        print(f"Patch: {self.current_patch}")
         print("Sapiens is ready.")
 
     def get_initial_data(self) -> dict:
@@ -411,15 +412,46 @@ class Sapiens:
         build_response["runes"] = runes
 
         # Get summoner spells
+        # spells = self._get_summoner_spells()
 
         # Get items
         items = self._get_items(champion_id, lane, tier, queue_mode, keystone_id, spicy)
         build_response["items"] = items
 
         # Get skills
+        # skills = self._get_skills()
 
         self.current_champion_data = {}  # Reset data
         return build_response
+
+    def _get_items(
+        self,
+        champion_id: str,
+        lane: str = "default",
+        tier: str = "platinum_plus",
+        queue_mode: int = 420,
+        keystone_id: int = 0,
+        spicy: int = 0,
+    ) -> dict:
+        champion_name = self.champions_data[champion_id]["name"]
+
+        print(f"Searching {champion_name} {lane}")
+        if keystone_id == 0:
+            recommend_runes = self._get_champion_keystones(
+                champion_id, lane, tier, queue_mode, spicy
+            )
+
+            keystone_id = int(recommend_runes[0]["id"])
+        region = "all"
+        url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
+        response = request_get(url)
+        # TODO: Fix Desktop app bug (double request)
+        # if not self.current_champion_data:
+        #     return {}
+
+        return self._get_build_json(
+            response, champion_id, lane, tier, keystone_id, spicy
+        )
 
     def _get_items(
         self,
