@@ -11,6 +11,7 @@ from backend.api.lol_scraper import (
     get_current_patch,
     get_items_data,
     get_runes_data,
+    get_spells_data,
 )
 from backend.api.utils import (
     percentage_division,
@@ -38,6 +39,7 @@ class Sapiens:
         self.runes_data = get_runes_data(self.current_patch)
         self.keystones, self.all_runes = self._get_keystones()
         self.items_data = get_items_data(self.current_patch)
+        self.spells_data = get_spells_data(self.current_patch)
 
         self.current_champion_data = {}
         print("Sapiens is ready.")
@@ -626,7 +628,23 @@ class Sapiens:
             "secondary_path_runes": secondary_path.to_dict(orient="records"),
             "shards_runes": shards.to_dict(orient="records"),
         }
-
+    def _get_champion_summoner_spells(
+        self,
+        champion_id: str,
+        lane: str = "default",
+        tier: str = "platinum_plus",
+        queue_mode: int = 420,
+        keystone_id: int = 0,
+        spicy: int = 0,
+    ):
+        region = "all"
+        url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
+        if "runes" not in response:
+            return {}
+        response = request_get(url)
+        columns = ["id_spell1", "id_spell2", "win_rate", "games"]
+        print(url)
+        return
     def _get_build_json(
         self,
         response: dict,

@@ -72,3 +72,18 @@ def get_runes(
     return s._get_champion_runes(
         champion_id, lane, tier, queue_mode, keystone_id, spicy
     )
+@build_router.get("/summonerspells", tags=["champion"])
+def get_summoner_spells(
+    champion_id: str = champion_id_param,
+    lane: str = lane_param,
+    tier: str = tier_param,
+    queue_mode: str = queue_mode_param,
+    keystone_id: int = keystone_id_param,
+    spicy: int = spicy_param,
+):
+    queue_mode = convert_queue_mode(queue_mode)
+    if queue_mode == 450:
+        lane = "middle"
+    return s._get_champion_summoner_spells(
+        champion_id, lane, tier, queue_mode, keystone_id, spicy
+    )
