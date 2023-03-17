@@ -6,12 +6,14 @@ import type { PickChampionInfo } from "../types";
 
 const getSpicyPicks = async (
   lane: string,
-  tier: string
+  tier: string,
+  limit: string
 ): Promise<PickChampionInfo[]> => {
   const { data } = await axios.get<PickChampionInfo[]>(
     `${SPICY_PICKS}?${new URLSearchParams({
       lane,
       tier,
+      limit,
     }).toString()}`,
     {
       baseURL: BACKEND_BASE,
@@ -22,12 +24,12 @@ const getSpicyPicks = async (
 };
 
 const useSpicyPicks = (
-  { lane, tier }: { lane: string; tier: string },
+  { lane, tier, limit }: { lane: string; tier: string; limit: string },
   enabled = true
 ): UseQueryResult<PickChampionInfo[]> => {
   return useQuery(
-    ["spicy-picks", lane, tier],
-    getSpicyPicks.bind(null, lane, tier),
+    ["spicy-picks", lane, tier, limit],
+    getSpicyPicks.bind(null, lane, tier, limit),
     {
       enabled,
       initialData: [],
