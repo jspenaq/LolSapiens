@@ -31,9 +31,9 @@ jobs:
         run: |
           pip install -r requirements.txt
 
-      - name: Set up data folder (backend)
-        run: |
-          python main.py
+      # - name: Set up data folder (backend)
+      #   run: |
+      #     python main.py
 
       - name: Set up Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -62,8 +62,14 @@ jobs:
           cd make
           ls
 
-      - name: Publish artifact
+      - name: Publish artifact backend
         uses: actions/upload-artifact@v3
         with:
           name: backend-package
           path: desktop/out/backend/main
+      
+      - name: Publish artifact frontend
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-package
+          path: desktop/out/make/
