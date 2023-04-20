@@ -1,4 +1,4 @@
-name: Publish electron app
+name: Publish electron app and backend
 
 on:
   push:
@@ -44,21 +44,26 @@ jobs:
         run: |
           cd frontend
           npm i
-      
+
       - name: Install dependencies (desktop)
         run: |
           cd desktop
           npm i
-      
+
+      - name: Package python code with PyInstaller
+        run: |
+          pyinstaller main.py --onefile --distpath ./desktop/out/backend --clean -y
+
       - name: Build electron app
         run: |
           cd desktop
           npm run make
           cd out
-          ls
           cd make
           ls
 
       - name: Publish artifact
-        run: |
-          echo "Publish artifacts.."
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-package
+          path: desktop/out/backend/main

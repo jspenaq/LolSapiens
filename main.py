@@ -54,8 +54,8 @@ app.include_router(build_router, prefix="/champion")
 if __name__ == "__main__":
     parser = create_parser()
     args = parser.parse_args()
-    if args.start:
-        port = int(os.environ.get("PORT", 3200))
-        uvicorn.run(app, host="0.0.0.0", port=port)
+    # if args.start:
+    port = int(os.environ.get("PORT", 3200))
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
     print("Done")
