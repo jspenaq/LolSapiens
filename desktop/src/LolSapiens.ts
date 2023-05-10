@@ -44,9 +44,8 @@ export default class LolSapiens extends BrowserWindow {
         return;
       }
 
-      const dir = `${basePath}/Config/Champions/${
-        championName as string
-      }/Recommended/`;
+      const dir = `${basePath}/Config/Champions/${championName as string
+        }/Recommended/`;
 
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
