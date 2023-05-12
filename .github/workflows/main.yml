@@ -42,6 +42,7 @@ jobs:
           coverage run --source=backend -m pytest -vv
           coverage report
           coverage html
+          coverage lcov
 
       - name: Upload to Coveralls
         uses: coverallsapp/github-action@v1
@@ -83,3 +84,4 @@ jobs:
     #     cd frontend
     #     npm run build
     #     npm test
+
