@@ -43,6 +43,9 @@ jobs:
           coverage report
           coverage html
 
+      - name: Upload to Coveralls
+        uses: coverallsapp/github-action@v1
+
       - name: Publish coverage report as artifact
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v3
