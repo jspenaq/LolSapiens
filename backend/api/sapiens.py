@@ -194,7 +194,6 @@ class Sapiens:
 
         method = max(method, 0)  # method < 0
         method = min(method, 8)  # method > 8
-        print(f"{method=}")
         match method:
             case 0:
                 df = df[df["games"] >= (maximum - 1 * standard)]
