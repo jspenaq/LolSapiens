@@ -1,6 +1,7 @@
 import { useAppSelector } from "../../hooks/reduxHooks";
 import type { ChampionBuildParams } from "../../hooks/useChampionBuild";
 import useChampionBuild from "../../hooks/useChampionBuild";
+import useKeystones from "../../hooks/useKeystones";
 import classes from "./championbuild.module.scss";
 import { useState, useMemo } from "react";
 import type { Option } from "../../types";
@@ -147,6 +148,11 @@ const ChampionBuild = ({
     Boolean(championBuildQuery?.champion_id)
   );
 
+  const keystonesData = useKeystones(
+    championBuildQuery,
+    Boolean(championBuildQuery?.champion_id)
+  );
+
   if (!championsData) {
     return <></>;
   }
@@ -210,6 +216,20 @@ const ChampionBuild = ({
       )}
       {data?.runes && <Runes runes={data.runes} />}
       {data?.items && <RecommendedBuild build={data.items} />}
+      {champion && (
+        <div className={classes.champion}>
+          <h2>Keystones</h2>
+          {keystonesData.data && (
+            <ul>
+              {Array.isArray(keystonesData.data) && keystonesData.data.map((keystone) => (
+                <li key={keystone.id}>
+                  {keystone.name} (Win rate: {keystone.win_rate}%, Games: {keystone.games})
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 };

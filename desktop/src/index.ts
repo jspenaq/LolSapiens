@@ -24,6 +24,7 @@ const createWindow = async (): Promise<void> => {
   }
 };
 
+app.commandLine.appendSwitch('ignore-certificate-errors')
 app
   .whenReady()
   .then(() => {

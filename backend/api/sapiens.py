@@ -194,7 +194,6 @@ class Sapiens:
 
         method = max(method, 0)  # method < 0
         method = min(method, 8)  # method > 8
-        print(f"{method=}")
         match method:
             case 0:
                 df = df[df["games"] >= (maximum - 1 * standard)]
@@ -272,7 +271,7 @@ class Sapiens:
         df = self._analyze(df, 0)
         # df = df[(df["pick_rate"] > max(mean, median)) & (df["ban_rate"] > p20)]
         # df = df.sort_values(by="win_rate", ascending=False)
-        return df.head(10)[["id", "win_rate", "pick_rate"]]
+        return df[["id", "win_rate", "pick_rate"]]
 
     def _analyze_picks(self, df: pd.DataFrame) -> pd.DataFrame:
         value_pick_rate = max(df["pick_rate"].mean(), df["pick_rate"].median())
@@ -287,12 +286,13 @@ class Sapiens:
         # df = df.sort_values(by="win_rate", ascending=False).reset_index()
         return df[["id", "win_rate", "pick_rate"]]
 
-    def get_top10_bans(
+    def get_top_bans(
         self,
         lane: str = "default",
         tier: str = "platinum_plus",
+        limit: int = 10,
     ) -> list:
-        """Fetches the top ten banned champions in the given lane and tier.
+        """Fetches the top banned champions in the given lane and tier.
 
         Args:
             lane (str, optional): the name of the lane to filter the tier list by.
@@ -309,7 +309,7 @@ class Sapiens:
             }
         """
         df = self._get_tierlist(lane, tier)
-        ids = self._analyze_bans(df)
+        ids = self._analyze_bans(df).head(limit)
         data = []
         for _, row in ids.iterrows():
             champion_id = row["id"]

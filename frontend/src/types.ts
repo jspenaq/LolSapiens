@@ -108,3 +108,12 @@ export interface BuildRunes {
   secondary_path_runes: BuildRune[];
   shards_runes: BuildRune[];
 }
+
+export interface Keystone {
+  id: string;
+  name: string;
+  win_rate: number;
+  games: number;
+}
+
+
