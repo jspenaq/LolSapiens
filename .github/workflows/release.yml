@@ -62,14 +62,14 @@ jobs:
           cd make
           ls
 
-      - name: Publish artifact backend
-        uses: actions/upload-artifact@v3
-        with:
-          name: backend-package
-          path: desktop/out/backend/main
+      # - name: Publish artifact backend
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: backend-package
+      #     path: desktop/out/backend/main
       
       - name: Publish artifact frontend
         uses: actions/upload-artifact@v3
         with:
-          name: backend-package
+          name: frontend-package-${{ matrix.os }}
           path: desktop/out/make/

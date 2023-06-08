@@ -12,7 +12,7 @@ export const DDRAGON_ITEM = "/img/item";
 export const DDRAGON_CANISBACK_BASE = "https://ddragon.canisback.com/img";
 
 // Backend
-export const BACKEND_BASE = "http://localhost:3200";
+export const BACKEND_BASE = "https://lolsapiens.onrender.com";
 
 export const INITIAL_DATA = "/initial-data";
 
