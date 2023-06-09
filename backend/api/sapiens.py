@@ -1,4 +1,5 @@
 import datetime
+from backend.api.logger import BackendLogger
 from pathlib import Path
 
 import pandas as pd
@@ -19,10 +20,12 @@ from backend.api.utils import (
     weighted_average,
 )
 
+logger = BackendLogger().logger
+
 
 class Sapiens:
     def __init__(self):
-        print("Initializing Sapiens...")
+        logger.info("Initializing Sapiens...")
         setup_folders()
 
         self.current_patch = get_current_patch()
@@ -30,7 +33,7 @@ class Sapiens:
         self.base_url = "https://axe.lolalytics.com"  # LoLalytics
         self.tierlist = self._get_tierlist()
         if self.tierlist.empty:
-            print("Using previous patch...")
+            logger.info("Using previous patch...")
             self.current_patch = get_current_patch(1)
             self.patch = ".".join(self.current_patch.split(".")[:2])
 
@@ -40,8 +43,10 @@ class Sapiens:
         self.items_data = get_items_data(self.current_patch)
 
         self.current_champion_data = {}
-        print(f"Patch: {self.current_patch}")
-        print("Sapiens is ready.")
+        logger.info(f"Patch: {self.current_patch}")
+        logger.info("Sapiens is ready.")
+
+    # Logger for sapiens
 
     def get_initial_data(self) -> dict:
         """Return the initial data related to champions, runes, items, and patch.
@@ -435,7 +440,7 @@ class Sapiens:
     ) -> dict:
         champion_name = self.champions_data[champion_id]["name"]
 
-        print(f"Searching {champion_name} {lane}")
+        logger.info(f"Searching {champion_name} {lane}")
         if keystone_id == 0:
             recommend_runes = self._get_champion_keystones(
                 champion_id, lane, tier, queue_mode, spicy
@@ -615,10 +620,10 @@ class Sapiens:
                 print("=======")
 
         best_path = self._analyze(pd.DataFrame(averages, columns=columns), spicy)
-        print(best_path)
+        logger.debug(best_path)
         best_path = best_path.head(1)["id"]
         secondary_path_id = int(best_path.values[0])
-        print(f"{matrix_all_paths[secondary_path_id]}")
+        logger.debug(f"{matrix_all_paths[secondary_path_id]}")
         secondary_path = matrix_all_paths[int(best_path.values[0])]
 
         top_runes_secondary = pd.DataFrame(columns=columns)
