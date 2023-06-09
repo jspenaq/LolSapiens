@@ -3,7 +3,11 @@ import json
 import platform
 from pathlib import Path
 import requests
+from backend.api.logger import BackendLogger
 from numpy import average
+
+
+logger = BackendLogger.logger
 
 
 def request_get(url: str):
@@ -92,8 +96,10 @@ def setup_folders(path: Path = Path("")) -> bool:
             try:
                 folder.mkdir(parents=True, exist_ok=True)
             except Exception as e:
-                print(f"An exception occurred while creating folder {folder_name}:")
-                print(e)
+                logger.error(
+                    f"An exception occurred while creating folder {folder_name}:"
+                )
+                logger.error(e)
                 return False
     return True
 

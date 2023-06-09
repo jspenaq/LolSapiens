@@ -10,6 +10,7 @@ from backend.api.utils import create_parser, request_get, setup_folders
 
 logger = BackendLogger.logger
 
+
 def get_languages() -> list:
     """Fetches the available languages for League of Legends.
 
@@ -113,7 +114,7 @@ def get_runes_data(version: str, folder: Path = Path("data")) -> list:
             return json.loads(file.read())
 
     except (RequestException, IOError, json.JSONDecodeError) as e:
-        print(f"Error retrieving runes data: {e}")
+        logger.error(f"Error retrieving runes data: {e}")
         return []
 
 

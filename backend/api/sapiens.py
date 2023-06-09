@@ -600,7 +600,7 @@ class Sapiens:
         matrix_all_paths = {}  # For later use
         for id in self.all_runes:
             if id != rune_path:
-                print(self.all_runes[id]["name"])
+                logger.debug(self.all_runes[id]["name"])
                 runes_by_path = {"data": [], "weights": []}  # All 9 runes by path.
                 matrix_all_paths[id] = {}
                 slots = self.all_runes[id]["slots"]
@@ -617,7 +617,7 @@ class Sapiens:
                     weighted_average(runes_by_path["data"], runes_by_path["weights"]), 4
                 )
                 averages.append([id, avg_mean, sum(runes_by_path["weights"])])
-                print("=======")
+                logger.debug("=======")
 
         best_path = self._analyze(pd.DataFrame(averages, columns=columns), spicy)
         logger.debug(best_path)
@@ -631,10 +631,10 @@ class Sapiens:
             df_secondary = self._analyze(
                 pd.DataFrame(secondary_path[k], columns=columns), spicy
             )[["id", "win_rate", "games"]].head(1)
-            print(df_secondary)
+            logger.debug(df_secondary)
             top_runes_secondary = pd.concat([top_runes_secondary, df_secondary])
         secondary_path = self._get_weighted_score(top_runes_secondary).head(2)
-        print(f"{secondary_path}")
+        logger.debug(f"{secondary_path}")
 
         # Shards
         ids_shards = {
