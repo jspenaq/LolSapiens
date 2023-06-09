@@ -8,7 +8,7 @@ from backend.api.logger import BackendLogger
 from backend.api.utils import create_parser, request_get, setup_folders
 
 
-logger = BackendLogger.logger
+logger = BackendLogger().logger
 
 
 def get_languages() -> list:

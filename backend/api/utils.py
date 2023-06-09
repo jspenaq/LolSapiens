@@ -7,7 +7,7 @@ from backend.api.logger import BackendLogger
 from numpy import average
 
 
-logger = BackendLogger.logger
+logger = BackendLogger().logger
 
 
 def request_get(url: str):
