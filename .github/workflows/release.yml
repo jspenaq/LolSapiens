@@ -50,9 +50,9 @@ jobs:
           cd desktop
           npm i
 
-      - name: Package python code with PyInstaller
-        run: |
-          pyinstaller main.py --onefile --distpath ./desktop/out/backend --clean -y
+      # - name: Package python code with PyInstaller
+      #   run: |
+      #     pyinstaller main.py --onefile --distpath ./desktop/out/backend --clean -y
 
       - name: Build electron app
         run: |
