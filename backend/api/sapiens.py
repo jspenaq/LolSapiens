@@ -469,7 +469,7 @@ class Sapiens:
     ) -> dict:
         champion_name = self.champions_data[champion_id]["name"]
 
-        print(f"Searching {champion_name} {lane}")
+        logger.info(f"Searching {champion_name} {lane}")
         if keystone_id == 0:
             recommend_runes = self._get_champion_keystones(
                 champion_id, lane, tier, queue_mode, spicy
@@ -686,7 +686,7 @@ class Sapiens:
         }
 
         champion_name = self.champions_data[champion_id]["name"]
-        print(f"{keystone_id=}")
+        logger.info(f"{keystone_id=}")
         keystone_name = self.keystones[str(keystone_id)]["name"]
         keystone_name_es = self.keystones[str(keystone_id)]["name_es"]
         build_txt_path = Path("Champions/recommend_build.txt")
@@ -712,11 +712,11 @@ class Sapiens:
                 build_file.write(skillOrder)
                 build_file.write("\n\n")
             except Exception as e:
-                print(e)
+                logger.error(e)
                 return {}
 
             for b, value in blocks.items():
-                print(f"=== {b} ===")
+                logger.debug(f"=== {b} ===")
                 build_file.write(f"=== {b} ===\n")
                 if b not in response.keys():
                     continue
@@ -750,7 +750,7 @@ class Sapiens:
                             inplace=True,
                         )
                     if recommended.empty:
-                        print("EMPTY")
+                        logger.debug("EMPTY")
                         continue
                     recommended = recommended.head(5)  # Maximum 5 items by block
 
@@ -764,7 +764,7 @@ class Sapiens:
 
                 recommended.drop(columns=["index"], inplace=True)
                 build_file.write(recommended.to_string())
-                print(recommended)
+                logger.debug(recommended)
                 build_file.write("\n\n")
 
         return build_json

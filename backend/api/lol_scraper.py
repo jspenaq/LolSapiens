@@ -4,8 +4,11 @@ from pathlib import Path
 import pandas as pd
 import requests
 from requests.exceptions import RequestException
+from backend.api.logger import BackendLogger
 from backend.api.utils import create_parser, request_get, setup_folders
 
+
+logger = BackendLogger.logger
 
 def get_languages() -> list:
     """Fetches the available languages for League of Legends.
@@ -27,7 +30,7 @@ def get_current_patch(position: int = 0) -> str:
     try:
         return request_get(url)[position]
     except Exception as e:
-        print(e)
+        logger.error(e)
         return ""
 
 
