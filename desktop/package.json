@@ -8,7 +8,7 @@
     "electron": "npm run compile && electron .",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "cd ../frontend && npm run build && cd ../desktop && npm run compile && electron-forge make",
+    "make": "cd ../frontend && npm run build && cd ../desktop && npm run compile && electron-forge make --arch=arm64,x64",
     "lint": "eslint ."
   },
   "author": "Juan Sebatian Peña Quintero",
