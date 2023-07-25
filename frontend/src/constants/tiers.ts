@@ -5,6 +5,7 @@ const rawTiers = [
   "1trick",
   "master_plus",
   "diamond_plus",
+  "emerald_plus",
   "platinum_plus",
   "gold_plus",
   "platinum",
