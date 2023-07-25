@@ -54,7 +54,14 @@ def create_parser() -> argparse.ArgumentParser:
         "-t",
         "--tier",
         default="platinum_plus",
-        choices=["gold_plus", "platinum_plus", "diamond_plus", "all", "1trick"],
+        choices=[
+            "gold_plus",
+            "platinum_plus",
+            "emerald_plus",
+            "diamond_plus",
+            "all",
+            "1trick",
+        ],
         help="Tier data",
     )
     parser.add_argument(

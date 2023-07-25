@@ -30,7 +30,7 @@ class Sapiens:
 
         self.current_patch = get_current_patch()
         self.patch = ".".join(self.current_patch.split(".")[:2])
-        self.base_url = "https://axe.lolalytics.com"  # LoLalytics
+        self.base_url = "https://ax.lolalytics.com"  # LoLalytics
         self.tierlist = self._get_tierlist()
         if self.tierlist.empty:
             logger.info("Using previous patch...")
@@ -107,7 +107,7 @@ class Sapiens:
                 file_name.stat().st_mtime
             )
         if not exists_flag or time_diff.total_seconds() > time_limit:
-            url = f"{self.base_url}/tierlist/2/?lane={lane}&patch={self.patch}&tier={tier}&queue=420&region=all"
+            url = f"{self.base_url}/tierlist/1/?lane={lane}&patch={self.patch}&tier={tier}&queue=420&region=all"
             response = request_get(url)
             with open(file_name, "w+", encoding="UTF-8") as file:
                 columns = [
