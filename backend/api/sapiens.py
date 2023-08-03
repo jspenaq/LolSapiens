@@ -414,7 +414,13 @@ class Sapiens:
             )
 
             build_response["items"] = self._get_build_json(
-                self.current_champion_data, champion_id, lane, tier, keystone_id, spicy
+                self.current_champion_data,
+                champion_id,
+                lane,
+                tier,
+                keystone_id,
+                spicy,
+                items_by_block=7,
             )
 
         else:
@@ -671,6 +677,7 @@ class Sapiens:
         tier: str,
         keystone_id: int,
         spicy: int,
+        items_by_block: int = 5,
     ):
         # response = self.current_champion_data
         blocks = {
@@ -757,7 +764,9 @@ class Sapiens:
                     if recommended.empty:
                         logger.debug("EMPTY")
                         continue
-                    recommended = recommended.head(5)  # Maximum 5 items by block
+                    recommended = recommended.head(
+                        items_by_block
+                    )  # Maximum 5 items by block
 
                     build_json["blocks"].append(
                         {
