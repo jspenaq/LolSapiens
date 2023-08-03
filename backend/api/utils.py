@@ -1,12 +1,8 @@
 import argparse
-import json
-import platform
-import re
 from pathlib import Path
 import requests
 from backend.api.logger import BackendLogger
 from numpy import average
-from bs4 import BeautifulSoup
 
 logger = BackendLogger().logger
 
