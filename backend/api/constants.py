@@ -18,7 +18,7 @@ lane_param = Query(
 tier_param = Query(
     "platinum_plus",
     title="tier",
-    description="The tier of data that you would like to use. Some options: 'gold', 'gold_plus', 'platinum_plus', '1trick', etc. Default: platinum_plus",
+    description="The tier of data that you would like to use. Some options: 'gold', 'gold_plus', 'platinum_plus', 'emerald_plus', '1trick', etc. Default: platinum_plus",
     example="gold_plus",
 )
 queue_mode_param = Query(

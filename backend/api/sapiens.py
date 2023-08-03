@@ -18,6 +18,7 @@ from backend.api.utils import (
     request_get,
     setup_folders,
     weighted_average,
+    transform_data_from_lolsociety,
 )
 
 logger = BackendLogger().logger
@@ -402,29 +403,47 @@ class Sapiens:
         # Update current_champion_data
         region = "all"
         url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
-        self.current_champion_data = request_get(url)
-        if "runes" not in self.current_champion_data:
-            # No data
-            self.current_champion_data = {}
-            return build_response
+        # TODO: Use lolalytics for Arena game mode
+        if queue_mode == 1500:
+            champion_name = self.champions_data[champion_id]["key_name"]
+            # url = f"https://lolsociety.com/champion/{self.champions_data[champion_id]['key_name']}"
+            url = f"https://lolsociety.com/_next/data/YFAcE9P5ndEtha-waTReL/champion/{champion_name}.json?key={champion_name}"
+            lolsociety_data = request_get(url)
+            self.current_champion_data = transform_data_from_lolsociety(
+                lolsociety_data["pageProps"]["championInfo"]
+            )
 
-        # Get runes
-        runes = self._get_champion_runes(
-            champion_id, lane, tier, queue_mode, keystone_id, spicy
-        )
-        if not build_response["keystones"]:
-            build_response["keystones"] = [runes["primary_path_runes"][0]]
-        build_response["runes"] = runes
+            build_response["items"] = self._get_build_json(
+                self.current_champion_data, champion_id, lane, tier, keystone_id, spicy
+            )
 
-        # Get summoner spells
-        # spells = self._get_summoner_spells()
+        else:
+            # Ranked, Aram
+            self.current_champion_data = request_get(url)
+            if "runes" not in self.current_champion_data:
+                # No data
+                self.current_champion_data = {}
+                return build_response
 
-        # Get items
-        items = self._get_items(champion_id, lane, tier, queue_mode, keystone_id, spicy)
-        build_response["items"] = items
+            # Get runes
+            runes = self._get_champion_runes(
+                champion_id, lane, tier, queue_mode, keystone_id, spicy
+            )
+            if not build_response["keystones"]:
+                build_response["keystones"] = [runes["primary_path_runes"][0]]
+            build_response["runes"] = runes
 
-        # Get skills
-        # skills = self._get_skills()
+            # Get summoner spells
+            # spells = self._get_summoner_spells()
+
+            # Get items
+            items = self._get_items(
+                champion_id, lane, tier, queue_mode, keystone_id, spicy
+            )
+            build_response["items"] = items
+
+            # Get skills
+            # skills = self._get_skills()
 
         self.current_champion_data = {}  # Reset data
         return build_response
@@ -454,34 +473,14 @@ class Sapiens:
         # if not self.current_champion_data:
         #     return {}
 
-        return self._get_build_json(
-            response, champion_id, lane, tier, keystone_id, spicy
-        )
-
-    def _get_items(
-        self,
-        champion_id: str,
-        lane: str = "default",
-        tier: str = "platinum_plus",
-        queue_mode: int = 420,
-        keystone_id: int = 0,
-        spicy: int = 0,
-    ) -> dict:
-        champion_name = self.champions_data[champion_id]["name"]
-
-        logger.info(f"Searching {champion_name} {lane}")
-        if keystone_id == 0:
-            recommend_runes = self._get_champion_keystones(
-                champion_id, lane, tier, queue_mode, spicy
-            )
-
-            keystone_id = int(recommend_runes[0]["id"])
-        region = "all"
-        url = f"{self.base_url}/mega/?ep=champion&p=d&v=1&patch={self.patch}&cid={champion_id}&lane={lane}&tier={tier}&queue={queue_mode}&region={region}&keystone={keystone_id}"
-        response = request_get(url)
-        # TODO: Fix Desktop app bug (double request)
-        # if not self.current_champion_data:
-        #     return {}
+        # TODO: Create a function to get skills: self._get_skills()
+        if "skills" in response:
+            new_skills = []
+            for s in response["skills"]["skillOrder"]:
+                # [0]: item_id, [1]: win_rate, [2]: pick_rate, [3]: games
+                new_skill = [s[0], round(s[2] * 100 / s[1], 2), s[1], s[1]]
+                new_skills.append(new_skill)
+            response["skills"] = new_skills
 
         return self._get_build_json(
             response, champion_id, lane, tier, keystone_id, spicy
@@ -707,7 +706,12 @@ class Sapiens:
                 "blocks": [],
             }
             try:
-                skillOrder = response["skills"]["skillOrder"][0][0]
+                skillOrder = response["skills"]
+                df = pd.DataFrame(
+                    skillOrder, columns=["id", "win_rate", "pick_rate", "games"]
+                )
+                skillOrder = self._analyze(df, spicy)
+                skillOrder = skillOrder["id"][0]
                 skillOrder = " > ".join(list(skillOrder))
                 build_file.write(skillOrder)
                 build_file.write("\n\n")
@@ -727,7 +731,8 @@ class Sapiens:
                     items = items[:7]
 
                 columns = ["id", "win_rate", "pick_rate", "games", "time"]
-                if b == "startSet":
+                if len(items[0]) == 4:
+                    # if b == "startSet":
                     columns = columns[:4]
 
                 df = pd.DataFrame(items, columns=columns)
@@ -760,7 +765,8 @@ class Sapiens:
                             "type": blocks[b],
                         }
                     )
-                    recommended.drop(columns=["time"], inplace=True)
+                    if "time" in recommended:
+                        recommended.drop(columns=["time"], inplace=True)
 
                 recommended.drop(columns=["index"], inplace=True)
                 build_file.write(recommended.to_string())
