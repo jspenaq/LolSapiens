@@ -3,7 +3,7 @@ name: Publish electron app and backend
 on:
   push:
     branches:
-      - release
+      - prod
 
 env:
   APP_NAME: LolSapiens
