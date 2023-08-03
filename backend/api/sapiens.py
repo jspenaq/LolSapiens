@@ -421,7 +421,6 @@ class Sapiens:
                 keystone_id,
                 spicy,
                 items_by_block=7,
-                self.current_champion_data, champion_id, lane, tier, keystone_id, spicy
             )
 
         else:
