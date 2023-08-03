@@ -727,8 +727,8 @@ class Sapiens:
 
                 items = response[b]
                 # [0]: item_id, [1]: win_rate, [2]: pick_rate, [3]: games, [4]: time,
-                if len(items) > 7:
-                    items = items[:7]
+                # if len(items) > 12:
+                #     items = items[:12]
 
                 columns = ["id", "win_rate", "pick_rate", "games", "time"]
                 if len(items[0]) == 4:
