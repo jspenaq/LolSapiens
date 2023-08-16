@@ -407,7 +407,7 @@ class Sapiens:
         if queue_mode == 1500:
             champion_name = self.champions_data[champion_id]["key_name"]
             # url = f"https://lolsociety.com/champion/{self.champions_data[champion_id]['key_name']}"
-            url = f"https://lolsociety.com/_next/data/YFAcE9P5ndEtha-waTReL/champion/{champion_name}.json?key={champion_name}"
+            url = f"https://lolsociety.com/_next/data/j1WrQn5vcmMFgi0DvsxAJ/champion/{champion_name}.json?key={champion_name}"
             lolsociety_data = request_get(url)
             self.current_champion_data = transform_data_from_lolsociety(
                 lolsociety_data["pageProps"]["championInfo"]
