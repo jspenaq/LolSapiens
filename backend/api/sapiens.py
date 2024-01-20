@@ -99,6 +99,15 @@ class Sapiens:
     def _get_tierlist(
         self, lane: str = "default", tier: str = "platinum_plus"
     ) -> pd.DataFrame:
+        """Fetches or creates a tierlist DataFrame based on the lane and tier.
+
+        Args:
+            lane (str, optional): The lane for the tierlist. Defaults to "default".
+            tier (str, optional): The tier for the tierlist. Defaults to "platinum_plus".
+
+        Returns:
+            pd.DataFrame: A DataFrame representing the tierlist.
+        """
         file_name = Path(f"data/tierlist_{lane}_{tier}.csv")
         time_limit = 6 * 60 * 60  # 6 hours (in seconds)
         exists_flag = file_name.exists()
@@ -489,7 +498,7 @@ class Sapiens:
             response["skills"] = new_skills
 
         return self._get_build_json(
-            response, champion_id, lane, tier, keystone_id, spicy
+            response, champion_id, lane, tier, keystone_id, spicy, items_by_block=7
         )
 
     def _get_champion_keystones(
