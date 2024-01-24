@@ -650,11 +650,12 @@ class Sapiens:
         secondary_path = self._get_weighted_score(top_runes_secondary).head(2)
         logger.debug(f"{secondary_path}")
 
-        # Shards
+        # Shards (Third path)
+        # Shards are changed (patch 14.2)
         ids_shards = {
             "0": ["5008", "5005", "5007"],
-            "1": ["5008f", "5002f", "5003f"],
-            "2": ["5001", "5002", "5003"],
+            "1": ["5008f", "5010f", "5001f"],
+            "2": ["5011", "5013", "5001"],
         }
         shards = pd.DataFrame(columns=columns)
         for i in range(len(ids_shards)):
