@@ -364,6 +364,8 @@ class Sapiens:
             }
         """
         df = self._get_tierlist(lane, tier)
+        # Delete the rows with only 1 game in games_by_lane
+        df = df[df["games_by_lane"] > 1]
         ids = self._analyze_picks(df)
         limit = min(limit, 20)
         ids = ids.head(limit)
